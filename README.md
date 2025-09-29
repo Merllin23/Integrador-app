@@ -1,5 +1,5 @@
 ## Elaboración de aplicación web para cotización y control de inventario de la empresa JKM Confecciones
-###Autores
+### Autores
 - Aguirre Calcina Gianfranco Stiven 
 - Apaza Achata Andrehe Epifanio
 - Calderon Huamantupa Patrick Anthony
