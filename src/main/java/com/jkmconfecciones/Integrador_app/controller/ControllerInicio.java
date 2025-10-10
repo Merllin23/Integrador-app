@@ -12,6 +12,7 @@ public class ControllerInicio {
         return "index";
     }
 
+
     @GetMapping("/admin")
     public String adminPage(Model model) {
         return "admin";
@@ -21,5 +22,8 @@ public class ControllerInicio {
     public String usuarioPage(Model model) {
         return "usuario";
     }
+
+    
+
 }
 
