@@ -11,5 +11,9 @@ public class ControllerInicio {
         return "index";
     }
     
+    @GetMapping("/landing_page")
+    public String landing_page() {
+        return "landing_page";
+    }
 }
 
