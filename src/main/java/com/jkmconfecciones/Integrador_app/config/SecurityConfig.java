@@ -12,9 +12,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index", "/login", "/bienvenida", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().permitAll() // permite todo por ahora
+                        .anyRequest().permitAll()
                 )
-                .csrf(csrf -> csrf.disable()); // deshabilitamos CSRF para pruebas
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }

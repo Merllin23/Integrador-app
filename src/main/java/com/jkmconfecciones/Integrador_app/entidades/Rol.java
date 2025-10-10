@@ -16,5 +16,5 @@ public class Rol {
     private Long id;
 
     @Column(name = "nombre_rol", nullable = false)
-    private String nombreRol; // Administrador, Vendedor, Cliente
+    private String nombreRol; // Administrador, Usuario
 }
