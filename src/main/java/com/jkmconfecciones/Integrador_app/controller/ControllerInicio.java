@@ -21,5 +21,11 @@ public class ControllerInicio {
     public String usuarioPage(Model model) {
         return "usuario";
     }
+    @GetMapping("/registro")
+    public String mostrarFormularioRegistro(Model model) {
+    model.addAttribute("usuario", new Usuario());
+    return "registro";
+    }
+
 }
 
