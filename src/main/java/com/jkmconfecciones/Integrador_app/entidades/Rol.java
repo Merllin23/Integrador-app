@@ -17,4 +17,6 @@ public class Rol {
 
     @Column(name = "nombre_rol", nullable = false)
     private String nombreRol; // Administrador, Vendedor, Cliente
+
+	
 }
