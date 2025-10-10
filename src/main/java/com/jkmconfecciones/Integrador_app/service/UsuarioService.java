@@ -1,7 +1,7 @@
 package com.jkmconfecciones.Integrador_app.service;
 
-import com.jkmconfecciones.Integrador_app.entidades.Usuario;
+import com.jkmconfecciones.Integrador_app.dto.UsuarioDTO;
 
 public interface UsuarioService {
-    Usuario validarLogin(String correo, String contraseña);
+    UsuarioDTO validarLogin(String correo, String contraseña);
 }

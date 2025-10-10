@@ -1,6 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller;
 
-import com.jkmconfecciones.Integrador_app.entidades.Usuario;
+import com.jkmconfecciones.Integrador_app.dto.UsuarioDTO;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,13 +23,13 @@ public class LoginController {
                                 @RequestParam String contraseña,
                                 Model model) {
 
-        Usuario usuario = usuarioService.validarLogin(correo, contraseña);
+        UsuarioDTO usuario = usuarioService.validarLogin(correo, contraseña);
 
         if (usuario != null) {
             model.addAttribute("nombre", usuario.getNombre());
-            model.addAttribute("rol", usuario.getRol().getNombreRol());
+            model.addAttribute("rol", usuario.getRol());
 
-            String rol = usuario.getRol().getNombreRol();
+            String rol = usuario.getRol();
             if ("Administrador".equalsIgnoreCase(rol)) {
                 return "redirect:/admin";
             } else {
@@ -40,4 +40,5 @@ public class LoginController {
             return "index";
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.service.Impl;
 
+import com.jkmconfecciones.Integrador_app.dto.UsuarioDTO;
 import com.jkmconfecciones.Integrador_app.entidades.Usuario;
 import com.jkmconfecciones.Integrador_app.repositorios.UsuarioRepository;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
@@ -15,20 +16,23 @@ public class UsuarioServiceImpl implements UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Usuario validarLogin(String correo, String contraseña) {
+    public UsuarioDTO validarLogin(String correo, String contraseña) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
 
-            // validar que esté activo
-            if (!"activo".equalsIgnoreCase(usuario.getEstado())) {
-                return null;
-            }
+            // valida que este activo
+            if (!"activo".equalsIgnoreCase(usuario.getEstado())) return null;
 
             // validar contraseña
             if (BCrypt.checkpw(contraseña, usuario.getContraseña())) {
-                return usuario;
+                // crear DTO
+                return new UsuarioDTO(
+                        usuario.getNombre(),
+                        usuario.getCorreo(),
+                        usuario.getRol().getNombreRol()
+                );
             }
         }
 
