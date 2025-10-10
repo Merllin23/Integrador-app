@@ -10,5 +10,6 @@ public class ControllerInicio {
     public String home() {
         return "index";
     }
+    
 }
 
