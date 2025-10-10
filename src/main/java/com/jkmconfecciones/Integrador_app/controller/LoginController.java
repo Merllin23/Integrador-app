@@ -14,11 +14,6 @@ public class LoginController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping("/login")
-    public String mostrarLogin() {
-        return "login";
-    }
-
     @PostMapping("/login")
     public String procesarLogin(@RequestParam String correo,
                                 @RequestParam String contraseña,

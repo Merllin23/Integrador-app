@@ -21,5 +21,8 @@ public class ControllerInicio {
     public String usuarioPage(Model model) {
         return "usuario";
     }
+
+    @GetMapping("/recuperar")
+    public String recuperarPage(Model model) {return "recuperar-contrasena";}
 }
 
