@@ -23,6 +23,14 @@ public class ControllerInicio {
     }
 
     @GetMapping("/recuperar")
-    public String recuperarPage(Model model) {return "recuperar-contrasena";}
+    public String recuperarPage(Model model) {
+        return "recuperar-contrasena";
+    }
+
+    @GetMapping("/registro")
+    public String mostrarFormularioRegistro(Model model) {
+        return "registro";
+    }
+
 }
 
