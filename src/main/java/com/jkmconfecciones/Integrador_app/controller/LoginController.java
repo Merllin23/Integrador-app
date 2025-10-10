@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller;
 
+import com.jkmconfecciones.Integrador_app.dto.LoginResponseDTO;
 import com.jkmconfecciones.Integrador_app.dto.UsuarioDTO;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +24,21 @@ public class LoginController {
                                 @RequestParam String contraseña,
                                 Model model) {
 
-        UsuarioDTO usuario = usuarioService.validarLogin(correo, contraseña);
+        LoginResponseDTO response = usuarioService.validarLogin(correo, contraseña);
 
-        if (usuario != null) {
+        if (response.getUsuario() != null) {
+            UsuarioDTO usuario = response.getUsuario();
             model.addAttribute("nombre", usuario.getNombre());
             model.addAttribute("rol", usuario.getRol());
 
-            String rol = usuario.getRol();
-            if ("Administrador".equalsIgnoreCase(rol)) {
+            if ("Administrador".equalsIgnoreCase(usuario.getRol())) {
                 return "redirect:/admin";
             } else {
                 return "redirect:/usuario";
             }
         } else {
-            model.addAttribute("error", "Correo o contraseña incorrectos");
+            model.addAttribute("error", response.getMensaje());
             return "index";
         }
     }
-
 }

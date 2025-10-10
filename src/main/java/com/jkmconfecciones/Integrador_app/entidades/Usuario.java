@@ -38,6 +38,12 @@ public class Usuario {
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
 
-    @Column
-    private String estado;
+    @Column(nullable = false)
+    private String estado; // 'activo' o 'bloqueado'
+
+    @Column(name = "intentos_fallidos", nullable = false)
+    private int intentosFallidos = 0;
+
+    @Column(name = "fecha_bloqueo")
+    private LocalDateTime fechaBloqueo;
 }
