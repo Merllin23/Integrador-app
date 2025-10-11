@@ -27,7 +27,8 @@ public class RecuperarPasswordController {
             return "recuperar-password";
         } catch (Exception e) {
             model.addAttribute("error", true);
-            model.addAttribute("mensaje", "No se pudo procesar tu solicitud. Por favor, intenta de nuevo.");
+            model.addAttribute("mensaje", "Error: " + e.getMessage());
+            e.printStackTrace(); // Para ver el error completo en la consola
             return "recuperar-password";
         }
     }

@@ -23,21 +23,11 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String correo;
 
-    @Column(nullable = false)
+    @Column(name = "contrasena", nullable = false)
     private String contraseña;
 
     @Column
     private String telefono;
-
-    @Column
-    private String direccion;
-    
-    @Column(name = "token_recuperacion")
-    private String tokenRecuperacion;
-
-    @Column(name = "fecha_token_recuperacion")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaTokenRecuperacion;
 
     @ManyToOne
     @JoinColumn(name = "rol_id", nullable = false)
@@ -45,9 +35,6 @@ public class Usuario {
 
     @Column(name = "fecha_registro")
     private LocalDateTime fechaRegistro;
-
-    @Column
-    private String estado;
 
 	public Long getId() {
 		return id;
@@ -89,14 +76,6 @@ public class Usuario {
 		this.telefono = telefono;
 	}
 
-	public String getDireccion() {
-		return direccion;
-	}
-
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
-	}
-
 	public Rol getRol() {
 		return rol;
 	}
@@ -111,14 +90,6 @@ public class Usuario {
 
 	public void setFechaRegistro(LocalDateTime fechaRegistro) {
 		this.fechaRegistro = fechaRegistro;
-	}
-
-	public String getEstado() {
-		return estado;
-	}
-
-	public void setEstado(String estado) {
-		this.estado = estado;
 	}
     
     
