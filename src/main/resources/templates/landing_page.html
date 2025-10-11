@@ -1,0 +1,263 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JK Confecciones</title>
+
+    <!-- Fuente Poppins -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+    />
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f1faee;
+      }
+    </style>
+  </head>
+
+  <body class="text-[#212529]">
+    <!-- NAVBAR -->
+    <header class="bg-[#052F5E] text-white">
+      <div
+        class="container mx-auto flex flex-wrap items-center justify-between px-6 py-4 md:px-10"
+      >
+        <div class="flex items-center gap-3">
+          <img src="logo-jk.png" alt="Logo JK" class="h-10" />
+          <h1 class="font-semibold text-lg">JK Confecciones</h1>
+        </div>
+
+        <!-- Botón menú móvil -->
+        <button
+          id="menu-btn"
+          class="md:hidden border border-white px-3 py-1 rounded-lg"
+        >
+          ☰
+        </button>
+
+        <!-- Menú -->
+        <nav
+          id="menu"
+          class="hidden w-full md:flex md:w-auto md:items-center md:gap-8 md:static md:bg-transparent mt-4 md:mt-0"
+        >
+          <a href="#" class="block px-3 py-2 hover:text-[#A8ADDC]">Inicio</a>
+          <a href="#" class="block px-3 py-2 hover:text-[#A8ADDC]">Catálogo</a>
+          <button
+            class="bg-[#C50614] hover:bg-[#9A1E2E] text-white font-medium px-5 py-2 rounded-lg transition mx-3 mt-2 md:mt-0"
+          >
+            Cotizar Ahora
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="relative w-full">
+      <img
+        src="banner-uniformes.jpg"
+        alt="Estudiantes con uniformes escolares"
+        class="w-full h-[400px] md:h-[550px] object-cover"
+      />
+      <div
+        class="absolute inset-0 bg-black/40 flex flex-col justify-center px-6 md:px-20"
+      >
+        <h2
+          class="text-white text-3xl md:text-5xl font-extrabold leading-tight mb-4"
+        >
+          Uniformes Escolares<br class="hidden md:block" />que Inspiran Confianza
+        </h2>
+        <p class="text-white text-base md:text-lg max-w-2xl">
+          En <span class="font-semibold">JK Confecciones</span>, creamos uniformes escolares que no solo
+          cumplen con los estándares de calidad, sino que también fomentan la identidad y el orgullo
+          estudiantil.
+        </p>
+      </div>
+    </section>
+
+    <!-- BENEFICIOS -->
+    <section class="py-10 bg-white">
+      <div class="container mx-auto text-center px-4">
+        <h3 class="text-2xl font-semibold mb-8">Nosotros ofrecemos:</h3>
+        <div
+          class="flex flex-col sm:flex-row sm:flex-wrap justify-center gap-4"
+        >
+          <div
+            class="border border-[#A8ADDC] px-6 py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <span class="font-medium">💎 Calidad Insuperable</span>
+          </div>
+          <div
+            class="border border-[#A8ADDC] px-6 py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <span class="font-medium">📅 Disponibles Todo el Año</span>
+          </div>
+          <div
+            class="border border-[#A8ADDC] px-6 py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <span class="font-medium">🧵 Ajuste Perfecto Garantizado</span>
+          </div>
+          <div
+            class="border border-[#A8ADDC] px-6 py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <span class="font-medium">💰 Precios Justos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUCTOS DESTACADOS -->
+    <section class="py-12 bg-[#f1faee]">
+      <div class="container mx-auto text-center px-4">
+        <h3 class="text-2xl font-semibold mb-8">Productos Destacados:</h3>
+
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto"
+        >
+          <div class="flex flex-col items-center">
+            <img
+              src="uniforme-primaria.jpg"
+              alt="Uniforme de primaria"
+              class="rounded-lg shadow-md w-60"
+            />
+            <h4 class="font-semibold mt-3">Uniforme de Primaria</h4>
+            <a href="#" class="text-[#052F5E] underline">Ver detalles</a>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <img
+              src="uniforme-secundaria.jpg"
+              alt="Uniforme de secundaria"
+              class="rounded-lg shadow-md w-60"
+            />
+            <h4 class="font-semibold mt-3">Uniforme de Secundaria</h4>
+            <a href="#" class="text-[#052F5E] underline">Ver detalles</a>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <img
+              src="uniforme-deportivo.jpg"
+              alt="Uniforme deportivo"
+              class="rounded-lg shadow-md w-60"
+            />
+            <h4 class="font-semibold mt-3">Uniforme Deportivo</h4>
+            <a href="#" class="text-[#052F5E] underline">Ver detalles</a>
+          </div>
+
+          <div class="flex flex-col items-center">
+            <img
+              src="uniforme-gala.jpg"
+              alt="Uniforme de gala"
+              class="rounded-lg shadow-md w-60"
+            />
+            <h4 class="font-semibold mt-3">Uniforme de Gala</h4>
+            <a href="#" class="text-[#052F5E] underline">Ver detalles</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERSONALIZADOS -->
+    <section class="py-12 bg-white text-center px-6 md:px-10">
+      <h3 class="text-2xl font-semibold mb-4">Uniformes Personalizados</h3>
+      <p class="max-w-3xl mx-auto mb-6 text-[#212529] text-base md:text-lg">
+        Ofrecemos la posibilidad de crear uniformes escolares completamente personalizados, adaptados a las
+        necesidades y el diseño específico de cada institución educativa. Desde la elección de telas y colores
+        hasta la inclusión de logotipos y detalles distintivos, garantizamos un resultado único y de alta
+        calidad.
+      </p>
+      <button
+        class="bg-[#9A1E2E] hover:bg-[#C50614] text-white font-semibold px-6 py-3 rounded-lg transition"
+      >
+        Cotizar mi Pedido Personalizado
+      </button>
+    </section>
+
+    <!-- TESTIMONIOS -->
+    <section class="py-12 bg-[#f1faee]">
+      <div class="container mx-auto text-center px-6">
+        <h3 class="text-2xl font-semibold mb-8">
+          Historias reales de clientes satisfechos:
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <img
+              src="cliente1.jpg"
+              alt="Cliente"
+              class="mx-auto rounded-full w-16 h-16 mb-4 object-cover"
+            />
+            <h4 class="font-semibold">Sarah K.</h4>
+            <p class="text-sm text-gray-600">@Brello</p>
+            <p class="mt-3 text-[#212529] text-sm">
+              "La calidad de los uniformes de JK Confecciones es excepcional. Los materiales son duraderos y
+              los diseños son modernos y cómodos."
+            </p>
+            <p class="text-yellow-500 mt-3 text-lg">★★★★★</p>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <img
+              src="cliente2.jpg"
+              alt="Cliente"
+              class="mx-auto rounded-full w-16 h-16 mb-4 object-cover"
+            />
+            <h4 class="font-semibold">Michael L.</h4>
+            <p class="text-sm text-gray-600">@Yo</p>
+            <p class="mt-3 text-[#212529] text-sm">
+              "Estamos muy satisfechos con el servicio de JK Confecciones. La atención al cliente es excelente
+              y los uniformes cumplen con todas nuestras expectativas."
+            </p>
+            <p class="text-yellow-500 mt-3 text-lg">★★★★★</p>
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md p-6">
+            <img
+              src="cliente3.jpg"
+              alt="Cliente"
+              class="mx-auto rounded-full w-16 h-16 mb-4 object-cover"
+            />
+            <h4 class="font-semibold">Lauren M.</h4>
+            <p class="text-sm text-gray-600">@Boo</p>
+            <p class="mt-3 text-[#212529] text-sm">
+              "Recomendamos ampliamente a JK Confecciones. Su compromiso con la calidad y la satisfacción del
+              cliente es evidente en cada producto."
+            </p>
+            <p class="text-yellow-500 mt-3 text-lg">★★★★★</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-[#A8ADDC] py-6 text-center">
+      <div class="container mx-auto px-6">
+        <nav
+          class="flex flex-wrap justify-center gap-6 text-[#052F5E] mb-3 font-medium text-sm md:text-base"
+        >
+          <a href="#">Inicio</a>
+          <a href="#">Catálogo</a>
+          <a href="#">Uniformes Personalizados</a>
+          <a href="#">Nosotros</a>
+          <a href="#">Contacto</a>
+        </nav>
+        <p class="text-xs md:text-sm text-gray-500">
+          © 2025 JK Confecciones. Todos los derechos reservados.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Script menú móvil -->
+    <script>
+      const menuBtn = document.getElementById("menu-btn");
+      const menu = document.getElementById("menu");
+      menuBtn.addEventListener("click", () => {
+        menu.classList.toggle("hidden");
+      });
+    </script>
+  </body>
+</html>

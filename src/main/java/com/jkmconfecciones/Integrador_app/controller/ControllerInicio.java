@@ -12,7 +12,6 @@ public class ControllerInicio {
     public String home(@RequestParam(value = "registro", required = false) String registro, Model model) {
         return "index";
     }
-
     @GetMapping("/admin")
     public String adminPage(Model model) {
         return "admin";
@@ -26,6 +25,11 @@ public class ControllerInicio {
     @GetMapping("/recuperar")
     public String recuperarPage(Model model) {
         return "recuperar-contrasena";
+    }
+    
+    @GetMapping("/landing_page")
+    public String landing_page() {
+        return "landing_page";
     }
 
 }
