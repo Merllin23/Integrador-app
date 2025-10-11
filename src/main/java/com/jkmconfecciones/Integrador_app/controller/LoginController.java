@@ -27,9 +27,9 @@ public class LoginController {
             model.addAttribute("rol", usuario.getRol());
 
             if ("Administrador".equalsIgnoreCase(usuario.getRol())) {
-                return "redirect:/admin";
+                return "admin";  // Cambio: sin redirect
             } else {
-                return "redirect:/usuario";
+                return "usuario";  // Cambio: sin redirect
             }
         } else {
             model.addAttribute("error", response.getMensaje());

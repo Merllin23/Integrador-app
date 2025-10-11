@@ -14,11 +14,15 @@ public class ControllerInicio {
     }
     @GetMapping("/admin")
     public String adminPage(Model model) {
+        // Si acceden directamente sin autenticación, redirigir al login
+        model.addAttribute("mensaje", "Accede desde el panel de administración");
         return "admin";
     }
 
     @GetMapping("/usuario")
     public String usuarioPage(Model model) {
+        // Si acceden directamente sin autenticación, redirigir al login
+        model.addAttribute("mensaje", "Accede desde el panel de usuario");
         return "usuario";
     }
 
