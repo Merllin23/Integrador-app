@@ -19,6 +19,13 @@ public class ControllerInicio {
         return "admin";
     }
 
+    @GetMapping("/pedidos")
+    public String pedidosPage(Model model) {
+        // Si acceden directamente sin autenticación, redirigir al login
+        model.addAttribute("mensaje", "Accede desde el panel de pedidos");
+        return "pedidos";
+    }
+
     @GetMapping("/usuario")
     public String usuarioPage(Model model) {
         // Si acceden directamente sin autenticación, redirigir al login
