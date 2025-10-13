@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JK Confecciones - Iniciar Sesión</title>
+    <title>Recuperar Contraseña - JKM Confecciones</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,53 +28,61 @@
       <div class="text-left mb-4">
         <div class="flex items-center gap-3">
           <img src="/src/main/resources/static/JKM_Confecciones.png" alt="Logo JK" class="w-10 h-10">
-          <h1 class="text-title-section text-carbon font-semibold">JK Confecciones</h1>
+          <h1 class="text-title-section text-carbon font-semibold">JKM Confecciones</h1>
         </div>
       </div>
 
       <div class="border-b-2 border-primary-blue mb-4"></div>
 
-      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">¡Bienvenido!</h2>
-      <p class="text-center text-gray-600 mb-6">
-        Inicia sesión para ver tus pedidos y cotizaciones.
-      </p>
+      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Recupera tu contraseña</h2>
 
-      <!-- Contenedor de alertas -->
-      <div id="alert-container" class="mb-6"></div>
 
-      <!-- Formulario -->
-      <form th:action="@{/login}" method="post" class="space-y-6" id="loginForm">
-        <!-- Email -->
+      <!-- Formulario de recuperación -->
+      <form th:action="@{/recuperar-password}" method="post" class="space-y-6" id="recuperarForm">
+        
+        <!-- Nombre Completo -->
+        <div>
+          <label for="nombre" class="form-label text-carbon font-semibold block mb-3">
+            Nombre Completo
+          </label>
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
+            placeholder="Nombres y Apellidos"
+            class="form-input w-full"
+          />
+        </div>
+
+        <!-- Correo Electrónico -->
         <div>
           <label for="email" class="form-label text-carbon font-semibold block mb-3">
-            Correo Electrónico
+            Dirección a correo electrónico
           </label>
           <input
             type="email"
             id="email"
             name="correo"
             required
-            placeholder="Ingresa tu correo electrónico"
+            placeholder="tu.correo@ejemplo.com"
             class="form-input w-full"
           />
         </div>
 
-        <!-- Contraseña -->
+        <!-- Teléfono -->
         <div>
-          <label for="password" class="form-label text-carbon font-semibold block mb-3">
-            Contraseña
+          <label for="telefono" class="form-label text-carbon font-semibold block mb-3">
+            Teléfono
           </label>
           <input
-            type="password"
-            id="password"
-            name="contraseña"
+            type="tel"
+            id="telefono"
+            name="telefono"
             required
-            placeholder="Ingresa tu contraseña"
+            placeholder="Teléfono"
             class="form-input w-full"
           />
-          <a th:href="@{/recuperar}" class="block text-notes text-primary-blue mt-3 hover:text-primary-red transition-colors underline">
-            ¿Olvidaste tu contraseña?
-          </a>
         </div>
 
         <!-- Botón -->
@@ -82,18 +90,18 @@
           type="submit"
           class="btn-primary w-full text-lg font-semibold mt-4"
         >
-          Iniciar Sesión
+          Enviar código de confirmación
         </button>
       </form>
 
-      <!-- Separador y crear cuenta -->
+      <!-- Enlace para iniciar sesión -->
       <div class="mt-8 text-center">
-        <p class="text-body text-carbon mb-4">
-          ¿Eres nuevo aquí?
+        <p class="text-body text-carbon">
+          ¿Ya tienes una cuenta?
+          <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
+            Iniciar sesión
+          </a>
         </p>
-        <a th:href="@{/registro}" class="btn-secondary w-full inline-block text-center">
-          Crea una cuenta
-        </a>
       </div>
 
     </div>
@@ -129,13 +137,14 @@
       }
 
       // Validación del formulario
-      const loginForm = document.getElementById('loginForm');
-      if (loginForm) {
-          loginForm.addEventListener('submit', function(e) {
+      const recuperarForm = document.getElementById('recuperarForm');
+      if (recuperarForm) {
+          recuperarForm.addEventListener('submit', function(e) {
+              const nombre = document.getElementById('nombre').value;
               const email = document.getElementById('email').value;
-              const password = document.getElementById('password').value;
+              const telefono = document.getElementById('telefono').value;
               
-              if (!validateLoginForm(email, password)) {
+              if (!validateRecuperarForm(nombre, email, telefono)) {
                   e.preventDefault();
               }
           });
@@ -162,15 +171,20 @@
       }, 4000);
   });
 
-  // Función de validación del formulario de login
-  function validateLoginForm(email, password) {
+  // Función de validación del formulario de recuperación
+  function validateRecuperarForm(nombre, email, telefono) {
+      if (!nombre || nombre.trim() === '') {
+          showError('Por favor ingresa tu nombre completo');
+          return false;
+      }
+      
       if (!email || !isValidEmail(email)) {
           showError('Por favor ingresa un correo electrónico válido');
           return false;
       }
       
-      if (!password || password.trim() === '') {
-          showError('Por favor ingresa tu contraseña');
+      if (!telefono || telefono.trim() === '') {
+          showError('Por favor ingresa tu número de teléfono');
           return false;
       }
       
@@ -183,32 +197,6 @@
       return emailRegex.test(email);
   }
 
-  // Funciones para mostrar alertas
-  function showError(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert alert-error slide-in">
-              <div class="alert-icon">⚠️</div>
-              <div class="alert-content">
-                  <strong>Error: </strong>${message}
-              </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-          </div>
-      `;
-  }
-
-  function showSuccess(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert alert-success slide-in">
-              <div class="alert-icon">✅</div>
-              <div class="alert-content">
-                  <strong>Éxito: </strong>${message}
-              </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-          </div>
-      `;
-  }
 </script>
 
 <!-- Estilos adicionales para mejorar el diseño -->
@@ -219,16 +207,6 @@
   
   .rounded-2xl {
       border-radius: 1rem;
-  }
-  
-  /* Asegurar que el fondo cubra toda la pantalla */
-  body {
-      background-color: var(--soft-gray);
-  }
-  
-  /* Mejoras específicas para la integración */
-  .font-primary {
-      font-family: var(--font-primary);
   }
 </style>
 </body>
