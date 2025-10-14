@@ -3,85 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Usuario - JK Confecciones</title>
+  <title>Registro de Usuario - JKM Confecciones</title>
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS personalizado -->
+  <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
+
+  <!-- Script de alertas -->
+  <script th:src="@{/js/alerts.js}" defer></script>
+
+  <!-- Fuente Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans">
 
 <div class="flex justify-center items-center min-h-screen">
 
   <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
-    <div class="w-1/2 p-8">
+    <!-- Sección izquierda -->
+    <div class="w-full lg:w-1/2 p-8">
 
       <div class="text-left mb-4">
-        <h1 class="text-3xl font-bold text-black">JK Confecciones</h1>
+        <div class="flex items-center gap-3">
+          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
+          <h1 class="text-2xl font-bold text-carbon">JKM Confecciones</h1>
+        </div>
       </div>
 
-      <div class="border-b-2 border-blue-500 mb-4"></div>
+      <div class="border-b-2 border-primary-blue mb-4"></div>
 
-      <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">Crea tu Cuenta</h2>
+      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Crea tu Cuenta</h2>
       <p class="text-center text-gray-600 mb-6">
         Únete a JK Confecciones para agilizar tus compras y cotizaciones.
       </p>
 
-      <!-- Mensaje de error -->
-      <div th:if="${error}"
-           class="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mb-4 text-center"
-           th:text="${error}">
-      </div>
+      <!-- Mensajes dinámicos -->
+      <div th:if="${error}" 
+           class="alert alert-error mb-4 text-center" 
+           th:text="${error}"></div>
 
-      <!-- Mensaje de éxito -->
-      <div th:if="${mensaje}"
-           class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4 text-center"
-           th:text="${mensaje}">
-      </div>
+      <div th:if="${mensaje}" 
+           class="alert alert-success mb-4 text-center" 
+           th:text="${mensaje}"></div>
 
       <!-- Formulario de registro -->
-      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4">
+      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4" id="registroForm">
 
         <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+               class="form-input w-full">
 
         <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+               class="form-input w-full">
 
         <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+               class="form-input w-full">
 
         <input th:field="*{telefono}" type="text" placeholder="Teléfono"
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+               class="form-input w-full">
 
         <input th:field="*{direccion}" type="text" placeholder="Dirección"
-               class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+               class="form-input w-full">
 
         <button type="submit"
-                class="w-full p-3 mt-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">
+                class="btn-primary w-full text-lg font-semibold mt-4">
           Crear Cuenta
         </button>
       </form>
 
       <p class="mt-4 text-center text-gray-600">
         ¿Ya tienes una cuenta?
-        <a th:href="@{/}" class="text-blue-500 hover:underline">Iniciar sesión</a>
+        <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
+          Iniciar sesión
+        </a>
       </p>
 
     </div>
 
-    <div class="w-1/2 bg-gray-200 flex justify-center items-center">
-      <img src="registro.png" alt="Imagen de registro" class="max-w-full h-auto object-cover">
+    <!-- Sección derecha - Imagen -->
+    <div class="hidden lg:flex lg:w-1/2 bg-gray-200 justify-center items-center">
+      <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
+        <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro"
+             class="w-full h-full object-cover">
+      </div>
     </div>
 
   </div>
 </div>
 
+<!-- Script de validación -->
 <script>
-  setTimeout(() => {
-      const errorMsg = document.querySelector('[th\\:if="${error}"]');
-      const successMsg = document.querySelector('[th\\:if="${mensaje}"]');
-      if (errorMsg) errorMsg.style.display = 'none';
-      if (successMsg) successMsg.style.display = 'none';
-  }, 4000);
+  document.addEventListener('DOMContentLoaded', function() {
+      const registroForm = document.getElementById('registroForm');
+      if (registroForm) {
+          registroForm.addEventListener('submit', function(e) {
+              const nombre = document.querySelector('[name="nombre"]').value;
+              const correo = document.querySelector('[name="correo"]').value;
+              const contraseña = document.querySelector('[name="contraseña"]').value;
+
+              if (!validateRegistroForm(nombre, correo, contraseña)) e.preventDefault();
+          });
+      }
+
+      setTimeout(() => {
+          document.querySelectorAll('.alert-error, .alert-success')
+              .forEach(el => el.style.display = 'none');
+      }, 4000);
+  });
+
+  function validateRegistroForm(nombre, correo, contraseña) {
+      if (!nombre || nombre.trim() === '') {
+          showError('Por favor ingresa tu nombre completo');
+          return false;
+      }
+      if (!correo || !isValidEmail(correo)) {
+          showError('Por favor ingresa un correo electrónico válido');
+          return false;
+      }
+      if (!contraseña || contraseña.length < 6) {
+          showError('La contraseña debe tener al menos 6 caracteres');
+          return false;
+      }
+      return true;
+  }
+
+  function isValidEmail(email) {
+      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  }
+
+  function showError(message) {
+      const alertContainer = document.createElement('div');
+      alertContainer.className = 'alert alert-error text-center mb-4';
+      alertContainer.innerHTML = `<strong>Error:</strong> ${message}`;
+      document.querySelector('.space-y-4').prepend(alertContainer);
+      setTimeout(() => alertContainer.remove(), 4000);
+  }
 </script>
+
+<!-- Estilos adicionales -->
+<style>
+  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
+  .rounded-2xl { border-radius: 1rem; }
+  body { background-color: var(--soft-gray); }
+</style>
 
 </body>
 </html>
