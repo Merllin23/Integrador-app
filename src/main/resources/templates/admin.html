@@ -4,176 +4,226 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control - JKM Confecciones</title>
+
+    <!-- Tailwind & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'jk-blue': '#1e3a5f',
-                        'jk-red': '#dc3545',
-                        'jk-green': '#22c55e',
-                        'jk-sidebar': '#1e3a5f',
-                        'jk-sidebar-hover': '#2a4d6b'
-                    }
-                }
+          theme: {
+            extend: {
+              colors: {
+                'jk-blue': '#1e3a5f',
+                'jk-red': '#dc3545',
+                'jk-green': '#22c55e',
+                'jk-sidebar': '#1e3a5f',
+                'jk-sidebar-hover': '#2a4d6b'
+              }
             }
+          }
         }
     </script>
+
+    <style>
+        /* 🔹 Sidebar flexible con footer interno */
+        .sidebar {
+          display: flex;
+          flex-direction: column;
+          width: 16rem; /* w-64 */
+          height: 100vh;
+          background-color: #1e3a5f;
+          color: white;
+          position: fixed;
+          left: 0;
+          top: 0;
+          box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        /* Contenido del menú con scroll */
+        .sidebar-content {
+          flex: 1;
+          overflow-y: auto;
+          padding-bottom: 1rem;
+        }
+
+        /* Bloque inferior fijo dentro del panel (no tapa scroll) */
+        .sidebar-user {
+          border-top: 1px solid #2a4d6b;
+          padding: 1.25rem;
+          background-color: #1e3a5f;
+        }
+
+        .sidebar-user button {
+          width: 100%;
+        }
+
+        .btn-logout {
+          background-color: #dc3545;
+        }
+
+        .btn-logout:hover {
+          background-color: #b82a36;
+        }
+    </style>
 </head>
+
 <body class="bg-gray-100 font-sans">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <div class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto">
-            <!-- Logo -->
-            <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
-                <div class="w-8 h-8 bg-jk-red rounded-full flex items-center justify-center text-sm font-bold mr-3">
-                    JKM
-                </div>
-                <span class="font-semibold">JKM Confecciones</span>
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <!-- Logo -->
+        <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
+            <div class="w-8 h-8 bg-jk-red rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                JKM
             </div>
-            
-            <!-- Menu Items -->
-            <nav class="mt-1">
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 bg-jk-sidebar-hover border-l-4 border-jk-red">
-                    <i class="fas fa-tachometer-alt w-5 mr-3"></i>
-                    <span>Panel</span>
-                </a>
-                <a href="/pedidos" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-shopping-cart w-5 mr-3"></i>
-                    <span>Pedidos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-box w-5 mr-3"></i>
-                    <span>Productos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-users w-5 mr-3"></i>
-                    <span>Clientes</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-quote-left w-5 mr-3"></i>
-                    <span>Gestión de Cotizaciones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-tags w-5 mr-3"></i>
-                    <span>Categorías/Colecciones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-cut w-5 mr-3"></i>
-                    <span>Tallas/Variantes</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-percentage w-5 mr-3"></i>
-                    <span>Precios, Descuentos y Promociones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-user-shield w-5 mr-3"></i>
-                    <span>Gestión de Roles y Permisos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-clipboard-list w-5 mr-3"></i>
-                    <span>Control de Inventario</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-download w-5 mr-3"></i>
-                    <span>Carga Masiva de Datos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-shield-alt w-5 mr-3"></i>
-                    <span>Registro de Auditoría de Seguridad</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-edit w-5 mr-3"></i>
-                    <span>Edición de Productos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-bell w-5 mr-3"></i>
-                    <span>Notificaciones</span>
-                </a>
-            </nav>
-            
-            <!-- User Profile Section -->
-            <div class="absolute bottom-0 left-0 right-0 p-5 border-t border-jk-sidebar-hover bg-jk-sidebar">
-                <div class="flex items-center mb-4">
-                    <!-- Avatar -->
-                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-                        <div th:if="${userImage}" class="w-full h-full">
-                            <img th:src="${userImage}" alt="Avatar" class="w-full h-full object-cover rounded-full">
-                        </div>
-                        <div th:unless="${userImage}" class="text-jk-blue font-semibold text-sm">
-                            <i class="fas fa-user text-lg"></i>
-                        </div>
+            <span class="font-semibold">JKM Confecciones</span>
+        </div>
+
+        <!-- Menú -->
+        <nav class="sidebar-content mt-1">
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 bg-jk-sidebar-hover border-l-4 border-jk-red">
+                <i class="fas fa-tachometer-alt w-5 mr-3"></i>
+                <span>Panel</span>
+            </a>
+            <a href="/pedidos" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-shopping-cart w-5 mr-3"></i>
+                <span>Pedidos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-box w-5 mr-3"></i>
+                <span>Productos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-users w-5 mr-3"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-quote-left w-5 mr-3"></i>
+                <span>Gestión de Cotizaciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-tags w-5 mr-3"></i>
+                <span>Categorías/Colecciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-cut w-5 mr-3"></i>
+                <span>Tallas/Variantes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-percentage w-5 mr-3"></i>
+                <span>Precios, Descuentos y Promociones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-user-shield w-5 mr-3"></i>
+                <span>Gestión de Roles y Permisos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                <span>Control de Inventario</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-download w-5 mr-3"></i>
+                <span>Carga Masiva de Datos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-shield-alt w-5 mr-3"></i>
+                <span>Registro de Auditoría de Seguridad</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-edit w-5 mr-3"></i>
+                <span>Edición de Productos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-bell w-5 mr-3"></i>
+                <span>Notificaciones</span>
+            </a>
+        </nav>
+
+        <!-- 🔹 Usuario y Cerrar Sesión (fijo dentro del sidebar, no tapa scroll) -->
+        <div class="sidebar-user">
+            <div class="flex items-center mb-4">
+                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3 overflow-hidden">
+                    <div th:if="${userImage}">
+                        <img th:src="${userImage}" alt="Avatar" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <!-- User Info -->
-                    <div class="flex-1 min-w-0">
-                        <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
-                        <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
+                    <div th:unless="${userImage}" class="text-jk-blue font-semibold text-sm">
+                        <i class="fas fa-user text-lg"></i>
                     </div>
                 </div>
-                
-                <!-- Logout Button -->
-                <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                <div class="flex-1 min-w-0">
+                    <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
+                    <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
+                </div>
+            </div>
+
+            <!-- Logout funcional -->
+            <form th:action="@{/auth/logout}" method="post" class="w-full">
+                <button type="submit"
+                        class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     <span>Cerrar Sesión</span>
-                </a>
-            </div>
+                </button>
+            </form>
         </div>
-
-        <!-- Main Content -->
-        <div class="ml-64 flex-1 p-6">
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <h1 class="text-3xl font-semibold text-jk-blue">Panel de Control</h1>
-                <div th:if="${nombre}" class="mt-2 text-gray-700">
-                    Hola, <span th:text="${nombre}"></span> — Rol: <span th:text="${rol}"></span>
-                </div>
-            </div>
-
-            <!-- Aquí sigue el resto del contenido del panel (métricas, tablas, etc.) -->
-            <!-- ... (idéntico a la versión main) ... -->
-        </div>
-
-        <!-- WhatsApp Support Button -->
-        <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2">
-            <i class="fab fa-whatsapp text-lg"></i>
-            <span class="font-medium">Soporte WhatsApp</span>
-        </a>
     </div>
 
-    <script>
-        // Gráfico de tendencia semanal
-        const ctx = document.getElementById('trendChart')?.getContext('2d');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
-                    datasets: [{
-                        label: 'Cotizaciones',
-                        data: [45, 52, 38, 65, 48, 72, 58],
-                        borderColor: '#1e3a5f',
-                        backgroundColor: 'rgba(30, 58, 95, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#1e3a5f',
-                        pointBorderColor: '#1e3a5f',
-                        pointRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { color: '#666' } },
-                        x: { grid: { display: false }, ticks: { color: '#666' } }
-                    }
-                }
-            });
+    <!-- Contenido principal -->
+    <div class="ml-64 flex-1 p-6">
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <h1 class="text-3xl font-semibold text-jk-blue">Panel de Control</h1>
+            <div th:if="${nombre}" class="mt-2 text-gray-700">
+                Hola, <span th:text="${nombre}"></span> — Rol: <span th:text="${rol}"></span>
+            </div>
+        </div>
+
+        <!-- Contenido del panel -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <canvas id="trendChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- WhatsApp Support -->
+    <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span class="font-medium">Soporte WhatsApp</span>
+    </a>
+</div>
+
+<!-- Gráfico -->
+<script>
+    const ctx = document.getElementById('trendChart')?.getContext('2d');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+          datasets: [{
+            label: 'Cotizaciones',
+            data: [45, 52, 38, 65, 48, 72, 58],
+            borderColor: '#1e3a5f',
+            backgroundColor: 'rgba(30, 58, 95, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#1e3a5f',
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { color: '#666' } },
+            x: { grid: { display: false }, ticks: { color: '#666' } }
+          }
         }
-    </script>
+      });
+    }
+</script>
 </body>
 </html>

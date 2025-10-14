@@ -37,11 +37,13 @@ public class ControllerInicio {
     public String recuperarPage(Model model) {
         return "recuperar-contrasena";
     }
-    
+
     @GetMapping("/landing_page")
     public String landing_page() {
         return "landing_page";
     }
+
+
 
 }
 
