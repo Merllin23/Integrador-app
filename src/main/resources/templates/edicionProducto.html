@@ -1,164 +1,40 @@
 <!DOCTYPE html>
-<html lang="es"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Panel de Edición de Producto</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<script>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - JKM Confecciones</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0F3460',
-                        'background-light': '#F8F9FA',
-                        'background-dark': '#1A202C',
-                        'sidebar-dark': '#0F3460',
-                        'sidebar-light': '#0F3460',
-                        'text-light': '#1A202C',
-                        'text-dark': '#E2E8F0',
-                        'card-light': '#FFFFFF',
-                        'card-dark': '#2D3748',
-                        'border-light': '#E2E8F0',
-                        'border-dark': '#4A5568',
-                    },
-                    fontFamily: {
-                        display: ['Inter', 'sans-serif'],
-                    },
-                    borderRadius: {
-                        'DEFAULT': '0.5rem',
-                    },
-                },
-            },
-        };
+                        'jk-blue': '#1e3a5f',
+                        'jk-red': '#dc3545',
+                        'jk-green': '#22c55e',
+                        'jk-sidebar': '#1e3a5f',
+                        'jk-sidebar-hover': '#2a4d6b'
+                    }
+                }
+            }
+        }
     </script>
-<style>
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            -webkit-font-feature-settings: 'liga';
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Estilos personalizados para scrollbar */
-        .scrollbar-thin {
-            scrollbar-width: thin;
-            scrollbar-color: #4A5568 #1A202C;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: #1A202C;
-            border-radius: 3px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background: #4A5568;
-            border-radius: 3px;
-        }
-        
-        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-            background: #718096;
-        }
-        
-        /* Asegurar que el sidebar mantenga su altura */
-        .sidebar-container {
-            height: 100vh;
-            overflow: hidden;
-        }
-    </style>
 </head>
+
 <body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 <div class="flex h-screen">
-<aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
-<div class="px-6 py-4 flex items-center border-b border-gray-600">
-<img src="/src/main/resources/static/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
-<h1 class="text-xl font-bold">JKM Confecciones</h1>
-</div>
-<nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">dashboard</span>
-                    Panel
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">list_alt</span>
-                    Pedidos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">inventory_2</span>
-                    Productos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">people</span>
-                    Clientes
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">receipt_long</span>
-                    Gestión de Cotizaciones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">category</span>
-                    Categorías/ Colecciones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">style</span>
-                    Tallas/Variantes
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">sell</span>
-                    Precios, Descuentos y Promociones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">admin_panel_settings</span>
-                    Gestión de Roles y Permisos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">inventory</span>
-                    Control de Inventario
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">upload_file</span>
-                    Carga Masiva de Datos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">security</span>
-                    Registro de Auditoría de Seguridad
-                </a>
-<a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">edit</span>
-                    Edicion de Productos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">notifications</span>
-                    Notificaciones
-                </a>
-</nav>
-<div class="px-6 py-4 border-t border-gray-600 mt-auto">
-<button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
-<span class="material-icons mr-2">support_agent</span>
-Soporte WhatsApp
-</button>
-</div>
-</aside>
 
-<main class="flex-1 ml-64 p-8">
-<div class="max-w-7xl mx-auto">
-<h2 class="text-3xl font-bold mb-2 text-text-light dark:text-text-dark">Panel de Edición de Producto: Uniforme Escolar</h2>
-<p class="text-gray-500 dark:text-gray-400 mb-8">Centro de Documentación Dinámica</p>
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2 text-text-light dark:text-text-dark">Panel de Edición de Producto: Uniforme Escolar</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">Centro de Documentación Dinámica</p>
 
 <!-- Tabs -->
 <div class="mb-8">
