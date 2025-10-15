@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo JKM - Uniformes Estéticos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primario-rojo': '#C50614',       
+                        'primario-azul-oscuro': '#052F5E',
+                        'secundario-rojo-oscuro': '#9A1E2E',
+                        'fondo-blanco-hueso': '#FFFFFF',    
+                        'carbon': '#212529',              
+                        'gris-claro-aura': '#E0E0E0',  
+                        'lavanda-suave': '#D4C4E7',    
+                        'crema-claro': '#F5F5DC',        
+                        'exito-verde': '#588157',           
+                        'alerta-oro': '#D4A373',            
+                        'error-rojo': '#BA181B',            
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    spacing: {
+                        'md': '1rem',
+                        'lg': '1.5rem',
+                        'xl': '2rem',
+                        '2xl': '3rem',
+                    },
+                    fontSize: {
+                        'title-general-sm': ['2rem', { lineHeight: '2.5rem', fontWeight: '800' }],
+                        'title-main': ['2.5rem', { lineHeight: '3rem', fontWeight: '700' }],
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .card-jkm-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-jkm-primary {
+            background-color: #C50614; 
+            transition: background-color 0.15s ease-in-out;
+        }
+        .btn-jkm-primary:hover {
+            background-color: #9A1E2E;
+        }
+        .container-jkm {
+            max-width: 1280px;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-poppins text-carbon min-h-screen flex flex-col">
+
+<!-- 1. ENCABEZADO (HEADER) -->
+    <header class="shadow-lg bg-primario-azul-oscuro sticky top-0 z-10">
+        <div class="container-jkm mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            
+            <!-- JKM Logo and Title Group -->
+            <div class="flex items-center">
+                <img 
+                    src="/src/main/resources/static/logoJKM.jpeg" 
+                    alt="JKM Confecciones Logo" 
+                    class="w-10 h-10 rounded-full object-cover border-2 border-primario-rojo shadow-md mr-3"
+                    onerror="this.onerror=null;this.src='https://placehold.co/40x40/C50614/FFFFFF?text=J';" 
+                >
+                <h2 class="text-2xl md:text-3xl font-bold text-fondo-blanco-hueso">
+                    <span class="text-primario-rojo">JKM</span> Confecciones
+                </h2>
+            </div>
+            
+            <!-- Íconos de Cuenta y Carrito -->
+            <nav class="flex items-center space-x-4">
+                <!-- Carrito de Pedidos/Cotización -->
+                <button aria-label="Carrito de Pedidos" class="text-fondo-blanco-hueso hover:text-lavanda-suave p-2 rounded-full transition duration-150 relative">
+                    <!-- Icono de Carrito -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.38a2 2 0 0 0 2-1.58l1.65-7.43H5.1"/><path d="M18 10h-2"/></svg>
+                    <span id="cart-badge" class="absolute top-1 right-1 h-4 w-4 bg-primario-rojo rounded-full flex items-center justify-center text-xs text-white font-bold" style="font-size: 0.65rem;">0</span>
+                </button>
+                <!-- Perfil de Usuario -->
+                <button aria-label="Perfil de Usuario" class="text-fondo-blanco-hueso hover:text-lavanda-suave p-2 rounded-full transition duration-150">
+                    <!-- Icono de Perfil -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. BANNER PRINCIPAL DEL COLEGIO - FONDO SUAVE (Crema Claro) -->
+    <div class="w-full bg-crema-claro border-b border-gray-200">
+        <div class="container-jkm mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 flex flex-col md:flex-row items-center gap-6">
+            <!-- Escudo del Colegio (Borde en color oscuro para contraste) -->
+            <img 
+                id="colegio-escudo"
+                src="/src/main/resources/static/EscudosColegios/Claret.jpg" 
+                alt="Escudo del Colegio Claretiano" 
+                class="w-32 h-32 object-contain rounded-full border-4 border-primario-azul-oscuro shadow-lg"
+                onerror="this.onerror=null;this.src='https://placehold.co/150x150/F5F5DC/052F5E?text=ESCUDO';"
+            >
+            <!-- Título y Descripción -->
+            <div>
+                <!-- El texto "Volver al Catálogo" ahora es oscuro sobre fondo suave -->
+                <a href="catalogo_colegios.html" class="text-primario-azul-oscuro hover:text-primario-rojo transition duration-150 text-sm flex items-center mb-2">
+                    <!-- Ícono de vuelta, también oscuro -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                    Volver al Catálogo de Colegios
+                </a>
+                <!-- El título se cambia a primario-azul-oscuro para contraste -->
+                <h1 id="colegio-title" class="text-title-main text-primario-azul-oscuro font-bold">
+                    Colegio Claretiano
+                </h1>
+                <!-- La descripción se cambia a carbon para contraste -->
+                <p class="text-lg text-carbon">
+                    Colección Oficial de Uniformes
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. LISTADO DE PRODUCTOS (MAIN CONTENT) -->
+    <main class="flex-grow container-jkm mx-auto px-4 sm:px-6 lg:px-8 mt-lg mb-2xl">
+        
+        <!-- Contenedor de Mensajes (Sustituto de alert) -->
+        <div id="message-container" class="fixed top-20 right-4 w-full max-w-sm z-50"></div>
+        
+        <!-- Barra de Búsqueda (Arriba de los filtros) -->
+        <div class="py-lg">
+            <div class="p-4 bg-white rounded-xl card-jkm-shadow relative flex items-center">
+                <!-- Icono de Búsqueda -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primario-rojo absolute left-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Buscar prenda por nombre..." 
+                    class="w-full pl-16 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-3 focus:ring-primario-rojo transition duration-150 text-lg" 
+                    onkeyup="filterProducts()"
+                    aria-label="Buscar prenda por nombre"
+                >
+            </div>
+        </div>
+
+
+        <!-- Contenedor Principal: Filtros y Productos -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-lg mt-lg">
+
+            <!-- Botón para Abrir/Cerrar Filtros en Móvil (Mejorado para indicar estado) -->
+            <button id="toggleFiltersBtn" class="lg:hidden w-full py-3 mb-4 flex items-center justify-center space-x-2 bg-primario-azul-oscuro text-white rounded-xl shadow-md hover:bg-primario-rojo transition duration-150 font-semibold">
+                <!-- Estado Inicial: Mostrar Filtros (ya que el sidebar está hidden por defecto en móvil) -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <span>Mostrar Filtros</span>
+            </button>
+            
+            <!-- COLUMNA DE FILTROS (SIDEBAR) - OCULTA POR DEFECTO EN MÓVIL, VISIBLE EN LG -->
+            <aside id="filterSidebar" class="lg:col-span-1 bg-white rounded-xl card-jkm-shadow p-6 h-fit sticky top-24 hidden lg:block">
+                <h3 class="text-xl font-bold text-primario-azul-oscuro mb-4 border-b pb-2">Filtrar Productos</h3>
+                
+                <!-- Filtro de Categoría -->
+                <div class="mb-5">
+                    <h4 class="font-semibold text-lg text-carbon mb-2">Categoría</h4>
+                    <div id="filter-category" class="space-y-1">
+                        <!-- Opciones de Categoría generadas por JS -->
+                    </div>
+                </div>
+
+                <!-- Filtro de Género -->
+                <div class="mb-5">
+                    <h4 class="font-semibold text-lg text-carbon mb-2">Género</h4>
+                    <div id="filter-gender" class="space-y-1">
+                        <!-- Opciones de Género generadas por JS -->
+                    </div>
+                </div>
+
+                <!-- Filtro de Talla -->
+                <div class="mb-5">
+                    <h4 class="font-semibold text-lg text-carbon mb-2">Talla</h4>
+                    <p class="text-sm text-gray-500 italic">La talla se selecciona individualmente en cada producto.</p>
+                </div>
+
+                <button onclick="clearFilters()" class="w-full py-2 text-sm text-primario-rojo border border-primario-rojo rounded-md hover:bg-primario-rojo hover:text-white transition duration-150">
+                    Limpiar Filtros
+                </button>
+            </aside>
+
+            <!-- COLUMNA DE LISTADO DE PRODUCTOS -->
+            <section class="lg:col-span-3">
+                <h2 class="text-2xl font-semibold text-primario-azul-oscuro mb-6 pb-2 border-b">
+                    Resultados (<span id="product-count">0</span> Prendas)
+                </h2>
+                <!-- Ajuste a grid-cols-2 en sm para mejor uso del espacio en tablet/móvil grande -->
+                <div id="product-list" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-lg">
+                    <!-- Las tarjetas de producto se generarán aquí con JS -->
+                </div>
+                <div id="noResults" class="hidden text-center text-lg text-gray-500 mt-8 p-6 bg-white rounded-xl card-jkm-shadow">
+                    No se encontraron productos que coincidan con los filtros y la búsqueda.
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 4. PIE DE PÁGINA (FOOTER) -->
+    <footer class="bg-primario-azul-oscuro text-fondo-blanco-hueso py-6 mt-auto">
+        <div class="container-jkm mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p class="mb-2 font-medium">JKM Confecciones | Calidad y Tradición en Uniformes</p>
+            <p class="text-gray-500">© 2024 JKM Confecciones. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 5. LÓGICA DE LA PÁGINA, FILTROS Y GENERACIÓN DE PRODUCTOS -->
+    <script>
+        // Datos simulados (Extendidos con categoría y género para el filtro)
+        const productos = [
+            // Imágenes placeholder ajustadas para reflejar la paleta Aura: Lavanda (#D4C4E7), Gris Claro (#E0E0E0), Crema Claro (#F5F5DC)
+            { id: 1, name: "Polo Piqué Oficial", price: 35.00, category: "Diario", gender: "Unisex", sizes: ["S", "M", "L", "XL"], image: "https://ikual.pe/cdn/shop/products/IKUELEM03POLXXEBLAN-MAPLE_20BEAR_206_20ELEMENTARY-2023_2.jpg?v=1749214707&width=533" },
+            { id: 2, name: "Pantalón Drill Clásico", price: 78.50, category: "Diario", gender: "Niño/Hombre", sizes: ["30", "32", "34", "36"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnPeO1HJFKg-yztEqOFXrmjglzNVCtiPWyLg&s" },
+            { id: 3, name: "Falda Plisada Suave", price: 65.00, category: "Diario", gender: "Niña/Mujer", sizes: ["6", "8", "10", "12"], image: "https://media.falabella.com/falabellaCL/882964605_1/w=1200,h=1500,fit=cover" },
+            { id: 4, name: "Chaqueta Deportiva", price: 95.00, category: "Deporte", gender: "Unisex", sizes: ["S", "M", "L"], image: "https://ikual.pe/cdn/shop/products/IKUECAVTNDSVXXEAZUL-DSV_2014_20CHI-2023_1.jpg?v=1749214736&width=533" },
+            { id: 5, name: "Buzo de Invierno (Pantalón)", price: 110.00, category: "Invierno", gender: "Unisex", sizes: ["8", "10", "12", "14"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2C4D0ex46oE4oPBv5KWPUT5D35ZNoDzX4RA&s" },
+            { id: 6, name: "Medias Suaves", price: 15.00, category: "Accesorios", gender: "Unisex", sizes: ["S", "M"], image: "https://oechsle.vteximg.com.br/arquivos/ids/15013101-1000-1000/image-20cead88b2054ea4a39e7ee10e0d36ce.jpg?v=638277416326070000" },
+            { id: 7, name: "Blusa Crema", price: 45.00, category: "Diario", gender: "Niña/Mujer", sizes: ["XS", "S", "M"], image: "https://ikual.pe/cdn/shop/products/IKU021032BLUE0LBLAN-MAUX.1.GRA-2021_1_M.jpg?crop=center&height=2048&v=1749215160&width=2048" },
+            { id: 8, name: "Corbata Moderna", price: 25.00, category: "Accesorios", gender: "Unisex", sizes: ["Única"], image: "https://img.kwcdn.com/product/fancy/eccb2afe-6de3-4845-bb4b-89c9aa51b11e.jpg?imageMogr2/auto-orient%7CimageView2/2/w/800/q/70/format/webp" },
+            { id: 9, name: "Short Deportivo Gris", price: 45.00, category: "Deporte", gender: "Niño/Hombre", sizes: ["S", "M", "L"], image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-eowWRa01fg1PdM4eTHAYICBFy0l9yBb40g&s" },
+            { id: 10, name: "Polera (Sudadera)", price: 70.00, category: "Invierno", gender: "Unisex", sizes: ["S", "M", "L"], image: "https://ikual.pe/cdn/shop/products/IKU020871POLXXC0001-CMU.16.GRA-2021_1_M.jpg?v=1749215057" },
+        ];
+
+        // Definición de las opciones de filtro únicas
+        const availableFilters = {
+            category: [...new Set(productos.map(p => p.category))],
+            gender: [...new Set(productos.map(p => p.gender))],
+        };
+        
+        let cartItemCount = 0; // Contador de elementos en el carrito (solo simulación)
+
+        // =========================================================================
+        // 1. FUNCIONES DE FILTRO Y BÚSQUEDA
+        // =========================================================================
+
+        /**
+         * Recoge los filtros activos y el término de búsqueda, y actualiza la lista de productos.
+         */
+        function filterProducts() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+            const selectedCategories = getSelectedFilters('filter-category');
+            const selectedGenders = getSelectedFilters('filter-gender');
+
+            const filteredProducts = productos.filter(product => {
+                
+                // 1. Filtrar por búsqueda de texto (nombre)
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm);
+                if (!matchesSearch) return false;
+
+                // 2. Filtrar por Categoría (si hay filtros seleccionados)
+                if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) {
+                    return false;
+                }
+
+                // 3. Filtrar por Género (si hay filtros seleccionados)
+                if (selectedGenders.length > 0 && !selectedGenders.includes(product.gender)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            renderProducts(filteredProducts);
+        }
+
+        /**
+         * Obtiene los valores seleccionados (marcados) de un grupo de filtros.
+         * @param {string} containerId - El ID del contenedor de filtros.
+         * @returns {string[]} Un array con los valores de los checkboxes marcados.
+         */
+        function getSelectedFilters(containerId) {
+            const checkboxes = document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+        
+        /**
+         * Limpia todos los filtros, el campo de búsqueda y vuelve a renderizar la lista completa.
+         */
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('#filterSidebar input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            filterProducts(); // Vuelve a renderizar con filtros vacíos
+        }
+
+        /**
+         * Toggles the visibility of the filter sidebar on small screens and updates the button content.
+         */
+        function toggleFilterSidebar() {
+            const sidebar = document.getElementById('filterSidebar');
+            const button = document.getElementById('toggleFiltersBtn');
+            
+            // Solo se toggles en pantallas pequeñas (donde el sidebar tiene 'hidden' por defecto)
+            if (window.innerWidth < 1024) {
+                sidebar.classList.toggle('hidden');
+
+                const isHidden = sidebar.classList.contains('hidden');
+
+                // Toggle button content to reflect the new state
+                const newText = isHidden ? 'Mostrar Filtros' : 'Ocultar Filtros';
+                
+                // SVG for Filter (when closed) and X (when open)
+                const newIcon = isHidden 
+                    ? '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>' // Filter Icon
+                    : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'; // Close Icon
+
+                button.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        ${newIcon}
+                    </svg>
+                    <span>${newText}</span>
+                `;
+            }
+        }
+
+        // =========================================================================
+        // 2. FUNCIONES DE RENDERIZADO
+        // =========================================================================
+
+        /**
+         * Genera las opciones de filtro en el sidebar.
+         */
+        function setupFilters() {
+            const categoryContainer = document.getElementById('filter-category');
+            const genderContainer = document.getElementById('filter-gender');
+
+            // Renderizar Categorías
+            availableFilters.category.forEach(cat => {
+                const id = `cat-${cat.replace(/\s/g, '-')}`;
+                categoryContainer.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center">
+                        <input type="checkbox" id="${id}" value="${cat}" class="h-4 w-4 text-primario-rojo border-gray-300 rounded focus:ring-primario-rojo" onchange="filterProducts()">
+                        <label for="${id}" class="ml-2 text-sm text-gray-700">${cat}</label>
+                    </div>
+                `);
+            });
+
+            // Renderizar Géneros
+            availableFilters.gender.forEach(gen => {
+                const id = `gen-${gen.replace(/\s/g, '-')}`;
+                genderContainer.insertAdjacentHTML('beforeend', `
+                    <div class="flex items-center">
+                        <input type="checkbox" id="${id}" value="${gen}" class="h-4 w-4 text-primario-rojo border-gray-300 rounded focus:ring-primario-rojo" onchange="filterProducts()">
+                        <label for="${id}" class="ml-2 text-sm text-gray-700">${gen}</label>
+                    </div>
+                `);
+            });
+        }
+
+        /**
+         * Renderiza la lista de productos filtrados.
+         * @param {Array<Object>} productsToRender - Array de productos a mostrar.
+         */
+        function renderProducts(productsToRender) {
+            const productListContainer = document.getElementById('product-list');
+            const noResults = document.getElementById('noResults');
+            const productCount = document.getElementById('product-count');
+            
+            productListContainer.innerHTML = '';
+            productCount.textContent = productsToRender.length;
+
+            if (productsToRender.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                productsToRender.forEach(product => {
+                    productListContainer.insertAdjacentHTML('beforeend', renderProductCard(product));
+                });
+            }
+        }
+        
+        /**
+         * Función para generar el HTML de una tarjeta de producto.
+         */
+        function renderProductCard(product) {
+            // Genera las opciones de tallas dinámicamente
+            const sizeOptions = product.sizes.map(size => 
+                `<option value="${size}">${size}</option>`
+            ).join('');
+
+            return `
+                <div id="product-${product.id}" class="bg-white rounded-xl card-jkm-shadow p-4 transition duration-300 hover:shadow-xl">
+                    <!-- Imagen del Producto -->
+                    <div class="h-48 overflow-hidden rounded-lg mb-3 flex items-center justify-center bg-gris-claro-aura">
+                        <img 
+                            src="${product.image}" 
+                            alt="${product.name}" 
+                            class="w-full h-full object-cover transition duration-300 transform hover:scale-105"
+                            onerror="this.onerror=null;this.src='https://placehold.co/400x400/E0E0E0/888888?text=Imagen+Faltante';"
+                        >
+                    </div>
+
+                    <!-- Detalles -->
+                    <span class="inline-block text-xs font-medium text-white px-2 py-0.5 rounded-full mb-1" style="background-color: #052F5E;">${product.category}</span>
+                    <h3 class="font-bold text-lg text-primario-azul-oscuro truncate">${product.name}</h3>
+                    <p class="text-xl font-extrabold text-primario-rojo mb-3">S/ ${product.price.toFixed(2)}</p>
+
+                    <!-- Formulario de Pedido -->
+                    <div class="flex flex-col space-y-3">
+                        <!-- Selector de Talla -->
+                        <div class="flex items-center space-x-2">
+                            <label for="size-${product.id}" class="text-sm font-medium w-1/3">Talla:</label>
+                            <select id="size-${product.id}" class="form-select w-2/3 border border-gris-claro-aura rounded-md p-2 text-sm focus:ring-primario-rojo focus:border-primario-rojo">
+                                ${sizeOptions}
+                            </select>
+                        </div>
+
+                        <!-- Selector de Cantidad -->
+                        <div class="flex items-center space-x-2">
+                            <label for="qty-${product.id}" class="text-sm font-medium w-1/3">Cantidad:</label>
+                            <input type="number" id="qty-${product.id}" value="1" min="1" class="form-input w-2/3 border border-gris-claro-aura rounded-md p-2 text-sm text-center focus:ring-primario-rojo focus:border-primario-rojo">
+                        </div>
+
+                        <!-- Botón Añadir a Cotización -->
+                        <button onclick="addToCart(${product.id})" class="btn-jkm-primary text-white font-medium py-2 rounded-md transition duration-150 shadow-lg mt-2">
+                            Añadir a Cotización
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // =========================================================================
+        // 3. FUNCIONES DE INTERACCIÓN (CARRITO Y MENSAJES)
+        // =========================================================================
+
+        function updateCartBadge() {
+            document.getElementById('cart-badge').textContent = cartItemCount;
+        }
+
+        function addToCart(productId) {
+            const product = productos.find(p => p.id === productId);
+            const sizeSelect = document.getElementById(`size-${productId}`);
+            const qtyInput = document.getElementById(`qty-${productId}`);
+
+            const size = sizeSelect.value;
+            const quantity = parseInt(qtyInput.value, 10);
+            
+            if (quantity < 1 || isNaN(quantity)) {
+                displayMessage('La cantidad debe ser al menos 1.', 'error');
+                return;
+            }
+
+            // Aumentar el contador del carrito (simulación)
+            cartItemCount += quantity;
+            updateCartBadge();
+            
+            const message = `Añadido: ${quantity} x ${product.name} (Talla: ${size}).`;
+            displayMessage(message, 'success');
+
+            // Lógica de carrito real (ej: guardar en Firestore, etc.) iría aquí.
+            console.log(`Carrito actualizado: ${message}`);
+        }
+        
+        /**
+         * Función para mostrar mensajes de confirmación (sustituye a alert).
+         */
+        function displayMessage(message, type) {
+            const messageContainer = document.getElementById('message-container');
+            if (!messageContainer) return;
+
+            const bgColor = type === 'success' ? 'bg-exito-verde' : 'bg-error-rojo';
+
+            const alertHtml = `
+                <div class="${bgColor} text-white p-3 rounded-lg shadow-xl mb-4 flex justify-between items-center opacity-0 transition-opacity duration-300 transform translate-y-2">
+                    <span>${message}</span>
+                    <button onclick="this.parentNode.remove()" class="ml-4 text-white opacity-75 hover:opacity-100">&times;</button>
+                </div>
+            `;
+            messageContainer.insertAdjacentHTML('afterbegin', alertHtml);
+            
+            const newAlert = messageContainer.firstChild;
+            setTimeout(() => {
+                newAlert.style.opacity = '1';
+                newAlert.style.transform = 'translateY(0)';
+            }, 10);
+
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                newAlert.style.opacity = '0';
+                newAlert.style.transform = 'translateY(-10px)';
+                newAlert.addEventListener('transitionend', () => newAlert.remove());
+            }, 5000);
+        }
+
+        // =========================================================================
+        // 4. INICIALIZACIÓN
+        // =========================================================================
+        window.onload = () => {
+            setupFilters();
+            filterProducts(); // Muestra todos los productos al inicio
+            updateCartBadge(); // Inicializa el badge del carrito
+
+            // Listener para el botón de toggle de filtros en móvil
+            document.getElementById('toggleFiltersBtn').addEventListener('click', toggleFilterSidebar);
+        };
+    </script>
+    
+</body>
+</html>
