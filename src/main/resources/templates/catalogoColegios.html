@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Colegios - JKM Confecciones</title>
+
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Carga de Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- CONFIGURACIÓN PERSONALIZADA DE TAILWIND -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Mapeo de Colores JKM
+                    colors: {
+                        'primario-rojo': '#C50614',        
+                        'primario-azul-oscuro': '#052F5E', 
+                        'secundario-rojo-oscuro': '#9A1E2E', 
+                        'fondo-blanco-hueso': '#FFFFFF',  
+                        'carbon': '#212529',              
+                        'gris-suave': '#A8DADC',          
+                        'exito-verde': '#588157',         
+                        'alerta-oro': '#D4A373',          
+                        'error-rojo': '#BA181B',          
+                    },
+                    // Tipografía
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    // Espaciados
+                    spacing: {
+                        'md': '1rem',
+                        'lg': '1.5rem',
+                        'xl': '2rem',
+                        '2xl': '3rem',
+                    },
+                    // Clases personalizadas de texto
+                    fontSize: {
+                        'title-general-sm': ['2rem', { lineHeight: '2.5rem', fontWeight: '800' }],
+                        'title-main': ['2.5rem', { lineHeight: '3rem', fontWeight: '700' }],
+                    }
+                },
+            },
+        }
+    </script>
+    <!-- Estilos personalizados para botones y sombra -->
+    <style>
+        .card-jkm-shadow {
+            /* Sombra más profunda y profesional */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-jkm-primary {
+            background-color: #C50614; /* primario-rojo */
+            transition: background-color 0.15s ease-in-out;
+        }
+        .btn-jkm-primary:hover {
+            background-color: #9A1E2E; /* secundario-rojo-oscuro */
+        }
+        .container-jkm {
+            max-width: 1280px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-poppins text-carbon min-h-screen flex flex-col">
+
+    <!-- 1. ENCABEZADO (HEADER) -->
+    <header class="shadow-lg bg-primario-azul-oscuro sticky top-0 z-10">
+        <div class="container-jkm mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            
+            <!-- JKM Logo and Title Group -->
+            <div class="flex items-center">
+                <img 
+                    src="/src/main/resources/static/logoJKM.jpeg" 
+                    alt="JKM Confecciones Logo" 
+                    class="w-10 h-10 rounded-full object-cover border-2 border-primario-rojo shadow-md mr-3"
+                    onerror="this.onerror=null;this.src='https://placehold.co/40x40/C50614/FFFFFF?text=J';" 
+                >
+                <h2 class="text-2xl md:text-3xl font-bold text-fondo-blanco-hueso">
+                    <span class="text-primario-rojo">JKM</span> Confecciones
+                </h2>
+            </div>
+            
+            <!-- Íconos de Cuenta y Carrito -->
+            <nav class="flex items-center space-x-4">
+                <!-- Carrito de Pedidos/Cotización -->
+                <button aria-label="Carrito de Pedidos" class="text-fondo-blanco-hueso hover:text-gray-300 p-2 rounded-full transition duration-150 relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.38a2 2 0 0 0 2-1.58l1.65-7.43H5.1"/><path d="M18 10h-2"/></svg>
+                    <span class="absolute top-1 right-1 h-3 w-3 bg-primario-rojo rounded-full flex items-center justify-center text-xs text-white font-bold" style="font-size: 0.65rem;">3</span>
+                </button>
+                <!-- Perfil de Usuario -->
+                <button aria-label="Perfil de Usuario" class="text-fondo-blanco-hueso hover:text-gray-300 p-2 rounded-full transition duration-150">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. CONTENIDO PRINCIPAL: BANNER Y CATÁLOGO -->
+    <main class="flex-grow container-jkm mx-auto px-4 sm:px-6 lg:px-8 mt-lg mb-2xl">
+        
+        <!-- Banner de Bienvenida -->
+        <div class="text-center py-xl mb-xl">
+            <h1 class="text-title-main text-primario-azul-oscuro font-bold">
+                Encuentra tu Colegio
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mt-2">
+                Selecciona la institución educativa para visualizar y cotizar todos sus uniformes oficiales.
+            </p>
+        </div>
+
+        <!-- Barra de Búsqueda Estética -->
+        <div class="mb-lg">
+            <div class="p-4 bg-white rounded-xl shadow-lg relative flex items-center">
+                <!-- Icono de Búsqueda -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primario-rojo absolute left-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Buscar colegio por nombre..." 
+                    class="w-full pl-16 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-3 focus:ring-primario-rojo transition duration-150 text-lg" 
+                    onkeyup="filterColegios()"
+                    aria-label="Buscar colegio por nombre"
+                >
+            </div>
+        </div>
+
+        <!-- Listado de Colegios -->
+        <section class="py-lg">
+            <div id="listadoColegios" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-md md:gap-lg">
+                <!-- Las tarjetas de colegio se insertarán aquí con JS -->
+            </div>
+            <div id="noResults" class="hidden text-center text-lg text-gray-500 mt-8 p-4 border rounded-lg">
+                No se encontraron colegios con ese nombre. Por favor, intenta otra búsqueda.
+            </div>
+            
+            <!-- Controles de Paginación -->
+            <div id="paginationContainer" class="flex justify-center items-center space-x-2 mt-xl mb-xl">
+                <!-- Los botones de paginación se insertarán aquí con JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 3. PIE DE PÁGINA (FOOTER) -->
+    <footer class="bg-primario-azul-oscuro text-fondo-blanco-hueso py-6 mt-auto">
+        <div class="container-jkm mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+            <p class="mb-2 font-medium">JKM Confecciones | Calidad y Tradición en Uniformes</p>
+            <p class="text-gray-500">© 2024 JKM Confecciones. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- 4. LÓGICA DE LA PÁGINA Y GENERACIÓN DE TARJETAS -->
+    <script>
+        // Data del Catálogo (16 Colegios para 2 páginas)
+        // Nota: Si tus rutas locales fallan, el onerror mostrará un logo de JKM.
+        const allColegios = [
+            { id: 1, name: "Claret", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Claret.jpg" }, 
+            { id: 2, name: "Corazon de Oro", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/corazondeOro.jpg" }, 
+            { id: 3, name: "Domingo Savio", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/domingoSavio.png" }, 
+            { id: 4, name: "El Pilar", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/elPilar.jpg" }, 
+            { id: 5, name: "Esclavistas", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Esclavista.png" },
+            { id: 6, name: "Fatima", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Fatima.jpg" },
+            { id: 7, name: "Internacional", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Internacional.png" },
+            { id: 8, name: "La Salle", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/laSalle.png" },
+            // Página 2 Comienza Aquí
+            { id: 9, name: "Max Ulhe", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/maxUlhe.png" }, 
+            { id: 10, name: "Panamericano", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Panamericano.jpg" },
+            { id: 11, name: "Prescott", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Prescott.png" },
+            { id: 12, name: "San Jeronimo", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/sanJeronimo.jpg" },
+            { id: 13, name: "Santiago Apostol", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/santiagoApostol.png" },
+            { id: 14, name: "Santiago Salvador", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/santiagoSalvador.png" },
+            { id: 15, name: "Santiago Vargas", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/santiagoVargas.jpg" },
+            { id: 16, name: "Sonrisitas", desc: "Uniforme Oficial", logo: "/src/main/resources/static/EscudosColegios/Sonrisitas.jpg" },
+        ];
+
+        // CONFIGURACIÓN DE PAGINACIÓN
+        let currentPage = 1;
+        const itemsPerPage = 8; // 16 colegios / 2 páginas = 8 por página
+        
+        const listadoColegios = document.getElementById('listadoColegios');
+        const noResults = document.getElementById('noResults');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const defaultPlaceholderImage = 'https://placehold.co/96x96/9A1E2E/FFFFFF?text=Logo+JKM';
+
+        // 1. Obtiene el subconjunto de datos para la página actual
+        function getPaginatedData(data, page, perPage) {
+            const start = (page - 1) * perPage;
+            const end = start + perPage;
+            return data.slice(start, end);
+        }
+
+        // 2. Renderiza las tarjetas de los colegios
+        function renderColegios(colegiosToRender) {
+            listadoColegios.innerHTML = ''; // Limpia el contenedor actual
+
+            if (colegiosToRender.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            colegiosToRender.forEach(colegio => {
+                const cardHtml = `
+                    <a href="detalle_uniforme.html?colegioId=${colegio.id}" class="block bg-white rounded-xl card-jkm-shadow overflow-hidden group hover:shadow-2xl transform hover:-translate-y-1 transition duration-300">
+                        
+                        <!-- CONTENEDOR DE IMAGEN (ESCUDO) -->
+                        <div class="h-32 bg-gray-100 p-4 flex items-center justify-center border-b border-gray-100">
+                            <img 
+                                src="${colegio.logo}" 
+                                alt="Escudo Colegio ${colegio.name}" 
+                                class="w-24 h-24 object-contain rounded-full border-4 border-primario-rojo shadow-md group-hover:scale-105 transition duration-300"
+                                onerror="this.onerror=null;this.src='${defaultPlaceholderImage}';"
+                            >
+                        </div>
+                        
+                        <div class="p-4 md:p-6 text-center">
+                            <h4 class="font-extrabold text-xl text-primario-azul-oscuro mb-1 truncate">${colegio.name}</h4>
+                            <p class="text-sm font-medium text-gray-500 mb-4">${colegio.desc}</p>
+                            <div class="btn-jkm-primary w-full mt-2 text-base text-white font-semibold py-2.5 rounded-lg shadow-lg group-hover:bg-secundario-rojo-oscuro transition duration-150">
+                                Ver Uniformes
+                            </div>
+                        </div>
+                    </a>
+                `;
+                listadoColegios.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+        
+        // 3. Renderiza los controles de paginación
+        function renderPaginationControls(totalItems, perPage, activePage) {
+            const totalPages = Math.ceil(totalItems / perPage);
+            paginationContainer.innerHTML = ''; // Limpia controles previos
+
+            if (totalPages <= 1) return;
+
+            const baseClasses = 'px-4 py-2 rounded-lg font-semibold transition duration-200';
+            
+            // Botón Anterior
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'Anterior';
+            prevButton.onclick = () => goToPage(activePage - 1);
+            if (activePage === 1) {
+                prevButton.disabled = true;
+                prevButton.className = `${baseClasses} bg-gray-200 text-gray-500 cursor-not-allowed`;
+            } else {
+                prevButton.className = `${baseClasses} bg-primario-rojo text-white hover:bg-secundario-rojo-oscuro shadow-md`;
+            }
+            paginationContainer.appendChild(prevButton);
+
+            // Números de Página
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.onclick = () => goToPage(i);
+                if (i === activePage) {
+                    pageButton.className = `${baseClasses} bg-primario-azul-oscuro text-white border-2 border-primario-rojo mx-1 shadow-inner`;
+                } else {
+                    pageButton.className = `${baseClasses} bg-white text-primario-azul-oscuro hover:bg-gray-100 border border-gray-300 mx-1`;
+                }
+                paginationContainer.appendChild(pageButton);
+            }
+
+            // Botón Siguiente
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'Siguiente';
+            nextButton.onclick = () => goToPage(activePage + 1);
+            if (activePage === totalPages) {
+                nextButton.disabled = true;
+                nextButton.className = `${baseClasses} bg-gray-200 text-gray-500 cursor-not-allowed`;
+            } else {
+                nextButton.className = `${baseClasses} bg-primario-rojo text-white hover:bg-secundario-rojo-oscuro shadow-md`;
+            }
+            paginationContainer.appendChild(nextButton);
+        }
+        
+        // 4. Función para mostrar la lista paginada
+        function displayColegios(data, page) {
+            const paginatedColegios = getPaginatedData(data, page, itemsPerPage);
+            renderColegios(paginatedColegios);
+            renderPaginationControls(data.length, itemsPerPage, page);
+            // Mover la vista al inicio del listado al cambiar de página
+            listadoColegios.scrollIntoView({ behavior: 'smooth' }); 
+        }
+
+        // 5. Función de navegación de página
+        function goToPage(pageNumber) {
+            const totalPages = Math.ceil(allColegios.length / itemsPerPage);
+            if (pageNumber < 1 || pageNumber > totalPages) return;
+            
+            currentPage = pageNumber;
+            displayColegios(allColegios, currentPage); 
+        }
+
+        // 6. Función de búsqueda (desactiva la paginación mientras se busca)
+        function filterColegios() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filteredColegios = allColegios.filter(colegio => 
+                colegio.name.toLowerCase().includes(searchTerm) || 
+                colegio.desc.toLowerCase().includes(searchTerm)
+            );
+
+            if (searchTerm === '') {
+                // Si la búsqueda se vacía, vuelve a la vista paginada
+                goToPage(1); 
+            } else {
+                // Muestra todos los resultados filtrados y oculta los controles
+                renderColegios(filteredColegios); 
+                paginationContainer.innerHTML = ''; 
+            }
+        }
+
+        // Inicializar la vista al cargar la página (muestra la página 1)
+        window.onload = () => {
+            displayColegios(allColegios, currentPage);
+        };
+    </script>
+    
+</body>
+</html>
+
+
