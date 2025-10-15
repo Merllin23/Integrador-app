@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Código de Confirmación - JKM Confecciones</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fuente Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Configuración de Tailwind con colores personalizados -->
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: {
+                      'poppins': ['Poppins', 'sans-serif'],
+                  },
+                  colors: {
+                      'primary-red': '#C50614',
+                      'primary-blue-dark': '#052F5E',
+                      'secondary-red-dark': '#9A1E2E',
+                      'white-bone': '#FFFFFF',
+                      'carbon': '#212529',
+                      'soft-gray': '#E6F2FF',
+                      'success-green': '#588157',
+                      'error-red': '#BA181B',
+                  }
+              }
+          }
+      }
+  </script>
+
+  <!-- Estilos personalizados -->
+  <style>
+      /* ===== ANIMACIONES ===== */
+      @keyframes slideIn {
+          from {
+              opacity: 0;
+              transform: translateX(-10px);
+          }
+          to {
+              opacity: 1;
+              transform: translateX(0);
+          }
+      }
+      
+      .slide-in {
+          animation: slideIn 0.3s ease-out;
+      }
+      
+      /* ===== ESTILOS ESPECÍFICOS ===== */
+      .form-input {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .form-input:focus {
+          transform: translateY(-1px);
+      }
+      
+      .btn-primary {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .btn-primary:hover {
+          transform: translateY(-2px);
+      }
+      
+      .btn-primary:active {
+          transform: translateY(0);
+      }
+      
+      /* Fondo con gradiente azul */
+      body {
+          background: linear-gradient(135deg, #E6F2FF 0%, #D4E6FF 50%, #C2DAFF 100%);
+      }
+
+      /* Estilos para inputs de código */
+      .code-input {
+          width: 60px;
+          height: 60px;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: 600;
+          border: 2px solid #D1D5DB;
+          border-radius: 12px;
+          background: white;
+          transition: all 0.3s ease;
+      }
+
+      .code-input:focus {
+          border-color: #052F5E;
+          box-shadow: 0 0 0 3px rgba(5, 47, 94, 0.1);
+          transform: translateY(-2px);
+      }
+
+      .code-input-container {
+          display: flex;
+          gap: 12px;
+          justify-content: center;
+          margin: 2rem 0;
+      }
+  </style>
+</head>
+<body class="font-poppins">
+
+<div class="flex justify-center items-center min-h-screen p-4">
+
+  <div class="flex bg-white shadow-xl rounded-2xl w-full max-w-4xl overflow-hidden border border-blue-100">
+    <!-- Sección izquierda -->
+    <div class="w-full lg:w-1/2 p-8">
+
+      <div class="text-left mb-4">
+        <div class="flex items-center gap-3">
+          <img src="/src/main/resources/static/logoJKM.jpeg" alt="Logo JK" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
+          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
+        </div>
+      </div>
+
+      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
+
+      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">Introduzca el código de confirmación</h2>
+      <p class="text-center text-gray-600 mb-6">
+        Hemos enviado un código de confirmación a tu correo electrónico.
+      </p>
+
+      <!-- Contenedor de alertas -->
+      <div id="alert-container" class="mb-6"></div>
+
+      <!-- Formulario de código de confirmación -->
+      <form th:action="@{/verificar-codigo}" method="post" class="space-y-6" id="codigoForm">
+
+        <div class="text-center">
+          <label for="codigo" class="block font-medium text-carbon mb-3 text-lg">
+            Código de confirmación
+          </label>
+          
+          <!-- Inputs para cada dígito del código -->
+          <div class="code-input-container">
+            <input type="text" maxlength="1" class="code-input" required>
+            <input type="text" maxlength="1" class="code-input" required>
+            <input type="text" maxlength="1" class="code-input" required>
+            <input type="text" maxlength="1" class="code-input" required>
+            <input type="text" maxlength="1" class="code-input" required>
+            <input type="text" maxlength="1" class="code-input" required>
+          </div>
+
+          <!-- Campo oculto para el código completo -->
+          <input type="hidden" id="codigoCompleto" name="codigo">
+          
+          <p class="text-sm text-gray-500 mt-2">
+            Ingresa el código de 6 dígitos que recibiste
+          </p>
+        </div>
+
+        <!-- Botón de recuperar -->
+        <button type="submit"
+                class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl transition-all duration-300">
+          Recuperar
+        </button>
+      </form>
+
+      <!-- Reenviar código -->
+      <div class="mt-8 text-center">
+        <p class="text-carbon">
+          ¿No recibiste el código de confirmación?
+          <a href="#" class="text-primary-blue-dark hover:text-primary-red transition-colors underline font-semibold" id="reenviarCodigo">
+            Reenviar ahora
+          </a>
+        </p>
+        <p id="contador" class="text-sm text-gray-500 mt-2 hidden">
+          Podrás reenviar en <span id="tiempo">60</span> segundos
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Sección derecha - Imagen que ocupa todo el espacio -->
+    <div class="hidden lg:block lg:w-1/2 relative">
+      <img src="/src/main/resources/static/Img_niños.png" alt="Niños con uniformes escolares JK Confecciones"
+           class="w-full h-full object-cover">
+      <!-- Overlay azul sutil -->
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Script de validación y funcionalidad -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const errorMessage = /*[[${error}]]*/ null;
+      const successMessage = /*[[${mensaje}]]*/ null;
+      
+      if (errorMessage) showError(errorMessage);
+      if (successMessage) showSuccess(successMessage);
+
+      // Manejo de inputs de código
+      const codeInputs = document.querySelectorAll('.code-input');
+      const codigoCompleto = document.getElementById('codigoCompleto');
+      
+      codeInputs.forEach((input, index) => {
+          // Mover al siguiente input al escribir
+          input.addEventListener('input', function(e) {
+              if (this.value.length === 1 && index < codeInputs.length - 1) {
+                  codeInputs[index + 1].focus();
+              }
+              actualizarCodigoCompleto();
+          });
+          
+          // Manejar tecla backspace
+          input.addEventListener('keydown', function(e) {
+              if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                  codeInputs[index - 1].focus();
+              }
+          });
+          
+          // Pegar código completo
+          input.addEventListener('paste', function(e) {
+              e.preventDefault();
+              const pastedData = e.clipboardData.getData('text');
+              if (pastedData.length === 6) {
+                  for (let i = 0; i < 6; i++) {
+                      if (codeInputs[i]) {
+                          codeInputs[i].value = pastedData[i];
+                      }
+                  }
+                  codeInputs[5].focus();
+                  actualizarCodigoCompleto();
+              }
+          });
+      });
+
+      function actualizarCodigoCompleto() {
+          let codigo = '';
+          codeInputs.forEach(input => {
+              codigo += input.value;
+          });
+          codigoCompleto.value = codigo;
+      }
+
+      // Validación del formulario
+      const codigoForm = document.getElementById('codigoForm');
+      if (codigoForm) {
+          codigoForm.addEventListener('submit', function(e) {
+              const codigo = codigoCompleto.value;
+              
+              if (!validateCodigoForm(codigo)) e.preventDefault();
+          });
+      }
+
+      // Funcionalidad de reenviar código
+      const reenviarBtn = document.getElementById('reenviarCodigo');
+      const contador = document.getElementById('contador');
+      const tiempoSpan = document.getElementById('tiempo');
+      
+      if (reenviarBtn) {
+          reenviarBtn.addEventListener('click', function(e) {
+              e.preventDefault();
+              startCountdown();
+              showSuccess('Código reenviado exitosamente');
+          });
+      }
+
+      function startCountdown() {
+          let tiempo = 60;
+          reenviarBtn.classList.add('hidden');
+          contador.classList.remove('hidden');
+          
+          const interval = setInterval(() => {
+              tiempoSpan.textContent = tiempo;
+              tiempo--;
+              
+              if (tiempo < 0) {
+                  clearInterval(interval);
+                  reenviarBtn.classList.remove('hidden');
+                  contador.classList.add('hidden');
+              }
+          }, 1000);
+      }
+
+      // Efectos en inputs
+      const inputs = document.querySelectorAll('.form-input, .code-input');
+      inputs.forEach(input => {
+          input.addEventListener('focus', function() {
+              this.classList.add('ring-2', 'ring-blue-300');
+          });
+          input.addEventListener('blur', function() {
+              this.classList.remove('ring-2', 'ring-blue-300');
+          });
+      });
+
+      setTimeout(() => {
+          document.querySelectorAll('.alert-error, .alert-success')
+              .forEach(el => el.style.display = 'none');
+      }, 4000);
+  });
+
+  function validateCodigoForm(codigo) {
+      if (!codigo || codigo.length !== 6) {
+          showError('Por favor ingresa el código completo de 6 dígitos');
+          return false;
+      }
+      if (!/^\d+$/.test(codigo)) {
+          showError('El código debe contener solo números');
+          return false;
+      }
+      return true;
+  }
+
+  function showError(message) {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+          <div class="alert-error p-6 rounded-lg mb-6 bg-red-50 text-error-red border-l-4 border-error-red flex items-start gap-4 slide-in">
+              <div class="text-xl">⚠️</div>
+              <div class="flex-1">
+                  <strong>Error: </strong>${message}
+              </div>
+              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
+          </div>`;
+  }
+
+  function showSuccess(message) {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+          <div class="alert-success p-6 rounded-lg mb-6 bg-green-50 text-success-green border-l-4 border-success-green flex items-start gap-4 slide-in">
+              <div class="text-xl">✅</div>
+              <div class="flex-1">
+                  <strong>Éxito: </strong>${message}
+              </div>
+              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
+          </div>`;
+  }
+</script>
+
+</body>
+</html>

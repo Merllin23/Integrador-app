@@ -4,37 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JK Confecciones - Iniciar Sesión</title>
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- CSS personalizado -->
-    <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
-    
-    <!-- Script de alertas -->
-    <script th:src="@{/js/alerts.js}" defer></script>
-    
-    <!-- Fuente Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-red': '#C50614',
+                        'primary-blue-dark': '#052F5E',
+                        'secondary-red-dark': '#9A1E2E',
+                        'white-bone': '#FFFFFF',
+                        'carbon': '#212529',
+                        'soft-gray': '#E6F2FF',
+                        'success-green': '#588157',
+                        'error-red': '#BA181B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Estilos personalizados -->
+    <style>
+        /* ===== ANIMACIONES ===== */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        /* ===== ESTILOS ESPECÍFICOS ===== */
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .form-input:focus {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-soft-gray font-poppins">
 
-<div class="flex justify-center items-center min-h-screen">
+<div class="flex justify-center items-center min-h-screen p-4">
 
-  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
-    <!-- Lado Izquierdo - Formulario -->
+  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl overflow-hidden">
+    <!-- Formulario -->
     <div class="w-full lg:w-1/2 p-8">
 
       <div class="text-left mb-4">
         <div class="flex items-center gap-3">
-          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
-          <h1 class="text-title-section text-carbon font-semibold">JK Confecciones</h1>
+          <img src="/src/main/resources/static/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
+          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
         </div>
       </div>
 
-      <div class="border-b-2 border-primary-blue mb-4"></div>
+      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
 
-      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">¡Bienvenido!</h2>
+      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">¡Bienvenido!</h2>
       <p class="text-center text-gray-600 mb-6">
         Inicia sesión para ver tus pedidos y cotizaciones.
       </p>
@@ -46,7 +122,7 @@
       <form th:action="@{/login}" method="post" class="space-y-6" id="loginForm">
         <!-- Email -->
         <div>
-          <label for="email" class="form-label text-carbon font-semibold block mb-3">
+          <label for="email" class="block font-medium text-carbon mb-3">
             Correo Electrónico
           </label>
           <input
@@ -55,13 +131,13 @@
             name="correo"
             required
             placeholder="Ingresa tu correo electrónico"
-            class="form-input w-full"
+            class="form-input w-full px-4 py-3 border-2 border-soft-gray rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-primary-blue-dark/10 outline-none"
           />
         </div>
 
         <!-- Contraseña -->
         <div>
-          <label for="password" class="form-label text-carbon font-semibold block mb-3">
+          <label for="password" class="block font-medium text-carbon mb-3">
             Contraseña
           </label>
           <input
@@ -70,9 +146,9 @@
             name="contraseña"
             required
             placeholder="Ingresa tu contraseña"
-            class="form-input w-full"
+            class="form-input w-full px-4 py-3 border-2 border-soft-gray rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-primary-blue-dark/10 outline-none"
           />
-          <a th:href="@{/recuperar}" class="block text-notes text-primary-blue mt-3 hover:text-primary-red transition-colors underline">
+          <a th:href="@{/recuperar}" class="block text-sm text-primary-blue-dark mt-3 hover:text-primary-red transition-colors underline">
             ¿Olvidaste tu contraseña?
           </a>
         </div>
@@ -80,7 +156,7 @@
         <!-- Botón -->
         <button
           type="submit"
-          class="btn-primary w-full text-lg font-semibold mt-4"
+          class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl"
         >
           Iniciar Sesión
         </button>
@@ -88,27 +164,25 @@
 
       <!-- Separador y crear cuenta -->
       <div class="mt-8 text-center">
-        <p class="text-body text-carbon mb-4">
+        <p class="text-carbon mb-4">
           ¿Eres nuevo aquí?
         </p>
-        <a th:href="@{/registro}" class="btn-secondary w-full inline-block text-center">
+        <a th:href="@{/registro}" class="btn-secondary w-full inline-block py-3 px-6 border-2 border-primary-blue-dark text-primary-blue-dark font-medium rounded-lg hover:bg-primary-blue-dark hover:text-white-bone transition-all">
           Crea una cuenta
         </a>
       </div>
 
     </div>
 
-    <!-- Lado Derecho - Imagen -->
-    <div class="hidden lg:block lg:w-1/2 bg-gray-200">
-      <div class="w-full h-full flex justify-center items-center p-8">
-        <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
-          <img
-            th:src="@{/images/Img_niños.png}"
-            alt="Niños con uniformes escolares JK Confecciones"
-            class="w-full h-full object-cover"
-          />
-        </div>
-      </div>
+    <!-- Lado Derecho - Imagen que ocupa todo el espacio -->
+    <div class="hidden lg:block lg:w-1/2 relative">
+      <img
+        src="/src/main/resources/static/Img_niños.png"
+        alt="Niños con uniformes escolares JKM Confecciones"
+        class="w-full h-full object-cover"
+      />
+      <!-- Overlay para mejorar legibilidad del texto si es necesario -->
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-blue-dark/10 to-transparent"></div>
     </div>
 
   </div>
@@ -136,10 +210,10 @@
       const inputs = document.querySelectorAll('.form-input');
       inputs.forEach(input => {
           input.addEventListener('focus', function() {
-              this.classList.add('ring-2', 'ring-primary-blue', 'ring-opacity-20');
+              this.classList.add('ring-2', 'ring-primary-blue-dark', 'ring-opacity-20');
           });
           input.addEventListener('blur', function() {
-              this.classList.remove('ring-2', 'ring-primary-blue', 'ring-opacity-20');
+              this.classList.remove('ring-2', 'ring-primary-blue-dark', 'ring-opacity-20');
           });
       });
 
@@ -168,34 +242,26 @@
   function showError(message) {
       const alertContainer = document.getElementById('alert-container');
       alertContainer.innerHTML = `
-          <div class="alert alert-error slide-in">
-              <div class="alert-icon">⚠️</div>
-              <div class="alert-content">
+          <div class="alert alert-error p-6 rounded-lg mb-6 bg-red-50 text-error-red border-l-4 border-error-red flex items-start gap-4 slide-in">
+              <div class="alert-icon text-xl">⚠️</div>
+              <div class="alert-content flex-1">
                   <strong>Error: </strong>${message}
               </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+              <button class="alert-close text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
           </div>`;
   }
 
   function showSuccess(message) {
       const alertContainer = document.getElementById('alert-container');
       alertContainer.innerHTML = `
-          <div class="alert alert-success slide-in">
-              <div class="alert-icon">✅</div>
-              <div class="alert-content">
+          <div class="alert alert-success p-6 rounded-lg mb-6 bg-green-50 text-success-green border-l-4 border-success-green flex items-start gap-4 slide-in">
+              <div class="alert-icon text-xl">✅</div>
+              <div class="alert-content flex-1">
                   <strong>Éxito: </strong>${message}
               </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
+              <button class="alert-close text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
           </div>`;
   }
 </script>
-
-<!-- Estilos adicionales -->
-<style>
-  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
-  .rounded-2xl { border-radius: 1rem; }
-  body { background-color: var(--soft-gray); }
-  .font-primary { font-family: var(--font-primary); }
-</style>
 </body>
 </html>
