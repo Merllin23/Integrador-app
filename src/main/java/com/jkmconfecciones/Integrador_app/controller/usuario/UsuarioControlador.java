@@ -1,4 +1,4 @@
-package com.jkmconfecciones.Integrador_app.controller;
+package com.jkmconfecciones.Integrador_app.controller.usuario;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
