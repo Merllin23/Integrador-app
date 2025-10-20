@@ -1,7 +1,10 @@
 package com.jkmconfecciones.Integrador_app.service;
 
-import com.jkmconfecciones.Integrador_app.dto.LoginResponseDTO;
+import com.jkmconfecciones.Integrador_app.entidades.Usuario;
+import java.util.Optional;
 
 public interface UsuarioService {
-    LoginResponseDTO validarLogin(String correo, String contraseña);
+    Optional<Usuario> buscarPorCorreo(String correo);
+    void reiniciarIntentos(Usuario usuario);
+    void aumentarIntentoFallido(Usuario usuario);
 }

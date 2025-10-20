@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Panel de Control</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0F3460',
+                        'background-light': '#F8F9FA',
+                        'background-dark': '#1A202C',
+                        'sidebar-dark': '#0F3460',
+                        'sidebar-light': '#0F3460',
+                        'text-light': '#1A202C',
+                        'text-dark': '#E2E8F0',
+                        'card-light': '#FFFFFF',
+                        'card-dark': '#2D3748',
+                        'border-light': '#E2E8F0',
+                        'border-dark': '#4A5568',
+                    },
+                    fontFamily: {
+                        display: ['Inter', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'DEFAULT': '0.5rem',
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Estilos personalizados para scrollbar */
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: #4A5568 #1A202C;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #1A202C;
+            border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #4A5568;
+            border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #718096;
+        }
+
+        /* Asegurar que el sidebar mantenga su altura */
+        .sidebar-container {
+            height: 100vh;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+<div class="flex h-screen">
+    <aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
+        <div class="px-6 py-4 flex items-center border-b border-gray-600">
+            <img src="/src/main/resources/static/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
+            <h1 class="text-xl font-bold">JKM Confecciones</h1>
+        </div>
+        <nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">dashboard</span>
+                Panel
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">list_alt</span>
+                Pedidos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory_2</span>
+                Productos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">people</span>
+                Clientes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">receipt_long</span>
+                Gestión de Cotizaciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">category</span>
+                Categorías/ Colecciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">style</span>
+                Tallas/Variantes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">sell</span>
+                Precios, Descuentos y Promociones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">admin_panel_settings</span>
+                Gestión de Roles y Permisos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory</span>
+                Control de Inventario
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">upload_file</span>
+                Carga Masiva de Datos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">security</span>
+                Registro de Auditoría de Seguridad
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">edit</span>
+                Edicion de Productos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">notifications</span>
+                Notificaciones
+            </a>
+        </nav>
+        <div class="px-6 py-4 border-t border-gray-600 mt-auto">
+            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
+                <span class="material-icons mr-2">support_agent</span>
+                Soporte WhatsApp
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-text-light dark:text-text-dark">Panel de Control</h2>
+
+            <!-- Métricas Clave -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Métricas Clave</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-2">Total de Solicitudes de Cotización</p>
+                        <p class="text-4xl font-bold text-text-light dark:text-text-dark">1,234</p>
+                        <p class="text-green-500 text-sm mt-2">+12%</p>
+                    </div>
+                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
+                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-2">Tiempo Promedio de Respuesta</p>
+                        <p class="text-4xl font-bold text-text-light dark:text-text-dark">24h</p>
+                        <p class="text-red-500 text-sm mt-2">-5%</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análisis de Productos y Demanda -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Análisis de Productos y Demanda</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Top 5 Productos Más Solicitados -->
+                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
+                        <h4 class="font-semibold text-text-light dark:text-text-dark mb-4">Top 5 Productos Más Solicitados</h4>
+                        <div class="flex justify-around items-end h-40 mb-4">
+                            <div class="text-center">
+                                <div class="bg-red-400 h-24 w-8 rounded-t-md mb-2"></div>
+                                <p class="text-xs text-red-500 font-medium">Camisas</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-blue-400 h-32 w-8 rounded-t-md mb-2"></div>
+                                <p class="text-xs text-blue-500 font-medium">Pantalones</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-yellow-400 h-20 w-8 rounded-t-md mb-2"></div>
+                                <p class="text-xs text-yellow-600 font-medium">Faldas</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-green-400 h-28 w-8 rounded-t-md mb-2"></div>
+                                <p class="text-xs text-green-500 font-medium">Chaquetas</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="bg-purple-400 h-36 w-8 rounded-t-md mb-2"></div>
+                                <p class="text-xs text-purple-500 font-medium">Corbatas</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tendencia Semanal de Cotizaciones -->
+                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
+                        <h4 class="font-semibold text-text-light dark:text-text-dark mb-4">Tendencia Semanal de Cotizaciones</h4>
+                        <div class="relative h-40 mb-4">
+                            <svg class="absolute w-full h-full" preserveAspectRatio="none" viewBox="0 0 300 100">
+                                <path d="M0,80 Q50,20 100,60 Q150,10 200,40 Q250,70 300,30" fill="none" stroke="#4A90E2" stroke-width="3"></path>
+                                <circle cx="0" cy="80" r="4" fill="#4A90E2"></circle>
+                                <circle cx="50" cy="35" r="4" fill="#4A90E2"></circle>
+                                <circle cx="100" cy="60" r="4" fill="#4A90E2"></circle>
+                                <circle cx="150" cy="25" r="4" fill="#4A90E2"></circle>
+                                <circle cx="200" cy="40" r="4" fill="#4A90E2"></circle>
+                                <circle cx="250" cy="70" r="4" fill="#4A90E2"></circle>
+                                <circle cx="300" cy="30" r="4" fill="#4A90E2"></circle>
+                            </svg>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                            <span class="text-red-500">Lun</span>
+                            <span class="text-blue-500">Mar</span>
+                            <span class="text-green-500">Mié</span>
+                            <span class="text-yellow-600">Jue</span>
+                            <span class="text-purple-500">Vie</span>
+                            <span class="text-pink-500">Sáb</span>
+                            <span class="text-indigo-500">Dom</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Análisis de Demanda Geográfica -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Análisis de Demanda Geográfica</h3>
+                <div class="bg-card-light dark:bg-card-dark p-4 rounded-lg shadow-md">
+                    <div class="bg-green-100 dark:bg-green-900 h-64 rounded-lg flex items-center justify-center relative overflow-hidden">
+                        <!-- Simulación de mapa -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-300 dark:from-green-800 dark:to-green-900"></div>
+                        <div class="relative z-10 text-center">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg mb-4 inline-block">
+                                <span class="material-icons text-green-600 dark:text-green-400 text-3xl">place</span>
+                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">América do Sul Brasil</p>
+                            </div>
+                            <div class="flex gap-4 justify-center">
+                                <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center">
+                                    <span class="material-icons text-sm">trending_up</span>
+                                </div>
+                                <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                                    <span class="material-icons text-sm">location_on</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rendimiento de Ventas por Asesor -->
+            <div class="mb-8">
+                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Rendimiento de Ventas por Asesor</h3>
+                <div class="bg-card-light dark:bg-card-dark rounded-lg shadow-md overflow-hidden">
+                    <table class="min-w-full divide-y divide-border-light dark:divide-border-dark">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asesor</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cotizaciones Gestionadas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aceptadas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pendientes</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rechazadas</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valor Total de Ventas</th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-card-light dark:bg-card-dark divide-y divide-border-light dark:divide-border-dark">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Carlos</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">350</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">300</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">100</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">50</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$50,000</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Sofía</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">300</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">180</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">80</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">40</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$45,000</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Mateo</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">280</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">150</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">90</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">40</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$40,000</td>
+                        </tr>
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Isabella</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">250</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">120</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">80</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">50</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$35,000</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Margen inferior para mejor espaciado -->
+            <div class="pb-16"></div>
+
+        </div>
+    </main>
+</div>
+
+</body></html>

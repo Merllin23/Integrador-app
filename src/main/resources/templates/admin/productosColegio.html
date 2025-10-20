@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title th:text="${pageTitle} ?: 'Catálogo de productos'">Catálogo de productos</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { poppins: ['Poppins','sans-serif'] },
+                        colors: {
+                            'primary-blue': '#052F5E',
+                            'primary-red': '#C50614',
+                            'red-dark': '#9A1E2E',
+                            'soft-border': '#CFD1E8',
+                            'chip': '#E6E8F5',
+                            'muted': '#47579E',
+                            'ink': '#0D0F1C',
+                        }
+                    }
+                }
+            }
+        </script>
+        <style>
+            .card-shadow { box-shadow: 0 6px 14px rgba(16,24,40,.08); }
+            .ring-soft:focus { box-shadow: 0 0 0 4px rgba(197,6,20,.12); }
+        </style>
+</head>
+<body class="bg-white font-poppins text-ink">
+
+    <!-- Top bar -->
+    <header class="bg-primary-blue text-white border-b border-primary-blue">
+        <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <img src="/JKM_Confecciones.png" alt="JKM" class="w-12 h-12 rounded-full object-cover border-2 border-primary-red" onerror="this.onerror=null;this.src='https://placehold.co/48x48/C50614/FFFFFF?text=J'" />
+                <h2 class="text-2xl md:text-3xl font-bold text-white">
+                    <span class="text-primary-red">JKM</span> Confecciones
+                </h2>
+            </div>
+            <nav class="hidden md:flex items-center gap-6">
+                <a th:href="@{/}" class="text-white/90 hover:text-white transition">Inicio</a>
+                <a th:href="@{/catalogoColegios}" class="text-white/90 hover:text-white transition">Catálogo</a>
+                <div class="flex items-center bg-chip rounded-lg overflow-hidden">
+                    <div class="w-10 h-10 grid place-items-center text-muted">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    </div>
+                    <input type="text" placeholder="Search" class="bg-chip h-10 px-3 text-sm text-muted placeholder:text-muted focus:outline-none" />
+                </div>
+            </nav>
+            <div class="flex items-center gap-2">
+                <a th:href="@{/registro}" class="bg-primary-red hover:bg-red-dark text-white px-4 py-2 rounded-lg font-semibold shadow-sm">Registrarme</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Sidebar filters -->
+        <aside class="lg:col-span-3 space-y-5">
+            <!-- Search -->
+            <div class="bg-white rounded-xl border border-soft-border p-3 flex overflow-hidden">
+                <div class="w-12 h-12 grid place-items-center bg-chip rounded-lg text-muted">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-5 h-5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <input type="text" placeholder="Buscar  por nombre de producto..." class="flex-1 h-12 px-3 text-sm rounded-r-xl focus:outline-none" />
+            </div>
+
+            <!-- Categoría -->
+            <div>
+                <h3 class="px-4 pt-4 pb-2 font-bold">Categoría</h3>
+                <div class="space-y-3 p-4">
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="cat" class="accent-blue-500" checked>
+                        <span class="text-sm">Uniforme de Gala</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="cat" class="accent-blue-500">
+                        <span class="text-sm">Uniforme de Diario</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="cat" class="accent-blue-500">
+                        <span class="text-sm">Buzo Deportivo</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tipo de prenda -->
+            <div>
+                <h3 class="px-4 pt-4 pb-2 font-bold">Tipo de Prenda</h3>
+                <div class="space-y-3 p-4">
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="tipo" class="accent-blue-500" checked>
+                        <span class="text-sm">Camisa</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="tipo" class="accent-blue-500">
+                        <span class="text-sm">Falda</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="tipo" class="accent-blue-500">
+                        <span class="text-sm">Pantalón</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-lg border border-soft-border">
+                        <input type="radio" name="tipo" class="accent-blue-500">
+                        <span class="text-sm">Casaca</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tallas -->
+            <div>
+                <h3 class="px-4 pt-4 pb-2 font-bold">Talla</h3>
+                <div class="flex flex-wrap gap-3 p-4">
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">S</button>
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">M</button>
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">L</button>
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">XL</button>
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">XXL</button>
+                    <button class="px-4 h-10 bg-chip rounded-lg text-sm">XXXL</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Products -->
+        <section class="lg:col-span-9">
+            <div class="flex flex-col gap-3">
+                <div class="flex items-center justify-between flex-wrap gap-3 p-4">
+                    <h2 class="text-2xl sm:text-3xl font-bold">Nuestro Catálogo de Uniformes</h2>
+                    <div class="px-4 mt-6">
+                    <h3 class="text-lg text-muted">Catálogo de productos <span class="font-semibold text-ink" th:text="${nombreColegio}">Seleccionado</span></h3>
+                </div>
+                    <div class="w-full sm:w-auto bg-gray-50 border border-soft-border rounded-lg px-4 py-3 relative">
+                        <span class="text-sm">Ordenar por: <span class="font-medium">Popularidad</span></span>
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-muted">▾</span>
+                    </div>
+                </div>
+                <p class="px-4 font-bold">Mostrando 12 de 24 productos</p>
+
+                <!-- Grid products (placeholder data) -->
+                <div class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                    <!-- Card example -->
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/falda.png" alt="falda" >
+                            <p class="text-sm sm:text-base font-medium leading-6">Falda Escolar Plisada</p>
+                            <p class="text-sm text-muted">Desde S/ 50.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/camisa.png" alt="camisa" >
+                            <p class="text-sm sm:text-base font-medium leading-6">Camisa de Vestir Blanca</p>
+                            <p class="text-sm text-muted">Desde S/ 40.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/pantalon.png" alt="pantalón" >
+                            <p class="text-sm sm:text-base font-medium leading-6">Pantalón de Uniforme</p>
+                            <p class="text-sm text-muted">Desde S/ 60.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/casaca_depo.png" alt="casaca" >
+                            <p class="text-sm sm:text-base font-medium leading-6">Casaca Deportiva</p>
+                            <p class="text-sm text-muted">Desde S/ 75.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/polo_depo.png" alt="">
+                            <p class="text-sm sm:text-base font-medium leading-6">Polo de Diario</p>
+                            <p class="text-sm text-muted">Desde S/ 30.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/short.png" alt="short">
+                            <p class="text-sm sm:text-base font-medium leading-6">Short Deportivo</p>
+                            <p class="text-sm text-muted">Desde S/ 25.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/medias.png" alt="medias">
+                            <p class="text-sm sm:text-base font-medium leading-6">Medias Escolares</p>
+                            <p class="text-sm text-muted">Desde S/ 15.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/corbatas.png" alt="corbata">
+                            <p class="text-sm sm:text-base font-medium leading-6">Corbata de Gala</p>
+                            <p class="text-sm text-muted">Desde S/ 20.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/cinturon.png" alt="cinturón">
+                            <p class="text-sm sm:text-base font-medium leading-6">Cinturón de Uniforme</p>
+                            <p class="text-sm text-muted">Desde S/ 18.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/sombrero.png" alt="gorra">
+                            <p class="text-sm sm:text-base font-medium leading-6">Gorra Deportiva</p>
+                            <p class="text-sm text-muted">Desde S/ 12.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/mochila.png" alt="mochila">
+                            <p class="text-sm sm:text-base font-medium leading-6">Mochila Escolar</p>
+                            <p class="text-sm text-muted">Desde S/ 80.00</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="h-56 bg-gray-100 rounded-lg card-shadow"></div>
+                        <div>
+                            <img src="/productos/zapatos.png" alt="zapatos">
+                            <p class="text-sm sm:text-base font-medium leading-6">Zapatos de Uniforme</p>
+                            <p class="text-sm text-muted">Desde S/ 90.00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Heading with colegio name -->
+                <div class="px-4 mt-6">
+                    <h3 class="text-lg text-muted">Catálogo de productos <span class="font-semibold text-ink" th:text="${nombreColegio}">Seleccionado</span></h3>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
