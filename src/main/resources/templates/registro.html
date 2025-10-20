@@ -4,140 +4,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Usuario - JKM Confecciones</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Script de alertas -->
+  <script th:src="@{/js/alerts.js}" defer></script>
 
   <!-- Fuente Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Google reCAPTCHA -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f0f4f8;
+    }
+
+    .btn-primary-custom {
+      background-color: #9A1E2E;
+      border: none;
+    }
+
+    .btn-primary-custom:hover {
+      background-color: #8a1a27;
+    }
+
+    .alert-container {
+      margin-bottom: 1rem;
+    }
+
+    .card-custom {
+      border-radius: 1rem;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-container {
+      max-width: 450px;
+      width: 100%;
+    }
+  </style>
 </head>
-<body class="font-poppins">
 
-<div class="flex justify-center items-center min-h-screen p-4">
+<body>
 
-  <div class="flex bg-white shadow-xl rounded-2xl w-full max-w-4xl overflow-hidden border border-blue-100">
-    <!-- Sección izquierda -->
-    <div class="w-full lg:w-1/2 p-8">
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card card-custom w-100" style="max-width: 900px;">
+    <div class="row g-0">
 
-      <div class="text-left mb-4">
-        <div class="flex items-center gap-3">
-          <img src="/logoJKM.jpeg" alt="Logo JK" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
-          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
+      <!-- Sección izquierda -->
+      <div class="col-lg-6 p-4 d-flex flex-column justify-content-center">
+        <div class="mb-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" style="width:40px; height:40px;">
+            <h1 class="h5 mb-0">JKM Confecciones</h1>
+          </div>
+          <hr class="mb-4">
+        </div>
+
+        <h2 class="h5 text-center fw-bold mb-3">Crea tu Cuenta</h2>
+        <p class="text-center text-muted mb-4">
+          Únete a JK Confecciones para agilizar tus compras y cotizaciones.
+        </p>
+
+        <!-- Mensajes dinámicos -->
+        <div id="alert-container" class="alert-container"></div>
+
+        <!-- Formulario de registro -->
+        <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation form-container mx-auto" id="registroForm" novalidate>
+          <div class="mb-3">
+            <input th:field="*{nombre}" type="text" placeholder="Nombre completo" class="form-control" required>
+            <div class="invalid-feedback">Por favor ingresa tu nombre completo</div>
+          </div>
+
+          <div class="mb-3">
+            <input th:field="*{correo}" type="email" placeholder="Correo electrónico" class="form-control" required>
+            <div class="invalid-feedback">Por favor ingresa un correo válido</div>
+          </div>
+
+          <div class="mb-3">
+            <input th:field="*{contraseña}" type="password" placeholder="Contraseña" class="form-control" required>
+            <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres</div>
+          </div>
+
+          <div class="mb-3">
+            <input th:field="*{telefono}" type="text" placeholder="Teléfono" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <input th:field="*{direccion}" type="text" placeholder="Dirección" class="form-control">
+          </div>
+
+          <!-- reCAPTCHA -->
+          <div class="d-flex justify-content-center my-3">
+            <div class="g-recaptcha" data-sitekey="6Ldn-PArAAAAACYP7hzG-KAvcBkTUEZunA_k4e3_"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-primary-custom w-100">Crear Cuenta</button>
+        </form>
+
+        <p class="mt-3 text-center text-muted">
+          ¿Ya tienes una cuenta?
+          <a th:href="@{/login}" class="text-decoration-underline fw-semibold">Iniciar sesión</a>
+        </p>
+      </div>
+
+      <!-- Sección derecha - Imagen -->
+      <div class="col-lg-6 d-none d-lg-flex bg-light justify-content-center align-items-center p-3">
+        <div class="w-100 h-100 rounded-3 overflow-hidden shadow">
+          <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro" class="img-fluid h-100 w-100 object-fit-cover">
         </div>
       </div>
 
-      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
-
-      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">Crea tu Cuenta</h2>
-      <p class="text-center text-gray-600 mb-6">
-        Únete a JKM Confecciones para agilizar tus compras y cotizaciones.
-      </p>
-
-      <!-- Mensajes dinámicos -->
-      <div th:if="${error}" class="alert alert-error mb-4 text-center" th:text="${error}"></div>
-      <div th:if="${mensaje}" class="alert alert-success mb-4 text-center" th:text="${mensaje}"></div>
-
-      <!-- Formulario de registro -->
-      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4">
-
-        <div>
-          <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
-
-        <div>
-          <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
-
-        <div>
-          <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
-
-        <div>
-          <input th:field="*{telefono}" type="text" placeholder="Teléfono"
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
-
-        <div>
-          <input th:field="*{direccion}" type="text" placeholder="Dirección"
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
-
-        <!-- reCAPTCHA -->
-        <div class="flex justify-center my-4">
-          <div class="g-recaptcha" data-sitekey="6Ldn-PArAAAAACYP7hzG-KAvcBkTUEZunA_k4e3_"></div>
-        </div>
-
-        <button type="submit"
-                class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl transition-all duration-300">
-          Crear Cuenta
-        </button>
-      </form>
-
-      <p class="mt-4 text-center text-carbon">
-        ¿Ya tienes una cuenta?
-        <a th:href="@{/login}" class="text-primary-blue-dark hover:text-primary-red transition-colors underline font-semibold">
-          Iniciar sesión
-        </a>
-      </p>
-
     </div>
-
-    <!-- Sección derecha - Imagen que ocupa todo el espacio -->
-    <div class="hidden lg:block lg:w-1/2 relative">
-      <img src="/Img_niños.png" alt="Niños con uniformes escolares JK Confecciones"
-           class="w-full h-full object-cover">
-      <!-- Overlay azul sutil -->
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent"></div>
-    </div>
-
   </div>
 </div>
 
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      const errorMessage = /*[[${error}]]*/ null;
-      const successMessage = /*[[${mensaje}]]*/ null;
+    const registroForm = document.getElementById('registroForm');
 
-      if (errorMessage) showError(errorMessage);
-      if (successMessage) showSuccess(successMessage);
+    // Validación personalizada
+    registroForm.addEventListener('submit', function(e) {
+      const nombre = registroForm.querySelector('[name="nombre"]').value;
+      const correo = registroForm.querySelector('[name="correo"]').value;
+      const contraseña = registroForm.querySelector('[name="contraseña"]').value;
+      const captchaResponse = grecaptcha.getResponse();
 
-      setTimeout(() => {
-          document.querySelectorAll('.alert-error, .alert-success')
-              .forEach(el => el.style.display = 'none');
-      }, 4000);
+      if (!validateForm(nombre, correo, contraseña, captchaResponse)) e.preventDefault();
+    });
+
+    function validateForm(nombre, correo, contraseña, captchaResponse) {
+      if (!nombre.trim()) { showError('Por favor ingresa tu nombre completo'); return false; }
+      if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo)) { showError('Por favor ingresa un correo válido'); return false; }
+      if (!contraseña || contraseña.length < 6) { showError('La contraseña debe tener al menos 6 caracteres'); return false; }
+      if (!captchaResponse) { showError('Por favor completa el reCAPTCHA'); return false; }
+      return true;
+    }
+
+    function showError(message) {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+        <strong>Error:</strong> ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>`;
+      setTimeout(() => { alertContainer.innerHTML = ''; }, 4000);
+    }
+
+    // Bootstrap validación de formularios
+    (function () {
+      'use strict';
+      const forms = document.querySelectorAll('.needs-validation');
+      Array.from(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    })();
   });
-
-  function isValidEmail(email) {
-      return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim());
-  }
-
-  function showError(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert-error p-6 rounded-lg mb-6 bg-red-50 text-error-red border-l-4 border-error-red flex items-start gap-4 slide-in">
-              <div class="text-xl">⚠️</div>
-              <div class="flex-1">
-                  <strong>Error: </strong>${message}
-              </div>
-              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
-  }
-
-  function showSuccess(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert-success p-6 rounded-lg mb-6 bg-green-50 text-success-green border-l-4 border-success-green flex items-start gap-4 slide-in">
-              <div class="text-xl">✅</div>
-              <div class="flex-1">
-                  <strong>Éxito: </strong>${message}
-              </div>
-              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
-  }
 </script>
 
 </body>

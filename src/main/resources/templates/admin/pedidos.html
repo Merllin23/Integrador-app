@@ -23,348 +23,447 @@
     </script>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="flex min-h-screen">
-        <!-- Sidebar Fragment -->
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto">
+        <!-- Logo -->
+        <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
+            <div class="w-8 h-8 bg-jk-red rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                JKM
+            </div>
+            <span class="font-semibold">JKM Confecciones</span>
+        </div>
 
-        <!-- Main Content -->
-        <div class="ml-64 flex-1 p-6">
-            <!-- Header -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl font-semibold text-jk-blue">Pedidos</h1>
-                        <p class="text-gray-600 mt-1">Gestiona todos los pedidos de la empresa</p>
+        <!-- Menu Items -->
+        <nav class="mt-1">
+            <a href="/admin" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-tachometer-alt w-5 mr-3"></i>
+                <span>Panel</span>
+            </a>
+            <a href="/pedidos" class="flex items-center px-5 py-3 text-blue-200 bg-jk-sidebar-hover border-l-4 border-jk-red">
+                <i class="fas fa-shopping-cart w-5 mr-3"></i>
+                <span>Pedidos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-box w-5 mr-3"></i>
+                <span>Productos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-users w-5 mr-3"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-quote-left w-5 mr-3"></i>
+                <span>Gestión de Cotizaciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-tags w-5 mr-3"></i>
+                <span>Categorías/Colecciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-cut w-5 mr-3"></i>
+                <span>Tallas/Variantes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-percentage w-5 mr-3"></i>
+                <span>Precios, Descuentos y Promociones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-user-shield w-5 mr-3"></i>
+                <span>Gestión de Roles y Permisos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                <span>Control de Inventario</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-download w-5 mr-3"></i>
+                <span>Carga Masiva de Datos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-shield-alt w-5 mr-3"></i>
+                <span>Registro de Auditoría de Seguridad</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-edit w-5 mr-3"></i>
+                <span>Edición de Productos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-bell w-5 mr-3"></i>
+                <span>Notificaciones</span>
+            </a>
+        </nav>
+
+        <!-- User Profile Section -->
+        <div class="absolute bottom-0 left-0 right-0 p-5 border-t border-jk-sidebar-hover bg-jk-sidebar">
+            <div class="flex items-center mb-4">
+                <!-- Avatar -->
+                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3 overflow-hidden">
+                    <!-- Si hay una imagen de usuario disponible -->
+                    <div th:if="${userImage}" class="w-full h-full">
+                        <img th:src="${userImage}" alt="Avatar" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <button class="bg-jk-blue hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
-                        Nuevo Pedido
-                    </button>
+                    <!-- Si no hay imagen, mostrar iniciales -->
+                    <div th:unless="${userImage}" class="text-jk-blue font-semibold text-sm">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+                </div>
+                <!-- User Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
+                    <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
                 </div>
             </div>
 
-            <!-- Filters and Search -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Search Bar -->
-                    <div class="md:col-span-2">
-                        <div class="relative">
-                            <input type="text" placeholder="Buscar pedidos..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Status Filter -->
-                    <div>
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
-                            <option value="">Todos los estados</option>
-                            <option value="pendiente">Pendiente</option>
-                            <option value="en_proceso">En Proceso</option>
-                            <option value="completado">Completado</option>
-                            <option value="cancelado">Cancelado</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Date Filter -->
-                    <div>
-                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
-                    </div>
-                </div>
-            </div>
+            <!-- Logout Button -->
+            <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                <span>Cerrar Sesión</span>
+            </a>
+        </div>
+    </div>
 
-            <!-- Orders Table -->
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-lg font-semibold text-gray-800">Lista de Pedidos</h3>
-                        <div class="flex items-center space-x-2 text-sm text-gray-600">
-                            <span>Mostrando 1-10 de 45 pedidos</span>
-                        </div>
+    <!-- Main Content -->
+    <div class="ml-64 flex-1 p-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-semibold text-jk-blue">Pedidos</h1>
+                    <p class="text-gray-600 mt-1">Gestiona todos los pedidos de la empresa</p>
+                </div>
+                <button class="bg-jk-blue hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Nuevo Pedido
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Search Bar -->
+                <div class="md:col-span-2">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar pedidos..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                 </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    <input type="checkbox" class="rounded">
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pedido</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productos</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="rounded">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#PED-001</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">María García</div>
-                                            <div class="text-sm text-gray-500">maria@email.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    13/10/2025
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">Camisas (5), Pantalones (3)</div>
-                                    <div class="text-sm text-gray-500">8 productos</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1,250.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                        Pendiente
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
-                                            <i class="fas fa-print"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="rounded">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#PED-002</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Carlos López</div>
-                                            <div class="text-sm text-gray-500">carlos@empresa.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    12/10/2025
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">Chaquetas (2), Corbatas (10)</div>
-                                    <div class="text-sm text-gray-500">12 productos</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2,800.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                                        En Proceso
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
-                                            <i class="fas fa-print"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="rounded">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#PED-003</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Ana Rodríguez</div>
-                                            <div class="text-sm text-gray-500">ana@tienda.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    11/10/2025
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">Faldas (4), Camisas (6)</div>
-                                    <div class="text-sm text-gray-500">10 productos</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1,850.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                        Completado
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
-                                            <i class="fas fa-print"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="rounded">
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">#PED-004</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-8 w-8">
-                                            <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
-                                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <div class="text-sm font-medium text-gray-900">Roberto Silva</div>
-                                            <div class="text-sm text-gray-500">roberto@corporativo.com</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    10/10/2025
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">Pantalones (8), Chaquetas (4)</div>
-                                    <div class="text-sm text-gray-500">12 productos</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $3,200.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                        Cancelado
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex space-x-2">
-                                        <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="text-green-600 hover:text-green-900" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
-                                            <i class="fas fa-print"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-900" title="Eliminar">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <!-- Status Filter -->
+                <div>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
+                        <option value="">Todos los estados</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="en_proceso">En Proceso</option>
+                        <option value="completado">Completado</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
                 </div>
-                
-                <!-- Pagination -->
-                <div class="bg-white px-6 py-3 border-t border-gray-200">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center">
-                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50" disabled>
-                                <i class="fas fa-chevron-left mr-1"></i>
-                                Anterior
-                            </button>
-                        </div>
-                        <div class="flex space-x-1">
-                            <button class="px-3 py-2 text-sm bg-jk-blue text-white rounded">1</button>
-                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">2</button>
-                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">3</button>
-                            <span class="px-3 py-2 text-sm text-gray-500">...</span>
-                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">5</button>
-                        </div>
-                        <div class="flex items-center">
-                            <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">
-                                Siguiente
-                                <i class="fas fa-chevron-right ml-1"></i>
-                            </button>
-                        </div>
-                    </div>
+
+                <!-- Date Filter -->
+                <div>
+                    <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jk-blue focus:border-transparent">
                 </div>
             </div>
         </div>
 
-        <!-- WhatsApp Support Button -->
-        <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-800">Lista de Pedidos</h3>
+                    <div class="flex items-center space-x-2 text-sm text-gray-600">
+                        <span>Mostrando 1-10 de 45 pedidos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" class="rounded">
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pedido</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productos</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">#PED-001</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8">
+                                    <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">María García</div>
+                                    <div class="text-sm text-gray-500">maria@email.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            13/10/2025
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">Camisas (5), Pantalones (3)</div>
+                            <div class="text-sm text-gray-500">8 productos</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            $1,250.00
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Pendiente
+                                    </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">#PED-002</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8">
+                                    <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Carlos López</div>
+                                    <div class="text-sm text-gray-500">carlos@empresa.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            12/10/2025
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">Chaquetas (2), Corbatas (10)</div>
+                            <div class="text-sm text-gray-500">12 productos</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            $2,800.00
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        En Proceso
+                                    </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">#PED-003</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8">
+                                    <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Ana Rodríguez</div>
+                                    <div class="text-sm text-gray-500">ana@tienda.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            11/10/2025
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">Faldas (4), Camisas (6)</div>
+                            <div class="text-sm text-gray-500">10 productos</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            $1,850.00
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                        Completado
+                                    </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" class="rounded">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900">#PED-004</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-8 w-8">
+                                    <div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-gray-600 text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="ml-3">
+                                    <div class="text-sm font-medium text-gray-900">Roberto Silva</div>
+                                    <div class="text-sm text-gray-500">roberto@corporativo.com</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            10/10/2025
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">Pantalones (8), Chaquetas (4)</div>
+                            <div class="text-sm text-gray-500">12 productos</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                            $3,200.00
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                        Cancelado
+                                    </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <button class="text-jk-blue hover:text-blue-900" title="Ver detalles">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-green-600 hover:text-green-900" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-gray-600 hover:text-gray-900" title="Imprimir">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-900" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="bg-white px-6 py-3 border-t border-gray-200">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50" disabled>
+                            <i class="fas fa-chevron-left mr-1"></i>
+                            Anterior
+                        </button>
+                    </div>
+                    <div class="flex space-x-1">
+                        <button class="px-3 py-2 text-sm bg-jk-blue text-white rounded">1</button>
+                        <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">2</button>
+                        <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">3</button>
+                        <span class="px-3 py-2 text-sm text-gray-500">...</span>
+                        <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">5</button>
+                    </div>
+                    <div class="flex items-center">
+                        <button class="px-3 py-2 text-sm text-gray-600 hover:text-gray-900">
+                            Siguiente
+                            <i class="fas fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // Funcionalidad para los checkboxes
-        document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
-            const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-        });
+    <!-- WhatsApp Support Button -->
+    <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span class="font-medium">Soporte WhatsApp</span>
+    </a>
+</div>
 
-        // Funcionalidad para filtros
-        document.querySelector('input[type="text"]').addEventListener('input', function() {
-            // Aquí iría la lógica de filtrado en tiempo real
-            console.log('Filtrar por:', this.value);
+<script>
+    // Funcionalidad para los checkboxes
+    document.querySelector('thead input[type="checkbox"]').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
         });
+    });
 
-        document.querySelector('select').addEventListener('change', function() {
-            // Aquí iría la lógica de filtrado por estado
-            console.log('Filtrar por estado:', this.value);
-        });
-    </script>
+    // Funcionalidad para filtros
+    document.querySelector('input[type="text"]').addEventListener('input', function() {
+        // Aquí iría la lógica de filtrado en tiempo real
+        console.log('Filtrar por:', this.value);
+    });
+
+    document.querySelector('select').addEventListener('change', function() {
+        // Aquí iría la lógica de filtrado por estado
+        console.log('Filtrar por estado:', this.value);
+    });
+</script>
 </body>
 </html>
