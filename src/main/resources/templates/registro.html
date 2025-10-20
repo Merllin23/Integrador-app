@@ -16,6 +16,9 @@
 
   <!-- Fuente Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Google reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body class="bg-gray-100 font-sans">
 
@@ -40,12 +43,12 @@
       </p>
 
       <!-- Mensajes dinámicos -->
-      <div th:if="${error}" 
-           class="alert alert-error mb-4 text-center" 
+      <div th:if="${error}"
+           class="alert alert-error mb-4 text-center"
            th:text="${error}"></div>
 
-      <div th:if="${mensaje}" 
-           class="alert alert-success mb-4 text-center" 
+      <div th:if="${mensaje}"
+           class="alert alert-success mb-4 text-center"
            th:text="${mensaje}"></div>
 
       <!-- Formulario de registro -->
@@ -65,6 +68,11 @@
 
         <input th:field="*{direccion}" type="text" placeholder="Dirección"
                class="form-input w-full">
+
+        <!-- reCAPTCHA -->
+        <div class="flex justify-center my-4">
+          <div class="g-recaptcha" data-sitekey="6Ldn-PArAAAAACYP7hzG-KAvcBkTUEZunA_k4e3_"></div>
+        </div>
 
         <button type="submit"
                 class="btn-primary w-full text-lg font-semibold mt-4">
@@ -101,18 +109,20 @@
               const nombre = document.querySelector('[name="nombre"]').value;
               const correo = document.querySelector('[name="correo"]').value;
               const contraseña = document.querySelector('[name="contraseña"]').value;
+              const captchaResponse = grecaptcha.getResponse();
 
-              if (!validateRegistroForm(nombre, correo, contraseña)) e.preventDefault();
+              if (!validateRegistroForm(nombre, correo, contraseña, captchaResponse)) e.preventDefault();
           });
       }
 
+      // Ocultar mensajes después de unos segundos
       setTimeout(() => {
           document.querySelectorAll('.alert-error, .alert-success')
               .forEach(el => el.style.display = 'none');
       }, 4000);
   });
 
-  function validateRegistroForm(nombre, correo, contraseña) {
+  function validateRegistroForm(nombre, correo, contraseña, captchaResponse) {
       if (!nombre || nombre.trim() === '') {
           showError('Por favor ingresa tu nombre completo');
           return false;
@@ -125,11 +135,15 @@
           showError('La contraseña debe tener al menos 6 caracteres');
           return false;
       }
+      if (!captchaResponse || captchaResponse.length === 0) {
+          showError('Por favor completa el reCAPTCHA');
+          return false;
+      }
       return true;
   }
 
   function isValidEmail(email) {
-      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+      return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim());
   }
 
   function showError(message) {

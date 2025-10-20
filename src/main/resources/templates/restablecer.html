@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restablecer Contraseña - JKM Confecciones</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- CSS personalizado -->
+    <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
+
+    <!-- Script de alertas -->
+    <script th:src="@{/js/alerts.js}" defer></script>
+
+    <!-- Fuente Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+<div class="flex justify-center items-center min-h-screen">
+    <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
+
+        <!-- Lado Izquierdo -->
+        <div class="w-full lg:w-1/2 p-8">
+
+            <div class="flex items-center gap-3 mb-6">
+                <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
+                <h1 class="text-xl font-bold text-carbon">JKM Confecciones</h1>
+            </div>
+
+            <div class="border-b-2 border-primary-blue mb-6"></div>
+
+            <h2 class="text-2xl font-extrabold text-center mb-3">Restablece tu contraseña</h2>
+            <p class="text-center text-gray-600 mb-6">
+                Ingresa tu nueva contraseña para tu cuenta.
+            </p>
+
+            <!-- Alertas -->
+            <div id="alert-container" class="mb-6"></div>
+
+            <!-- Formulario -->
+            <form th:action="@{/restablecer}" method="post" class="space-y-6" id="restablecerForm">
+
+                <!-- Token oculto -->
+                <input type="hidden" name="token" th:value="${token}" />
+
+                <div>
+                    <label for="password" class="font-semibold block mb-2 text-gray-800">Nueva contraseña</label>
+                    <input
+                            type="password"
+                            id="password"
+                            name="contraseña"
+                            required
+                            placeholder="********"
+                            class="form-input w-full"
+                    />
+                </div>
+
+                <div>
+                    <label for="confirmPassword" class="font-semibold block mb-2 text-gray-800">Confirmar contraseña</label>
+                    <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmar"
+                            required
+                            placeholder="********"
+                            class="form-input w-full"
+                    />
+                </div>
+
+                <button
+                        type="submit"
+                        class="btn-primary w-full text-lg font-semibold mt-4"
+                >
+                    Restablecer contraseña
+                </button>
+            </form>
+
+            <!-- Enlace de regreso -->
+            <div class="mt-8 text-center">
+                <p class="text-gray-700">
+                    ¿Deseas iniciar sesión en tu cuenta?
+                    <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
+                        Iniciar sesión
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Lado Derecho - Imagen -->
+        <div class="hidden lg:block lg:w-1/2 bg-gray-200">
+            <div class="w-full h-full flex justify-center items-center p-8">
+                <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
+                    <img
+                            th:src="@{/images/Img_niños.png}"
+                            alt="Niños con uniformes escolares JK Confecciones"
+                            class="w-full h-full object-cover"
+                    />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorMessage = /*[[${error}]]*/ null;
+        const successMessage = /*[[${mensaje}]]*/ null;
+        if (errorMessage) showError(errorMessage);
+        if (successMessage) showSuccess(successMessage);
+    });
+
+    function showError(msg) {
+      document.getElementById('alert-container').innerHTML = `
+        <div class="alert alert-error">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>Error:</strong> ${msg}</div>
+          <button onclick="this.parentElement.style.display='none'">×</button>
+        </div>`;
+    }
+
+    function showSuccess(msg) {
+      document.getElementById('alert-container').innerHTML = `
+        <div class="alert alert-success">
+          <div class="alert-icon">✅</div>
+          <div><strong>Éxito:</strong> ${msg}</div>
+          <button onclick="this.parentElement.style.display='none'">×</button>
+        </div>`;
+    }
+</script>
+
+</body>
+</html>

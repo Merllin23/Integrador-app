@@ -11,12 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ControllerInicio {
 
 
-
-    @GetMapping("/recuperar")
-    public String recuperarPage() {
-        return "recuperar-contrasena";
-    }
-
     @GetMapping("/landing_page")
     public String landing_page() {
         return "landing_page";

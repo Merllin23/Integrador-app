@@ -1,114 +1,78 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar Contraseña - JKM Confecciones</title>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- CSS personalizado -->
-    <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
-    
-    <!-- Script de alertas -->
-    <script th:src="@{/js/alerts.js}" defer></script>
-    
-    <!-- Fuente Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Contraseña - JKM Confecciones</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS personalizado -->
+  <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
+
+  <!-- Script de alertas -->
+  <script th:src="@{/js/alerts.js}" defer></script>
+
+  <!-- Fuente Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100 font-sans">
 
 <div class="flex justify-center items-center min-h-screen">
-
   <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
-    <!-- Lado Izquierdo - Formulario -->
+
+    <!-- Lado Izquierdo -->
     <div class="w-full lg:w-1/2 p-8">
 
-      <div class="text-left mb-4">
-        <div class="flex items-center gap-3">
-          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
-          <h1 class="text-title-section text-carbon font-semibold">JKM Confecciones</h1>
-        </div>
+      <div class="flex items-center gap-3 mb-6">
+        <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
+        <h1 class="text-xl font-bold text-carbon">JKM Confecciones</h1>
       </div>
 
-      <div class="border-b-2 border-primary-blue mb-4"></div>
+      <div class="border-b-2 border-primary-blue mb-6"></div>
 
-      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Recupera tu contraseña</h2>
+      <h2 class="text-2xl font-extrabold text-center mb-3">Recupera tu contraseña</h2>
       <p class="text-center text-gray-600 mb-6">
-        Ingresa tus datos para recibir un código de confirmación.
+        Ingresa tu correo registrado para enviarte un enlace de recuperación.
       </p>
 
-      <!-- Contenedor de alertas -->
+      <!-- Alertas -->
       <div id="alert-container" class="mb-6"></div>
 
-      <!-- Formulario de recuperación -->
-      <form th:action="@{/recuperar-password}" method="post" class="space-y-6" id="recuperarForm">
-        
-        <!-- Nombre Completo -->
+      <!-- Formulario -->
+      <form th:action="@{/recuperar}" method="post" class="space-y-6" id="recuperarForm">
+
         <div>
-          <label for="nombre" class="form-label text-carbon font-semibold block mb-3">
-            Nombre Completo
-          </label>
+          <label for="correo" class="font-semibold block mb-2 text-gray-800">Correo electrónico</label>
           <input
-            type="text"
-            id="nombre"
-            name="nombre"
-            required
-            placeholder="Nombres y Apellidos"
-            class="form-input w-full"
+                  type="email"
+                  id="correo"
+                  name="correo"
+                  required
+                  placeholder="tu.correo@ejemplo.com"
+                  class="form-input w-full"
           />
         </div>
 
-        <!-- Correo Electrónico -->
-        <div>
-          <label for="email" class="form-label text-carbon font-semibold block mb-3">
-            Correo Electrónico
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="correo"
-            required
-            placeholder="tu.correo@ejemplo.com"
-            class="form-input w-full"
-          />
-        </div>
-
-        <!-- Teléfono -->
-        <div>
-          <label for="telefono" class="form-label text-carbon font-semibold block mb-3">
-            Teléfono
-          </label>
-          <input
-            type="tel"
-            id="telefono"
-            name="telefono"
-            required
-            placeholder="Teléfono"
-            class="form-input w-full"
-          />
-        </div>
-
-        <!-- Botón -->
         <button
-          type="submit"
-          class="btn-primary w-full text-lg font-semibold mt-4"
+                type="submit"
+                class="btn-primary w-full text-lg font-semibold mt-4"
         >
-          Enviar código de confirmación
+          Enviar enlace de recuperación
         </button>
       </form>
 
-      <!-- Enlace para iniciar sesión -->
+      <!-- Enlace de regreso -->
       <div class="mt-8 text-center">
-        <p class="text-body text-carbon">
-          ¿Ya tienes una cuenta?
+        <p class="text-gray-700">
+          ¿Ya recordaste tu contraseña?
           <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
             Iniciar sesión
           </a>
         </p>
       </div>
-
     </div>
 
     <!-- Lado Derecho - Imagen -->
@@ -116,9 +80,9 @@
       <div class="w-full h-full flex justify-center items-center p-8">
         <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
           <img
-            th:src="@{/images/Img_niños.png}"
-            alt="Niños con uniformes escolares JK Confecciones"
-            class="w-full h-full object-cover"
+                  th:src="@{/images/Img_niños.png}"
+                  alt="Niños con uniformes escolares JK Confecciones"
+                  class="w-full h-full object-cover"
           />
         </div>
       </div>
@@ -127,92 +91,32 @@
   </div>
 </div>
 
-<!-- Script de inicialización -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
       const errorMessage = /*[[${error}]]*/ null;
       const successMessage = /*[[${mensaje}]]*/ null;
-      
       if (errorMessage) showError(errorMessage);
       if (successMessage) showSuccess(successMessage);
-
-      const recuperarForm = document.getElementById('recuperarForm');
-      if (recuperarForm) {
-          recuperarForm.addEventListener('submit', function(e) {
-              const nombre = document.getElementById('nombre').value;
-              const email = document.getElementById('email').value;
-              const telefono = document.getElementById('telefono').value;
-              
-              if (!validateRecuperarForm(nombre, email, telefono)) e.preventDefault();
-          });
-      }
-
-      const inputs = document.querySelectorAll('.form-input');
-      inputs.forEach(input => {
-          input.addEventListener('focus', function() {
-              this.classList.add('ring-2', 'ring-primary-blue', 'ring-opacity-20');
-          });
-          input.addEventListener('blur', function() {
-              this.classList.remove('ring-2', 'ring-primary-blue', 'ring-opacity-20');
-          });
-      });
-
-      setTimeout(() => {
-          document.querySelectorAll('.alert-error, .alert-success')
-              .forEach(el => el.style.display = 'none');
-      }, 4000);
   });
 
-  function validateRecuperarForm(nombre, email, telefono) {
-      if (!nombre || nombre.trim() === '') {
-          showError('Por favor ingresa tu nombre completo');
-          return false;
-      }
-      if (!email || !isValidEmail(email)) {
-          showError('Por favor ingresa un correo electrónico válido');
-          return false;
-      }
-      if (!telefono || telefono.trim() === '') {
-          showError('Por favor ingresa tu número de teléfono');
-          return false;
-      }
-      return true;
+  function showError(msg) {
+    document.getElementById('alert-container').innerHTML = `
+      <div class="alert alert-error">
+        <div class="alert-icon">⚠️</div>
+        <div><strong>Error:</strong> ${msg}</div>
+        <button onclick="this.parentElement.style.display='none'">×</button>
+      </div>`;
   }
 
-  function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function showError(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert alert-error slide-in">
-              <div class="alert-icon">⚠️</div>
-              <div class="alert-content">
-                  <strong>Error: </strong>${message}
-              </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
-  }
-
-  function showSuccess(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert alert-success slide-in">
-              <div class="alert-icon">✅</div>
-              <div class="alert-content">
-                  <strong>Éxito: </strong>${message}
-              </div>
-              <button class="alert-close" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
+  function showSuccess(msg) {
+    document.getElementById('alert-container').innerHTML = `
+      <div class="alert alert-success">
+        <div class="alert-icon">✅</div>
+        <div><strong>Éxito:</strong> ${msg}</div>
+        <button onclick="this.parentElement.style.display='none'">×</button>
+      </div>`;
   }
 </script>
 
-<!-- Estilos adicionales -->
-<style>
-  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
-  .rounded-2xl { border-radius: 1rem; }
-  body { background-color: var(--soft-gray); }
-</style>
 </body>
 </html>
