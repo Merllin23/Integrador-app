@@ -34,9 +34,9 @@ public class RegistroController {
             return "registro";
         }
 
-        // rol por defecto
-        Rol rolUsuario = rolRepository.findByNombreRol("USUARIO")
-                .orElseThrow(() -> new RuntimeException("No se encontró el rol 'USUARIO'"));
+    // rol por defecto (según BD actual: 'Usuario')
+    Rol rolUsuario = rolRepository.findByNombreRol("Usuario")
+        .orElseThrow(() -> new RuntimeException("No se encontró el rol 'Usuario'"));
 
         String hash = BCrypt.hashpw(usuario.getContraseña(), BCrypt.gensalt());
         usuario.setContraseña(hash);

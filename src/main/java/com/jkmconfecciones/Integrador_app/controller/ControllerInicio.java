@@ -4,6 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import com.jkmconfecciones.Integrador_app.service.ColegioService;
+import com.jkmconfecciones.Integrador_app.entidades.Colegio;
+import java.util.List;
 
 //Se ha modificado el enrutamiento, los fragments, son los componentes estaticos que se reutilizan en varias páginas,
 // como la barra lateral (sidebar) y el botón de soporte de WhatsApp y el boton logout no modificar!
@@ -11,10 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class ControllerInicio {
 
+    @Autowired
+    private ColegioService colegioService;
+
     @GetMapping("/")
-    public String home(@RequestParam(value = "registro", required = false) String registro, Model model) {
+    public String home(Model model) {
         return "index";
     }
+
+    @GetMapping("/login")
+    public String login(@RequestParam(value = "registro", required = false) String registro, Model model) {
+        return "login";
+    }
+
     @GetMapping("/admin")
     public String adminPage(Model model) {
         // Si acceden directamente sin autenticación, redirigir al login
@@ -47,6 +60,14 @@ public class ControllerInicio {
     
     @GetMapping("/landing_page")
     public String landing_page() {
+        System.out.println("[ControllerInicio] GET /landing_page -> rendering landing_page.html");
+        return "landing_page";
+    }
+
+    // Alias para prueba rápida de enrutamiento
+    @GetMapping("/landing")
+    public String landingAlias() {
+        System.out.println("[ControllerInicio] GET /landing -> rendering landing_page.html (alias)");
         return "landing_page";
     }
 
@@ -81,6 +102,31 @@ public class ControllerInicio {
         model.addAttribute("currentPage", "registroAuditoriaSeguridad");
         model.addAttribute("pageTitle", "Registro de Auditoría de Seguridad - JKM Confecciones");
         return "registroAuditoriaSeguridad";
+    }
+
+    @GetMapping("/catalogoColegios")
+    public String catalogoColegios(@RequestParam(value = "q", required = false) String termino,
+                                   Model model) {
+        List<Colegio> colegios = (termino == null || termino.isBlank())
+                ? colegioService.listarTodos()
+                : colegioService.buscarPorNombre(termino);
+
+        model.addAttribute("colegios", colegios);
+        model.addAttribute("q", termino == null ? "" : termino);
+        model.addAttribute("currentPage", "catalogoColegios");
+        model.addAttribute("pageTitle", "Catálogo de Colegios - JKM Confecciones");
+        return "catalogoColegios";
+    }
+
+    @GetMapping("/catalogoProductosColegios")
+    public String catalogoProductosColegios(@RequestParam("colegioId") Long colegioId,
+                                            Model model) {
+        com.jkmconfecciones.Integrador_app.entidades.Colegio colegio = colegioService.obtenerPorId(colegioId);
+        String nombreColegio = (colegio != null && colegio.getNombre() != null) ? colegio.getNombre() : "Seleccionado";
+        model.addAttribute("colegio", colegio);
+        model.addAttribute("nombreColegio", nombreColegio);
+        model.addAttribute("pageTitle", "Catálogo de productos " + nombreColegio);
+        return "productosColegio";
     }
 
 }
