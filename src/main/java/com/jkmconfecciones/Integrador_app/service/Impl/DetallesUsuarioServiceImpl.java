@@ -45,7 +45,7 @@ public class DetallesUsuarioServiceImpl implements UserDetailsService {
         // Crear usuario para que reconozca el Spring Security  según el estado
         return new User(
                 usuario.getCorreo(),
-                usuario.getContrasena(),
+                usuario.getContraseña(),
                 true,
                 true,
                 true,
