@@ -4,15 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Usuario - JKM Confecciones</title>
-
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- CSS personalizado -->
-  <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
-
-  <!-- Script de alertas -->
-  <script th:src="@{/js/alerts.js}" defer></script>
 
   <!-- Fuente Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,54 +12,59 @@
   <!-- Google reCAPTCHA -->
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="font-poppins">
 
-<div class="flex justify-center items-center min-h-screen">
+<div class="flex justify-center items-center min-h-screen p-4">
 
-  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
+  <div class="flex bg-white shadow-xl rounded-2xl w-full max-w-4xl overflow-hidden border border-blue-100">
     <!-- Sección izquierda -->
     <div class="w-full lg:w-1/2 p-8">
 
       <div class="text-left mb-4">
         <div class="flex items-center gap-3">
-          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
-          <h1 class="text-2xl font-bold text-carbon">JKM Confecciones</h1>
+          <img src="/logoJKM.jpeg" alt="Logo JK" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
+          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
         </div>
       </div>
 
-      <div class="border-b-2 border-primary-blue mb-4"></div>
+      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
 
-      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Crea tu Cuenta</h2>
+      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">Crea tu Cuenta</h2>
       <p class="text-center text-gray-600 mb-6">
-        Únete a JK Confecciones para agilizar tus compras y cotizaciones.
+        Únete a JKM Confecciones para agilizar tus compras y cotizaciones.
       </p>
 
       <!-- Mensajes dinámicos -->
-      <div th:if="${error}"
-           class="alert alert-error mb-4 text-center"
-           th:text="${error}"></div>
-
-      <div th:if="${mensaje}"
-           class="alert alert-success mb-4 text-center"
-           th:text="${mensaje}"></div>
+      <div th:if="${error}" class="alert alert-error mb-4 text-center" th:text="${error}"></div>
+      <div th:if="${mensaje}" class="alert alert-success mb-4 text-center" th:text="${mensaje}"></div>
 
       <!-- Formulario de registro -->
-      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4" id="registroForm">
+      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4">
 
-        <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
-               class="form-input w-full">
+        <div>
+          <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
+                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
+        </div>
 
-        <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
-               class="form-input w-full">
+        <div>
+          <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
+                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
+        </div>
 
-        <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
-               class="form-input w-full">
+        <div>
+          <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
+                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
+        </div>
 
-        <input th:field="*{telefono}" type="text" placeholder="Teléfono"
-               class="form-input w-full">
+        <div>
+          <input th:field="*{telefono}" type="text" placeholder="Teléfono"
+                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
+        </div>
 
-        <input th:field="*{direccion}" type="text" placeholder="Dirección"
-               class="form-input w-full">
+        <div>
+          <input th:field="*{direccion}" type="text" placeholder="Dirección"
+                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
+        </div>
 
         <!-- reCAPTCHA -->
         <div class="flex justify-center my-4">
@@ -75,92 +72,73 @@
         </div>
 
         <button type="submit"
-                class="btn-primary w-full text-lg font-semibold mt-4">
+                class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl transition-all duration-300">
           Crear Cuenta
         </button>
       </form>
 
-      <p class="mt-4 text-center text-gray-600">
+      <p class="mt-4 text-center text-carbon">
         ¿Ya tienes una cuenta?
-        <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
+        <a th:href="@{/login}" class="text-primary-blue-dark hover:text-primary-red transition-colors underline font-semibold">
           Iniciar sesión
         </a>
       </p>
 
     </div>
 
-    <!-- Sección derecha - Imagen -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gray-200 justify-center items-center">
-      <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
-        <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro"
-             class="w-full h-full object-cover">
-      </div>
+    <!-- Sección derecha - Imagen que ocupa todo el espacio -->
+    <div class="hidden lg:block lg:w-1/2 relative">
+      <img src="/Img_niños.png" alt="Niños con uniformes escolares JK Confecciones"
+           class="w-full h-full object-cover">
+      <!-- Overlay azul sutil -->
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent"></div>
     </div>
 
   </div>
 </div>
 
-<!-- Script de validación -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      const registroForm = document.getElementById('registroForm');
-      if (registroForm) {
-          registroForm.addEventListener('submit', function(e) {
-              const nombre = document.querySelector('[name="nombre"]').value;
-              const correo = document.querySelector('[name="correo"]').value;
-              const contraseña = document.querySelector('[name="contraseña"]').value;
-              const captchaResponse = grecaptcha.getResponse();
+      const errorMessage = /*[[${error}]]*/ null;
+      const successMessage = /*[[${mensaje}]]*/ null;
 
-              if (!validateRegistroForm(nombre, correo, contraseña, captchaResponse)) e.preventDefault();
-          });
-      }
+      if (errorMessage) showError(errorMessage);
+      if (successMessage) showSuccess(successMessage);
 
-      // Ocultar mensajes después de unos segundos
       setTimeout(() => {
           document.querySelectorAll('.alert-error, .alert-success')
               .forEach(el => el.style.display = 'none');
       }, 4000);
   });
 
-  function validateRegistroForm(nombre, correo, contraseña, captchaResponse) {
-      if (!nombre || nombre.trim() === '') {
-          showError('Por favor ingresa tu nombre completo');
-          return false;
-      }
-      if (!correo || !isValidEmail(correo)) {
-          showError('Por favor ingresa un correo electrónico válido');
-          return false;
-      }
-      if (!contraseña || contraseña.length < 6) {
-          showError('La contraseña debe tener al menos 6 caracteres');
-          return false;
-      }
-      if (!captchaResponse || captchaResponse.length === 0) {
-          showError('Por favor completa el reCAPTCHA');
-          return false;
-      }
-      return true;
-  }
-
   function isValidEmail(email) {
       return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(email.trim());
   }
 
   function showError(message) {
-      const alertContainer = document.createElement('div');
-      alertContainer.className = 'alert alert-error text-center mb-4';
-      alertContainer.innerHTML = `<strong>Error:</strong> ${message}`;
-      document.querySelector('.space-y-4').prepend(alertContainer);
-      setTimeout(() => alertContainer.remove(), 4000);
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+          <div class="alert-error p-6 rounded-lg mb-6 bg-red-50 text-error-red border-l-4 border-error-red flex items-start gap-4 slide-in">
+              <div class="text-xl">⚠️</div>
+              <div class="flex-1">
+                  <strong>Error: </strong>${message}
+              </div>
+              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
+          </div>`;
+  }
+
+  function showSuccess(message) {
+      const alertContainer = document.getElementById('alert-container');
+      alertContainer.innerHTML = `
+          <div class="alert-success p-6 rounded-lg mb-6 bg-green-50 text-success-green border-l-4 border-success-green flex items-start gap-4 slide-in">
+              <div class="text-xl">✅</div>
+              <div class="flex-1">
+                  <strong>Éxito: </strong>${message}
+              </div>
+              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
+          </div>`;
   }
 </script>
-
-<!-- Estilos adicionales -->
-<style>
-  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
-  .rounded-2xl { border-radius: 1rem; }
-  body { background-color: var(--soft-gray); }
-</style>
 
 </body>
 </html>

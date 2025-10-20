@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,36 +87,34 @@
         </div>
       </div>
     </div>
-
   </div>
-</div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const errorMessage = /*[[${error}]]*/ null;
-      const successMessage = /*[[${mensaje}]]*/ null;
-      if (errorMessage) showError(errorMessage);
-      if (successMessage) showSuccess(successMessage);
-  });
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorMessage = /*[[${error}]]*/ null;
+        const successMessage = /*[[${mensaje}]]*/ null;
+        if (errorMessage) showError(errorMessage);
+        if (successMessage) showSuccess(successMessage);
+    });
 
-  function showError(msg) {
-    document.getElementById('alert-container').innerHTML = `
-      <div class="alert alert-error">
-        <div class="alert-icon">⚠️</div>
-        <div><strong>Error:</strong> ${msg}</div>
-        <button onclick="this.parentElement.style.display='none'">×</button>
-      </div>`;
-  }
+    function showError(msg) {
+      document.getElementById('alert-container').innerHTML = `
+        <div class="alert alert-error">
+          <div class="alert-icon">⚠️</div>
+          <div><strong>Error:</strong> ${msg}</div>
+          <button onclick="this.parentElement.style.display='none'">×</button>
+        </div>`;
+    }
 
-  function showSuccess(msg) {
-    document.getElementById('alert-container').innerHTML = `
-      <div class="alert alert-success">
-        <div class="alert-icon">✅</div>
-        <div><strong>Éxito:</strong> ${msg}</div>
-        <button onclick="this.parentElement.style.display='none'">×</button>
-      </div>`;
-  }
-</script>
+    function showSuccess(msg) {
+      document.getElementById('alert-container').innerHTML = `
+        <div class="alert alert-success">
+          <div class="alert-icon">✅</div>
+          <div><strong>Éxito:</strong> ${msg}</div>
+          <button onclick="this.parentElement.style.display='none'">×</button>
+        </div>`;
+    }
+  </script>
 
 </body>
 </html>
