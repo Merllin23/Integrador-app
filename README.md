@@ -5,7 +5,6 @@
 - Calderon Huamantupa Patrick Anthony
 - Coa Palo Jhadira Jazmin
 - Quispesivana Huamani Fidel 
-- Quiñones Sencca Abelardo Gregory 
 - Salas Salazar Miguel Ángel 
 - Saldivar Saldivar Erick
 - Vilca Salazar Geanfranco
