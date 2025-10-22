@@ -50,7 +50,7 @@
                     <i class="fas fa-shopping-cart w-5 mr-3"></i>
                     <span>Pedidos</span>
                 </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <a th:href="@{/admin/productos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'productos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
                     <i class="fas fa-box w-5 mr-3"></i>
                     <span>Productos</span>
                 </a>

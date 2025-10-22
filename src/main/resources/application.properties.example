@@ -2,8 +2,8 @@ spring.application.name=Integrador-app
 
 # Conexion
 spring.datasource.url=jdbc:mysql://localhost:3306/bd_confecciones?useSSL=false&serverTimezone=UTC
-spring.datasource.username=${DB_USER}
-spring.datasource.password=${DB_PASSWORD}
+spring.datasource.username='root'
+spring.datasource.password=''
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Hibernate
