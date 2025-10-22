@@ -8,151 +8,85 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- CSS personalizado -->
+  <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
+
+  <!-- Script de alertas -->
+  <script th:src="@{/js/alerts.js}" defer></script>
+
   <!-- Fuente Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Configuración de Tailwind con colores personalizados -->
-  <script>
-      tailwind.config = {
-          theme: {
-              extend: {
-                  fontFamily: {
-                      'poppins': ['Poppins', 'sans-serif'],
-                  },
-                  colors: {
-                      'primary-red': '#C50614',
-                      'primary-blue-dark': '#052F5E',
-                      'secondary-red-dark': '#9A1E2E',
-                      'white-bone': '#FFFFFF',
-                      'carbon': '#212529',
-                      'soft-gray': '#E6F2FF',
-                      'success-green': '#588157',
-                      'error-red': '#BA181B',
-                  }
-              }
-          }
-      }
-  </script>
-
-  <!-- Estilos personalizados -->
-  <style>
-      /* ===== ANIMACIONES ===== */
-      @keyframes slideIn {
-          from {
-              opacity: 0;
-              transform: translateX(-10px);
-          }
-          to {
-              opacity: 1;
-              transform: translateX(0);
-          }
-      }
-      
-      .slide-in {
-          animation: slideIn 0.3s ease-out;
-      }
-      
-      /* ===== ESTILOS ESPECÍFICOS ===== */
-      .form-input {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      
-      .form-input:focus {
-          transform: translateY(-1px);
-      }
-      
-      .btn-primary {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      
-      .btn-primary:hover {
-          transform: translateY(-2px);
-      }
-      
-      .btn-primary:active {
-          transform: translateY(0);
-      }
-      
-      /* Fondo con gradiente azul */
-      body {
-          background: linear-gradient(135deg, #E6F2FF 0%, #D4E6FF 50%, #C2DAFF 100%);
-      }
-  </style>
 </head>
-<body class="font-poppins">
+<body class="bg-gray-100 font-sans">
 
-<div class="flex justify-center items-center min-h-screen p-4">
+<div class="flex justify-center items-center min-h-screen">
 
-  <div class="flex bg-white shadow-xl rounded-2xl w-full max-w-4xl overflow-hidden border border-blue-100">
+  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
     <!-- Sección izquierda -->
     <div class="w-full lg:w-1/2 p-8">
 
       <div class="text-left mb-4">
         <div class="flex items-center gap-3">
-          <img src="/src/main/resources/static/logoJKM.jpeg" alt="Logo JK" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
-          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
+          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
+          <h1 class="text-2xl font-bold text-carbon">JKM Confecciones</h1>
         </div>
       </div>
 
-      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
+      <div class="border-b-2 border-primary-blue mb-4"></div>
 
-      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">Crea tu Cuenta</h2>
+      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Crea tu Cuenta</h2>
       <p class="text-center text-gray-600 mb-6">
-        Únete a JKM Confecciones para agilizar tus compras y cotizaciones.
+        Únete a JK Confecciones para agilizar tus compras y cotizaciones.
       </p>
 
-      <!-- Contenedor de alertas -->
-      <div id="alert-container" class="mb-6"></div>
+      <!-- Mensajes dinámicos -->
+      <div th:if="${error}" 
+           class="alert alert-error mb-4 text-center" 
+           th:text="${error}"></div>
+
+      <div th:if="${mensaje}" 
+           class="alert alert-success mb-4 text-center" 
+           th:text="${mensaje}"></div>
 
       <!-- Formulario de registro -->
       <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4" id="registroForm">
 
-        <div>
-          <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
+        <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
+               class="form-input w-full">
 
-        <div>
-          <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
+        <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
+               class="form-input w-full">
 
-        <div>
-          <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
+        <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
+               class="form-input w-full">
 
-        <div>
-          <input th:field="*{telefono}" type="text" placeholder="Teléfono"
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
+        <input th:field="*{telefono}" type="text" placeholder="Teléfono"
+               class="form-input w-full">
 
-        <div>
-          <input th:field="*{direccion}" type="text" placeholder="Dirección"
-                 class="form-input w-full px-4 py-3 border-2 border-blue-100 rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-blue-200 outline-none transition-all duration-300">
-        </div>
+        <input th:field="*{direccion}" type="text" placeholder="Dirección"
+               class="form-input w-full">
 
         <button type="submit"
-                class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl transition-all duration-300">
+                class="btn-primary w-full text-lg font-semibold mt-4">
           Crear Cuenta
         </button>
       </form>
 
-      <p class="mt-4 text-center text-carbon">
+      <p class="mt-4 text-center text-gray-600">
         ¿Ya tienes una cuenta?
-        <a th:href="@{/login}" class="text-primary-blue-dark hover:text-primary-red transition-colors underline font-semibold">
+        <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
           Iniciar sesión
         </a>
       </p>
 
     </div>
 
-    <!-- Sección derecha - Imagen que ocupa todo el espacio -->
-    <div class="hidden lg:block lg:w-1/2 relative">
-      <img src="/src/main/resources/static/Img_niños.png" alt="Niños con uniformes escolares JK Confecciones"
-           class="w-full h-full object-cover">
-      <!-- Overlay azul sutil -->
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent"></div>
+    <!-- Sección derecha - Imagen -->
+    <div class="hidden lg:flex lg:w-1/2 bg-gray-200 justify-center items-center">
+      <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
+        <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro"
+             class="w-full h-full object-cover">
+      </div>
     </div>
 
   </div>
@@ -161,12 +95,6 @@
 <!-- Script de validación -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-      const errorMessage = /*[[${error}]]*/ null;
-      const successMessage = /*[[${mensaje}]]*/ null;
-      
-      if (errorMessage) showError(errorMessage);
-      if (successMessage) showSuccess(successMessage);
-
       const registroForm = document.getElementById('registroForm');
       if (registroForm) {
           registroForm.addEventListener('submit', function(e) {
@@ -177,16 +105,6 @@
               if (!validateRegistroForm(nombre, correo, contraseña)) e.preventDefault();
           });
       }
-
-      const inputs = document.querySelectorAll('.form-input');
-      inputs.forEach(input => {
-          input.addEventListener('focus', function() {
-              this.classList.add('ring-2', 'ring-blue-300');
-          });
-          input.addEventListener('blur', function() {
-              this.classList.remove('ring-2', 'ring-blue-300');
-          });
-      });
 
       setTimeout(() => {
           document.querySelectorAll('.alert-error, .alert-success')
@@ -211,33 +129,24 @@
   }
 
   function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
   }
 
   function showError(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert-error p-6 rounded-lg mb-6 bg-red-50 text-error-red border-l-4 border-error-red flex items-start gap-4 slide-in">
-              <div class="text-xl">⚠️</div>
-              <div class="flex-1">
-                  <strong>Error: </strong>${message}
-              </div>
-              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
-  }
-
-  function showSuccess(message) {
-      const alertContainer = document.getElementById('alert-container');
-      alertContainer.innerHTML = `
-          <div class="alert-success p-6 rounded-lg mb-6 bg-green-50 text-success-green border-l-4 border-success-green flex items-start gap-4 slide-in">
-              <div class="text-xl">✅</div>
-              <div class="flex-1">
-                  <strong>Éxito: </strong>${message}
-              </div>
-              <button class="text-xl opacity-70 hover:opacity-100 transition-opacity" onclick="this.parentElement.style.display='none'">×</button>
-          </div>`;
+      const alertContainer = document.createElement('div');
+      alertContainer.className = 'alert alert-error text-center mb-4';
+      alertContainer.innerHTML = `<strong>Error:</strong> ${message}`;
+      document.querySelector('.space-y-4').prepend(alertContainer);
+      setTimeout(() => alertContainer.remove(), 4000);
   }
 </script>
+
+<!-- Estilos adicionales -->
+<style>
+  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
+  .rounded-2xl { border-radius: 1rem; }
+  body { background-color: var(--soft-gray); }
+</style>
 
 </body>
 </html>
