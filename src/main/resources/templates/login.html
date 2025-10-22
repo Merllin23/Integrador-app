@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JKM Confecciones - Iniciar Sesión</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary-red': '#C50614',
+                        'primary-blue-dark': '#052F5E',
+                        'secondary-red-dark': '#9A1E2E',
+                        'white-bone': '#FFFFFF',
+                        'carbon': '#212529',
+                        'soft-gray': '#E6F2FF',
+                        'success-green': '#588157',
+                        'error-red': '#BA181B',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Estilos personalizados -->
+    <style>
+        /* ===== ANIMACIONES ===== */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        /* ===== ESTILOS ESPECÍFICOS ===== */
+        .form-input {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .form-input:focus {
+            transform: translateY(-1px);
+        }
+        
+        .btn-primary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            animation: slideIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-soft-gray font-poppins">
+
+<div class="flex justify-center items-center min-h-screen p-4">
+
+  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl overflow-hidden">
+    <!-- Formulario -->
+    <div class="w-full lg:w-1/2 p-8">
+
+      <div class="text-left mb-4">
+        <div class="flex items-center gap-3">
+          <img src="/logoJKM.jpeg" alt="JKM Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md">
+          <h1 class="text-2xl lg:text-3xl font-semibold text-carbon">JKM Confecciones</h1>
+        </div>
+      </div>
+
+      <div class="border-b-2 border-primary-blue-dark mb-4"></div>
+
+      <h2 class="text-2xl lg:text-3xl font-extrabold text-carbon text-center mb-4">¡Bienvenido!</h2>
+      <p class="text-center text-gray-600 mb-6">
+        Inicia sesión para ver tus pedidos y cotizaciones.
+      </p>
+
+      <!-- Contenedor de alertas -->
+      <div id="alert-container" class="mb-6"></div>
+
+      <!-- Formulario -->
+      <form th:action="@{/login}" method="post" class="space-y-6" id="loginForm">
+        <!-- Email -->
+        <div>
+          <label for="email" class="block font-medium text-carbon mb-3">
+            Correo Electrónico
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="correo"
+            required
+            placeholder="Ingresa tu correo electrónico"
+            class="form-input w-full px-4 py-3 border-2 border-soft-gray rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-primary-blue-dark/10 outline-none"
+          />
+        </div>
+
+        <!-- Contraseña -->
+        <div>
+          <label for="password" class="block font-medium text-carbon mb-3">
+            Contraseña
+          </label>
+          <input
+            type="password"
+            id="password"
+            name="contraseña"
+            required
+            placeholder="Ingresa tu contraseña"
+            class="form-input w-full px-4 py-3 border-2 border-soft-gray rounded-lg focus:border-primary-blue-dark focus:ring-3 focus:ring-primary-blue-dark/10 outline-none"
+          />
+          <a th:href="@{/recuperar}" class="block text-sm text-primary-blue-dark mt-3 hover:text-primary-red transition-colors underline">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+
+        <!-- Botón -->
+        <button
+          type="submit"
+          class="btn-primary w-full py-3 px-6 bg-secondary-red-dark text-white-bone font-semibold rounded-lg hover:bg-[#8a1a27] shadow-lg hover:shadow-xl"
+        >
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <!-- Separador y crear cuenta -->
+      <div class="mt-8 text-center">
+        <p class="text-carbon mb-4">
+          ¿Eres nuevo aquí?
+        </p>
+        <a th:href="@{/registro}" class="btn-secondary w-full inline-block py-3 px-6 border-2 border-primary-blue-dark text-primary-blue-dark font-medium rounded-lg hover:bg-primary-blue-dark hover:text-white-bone transition-all">
+          Crea una cuenta
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Lado Derecho - Imagen que ocupa todo el espacio -->
+    <div class="hidden lg:block lg:w-1/2 relative">
+      <img
+        src="/Img_niños.png"
+        alt="Niños con uniformes escolares JKM Confecciones"
+        class="w-full h-full object-cover"
+      />
+      <!-- Overlay para mejorar legibilidad del texto si es necesario -->
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-blue-dark/10 to-transparent"></div>
+    </div>
+</div>
+
+</body>
+</html>

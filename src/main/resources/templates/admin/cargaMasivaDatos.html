@@ -1,12 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="es"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Carga Masiva de Datos</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Carga Masiva de Datos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -34,7 +35,7 @@
             },
         };
     </script>
-<style>
+    <style>
         .material-icons {
             font-family: 'Material Icons';
             font-weight: normal;
@@ -50,31 +51,31 @@
             -webkit-font-feature-settings: 'liga';
             -webkit-font-smoothing: antialiased;
         }
-        
+
         /* Estilos personalizados para scrollbar */
         .scrollbar-thin {
             scrollbar-width: thin;
             scrollbar-color: #4A5568 #1A202C;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-track {
             background: #1A202C;
             border-radius: 3px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb {
             background: #4A5568;
             border-radius: 3px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background: #718096;
         }
-        
+
         /* Asegurar que el sidebar mantenga su altura */
         .sidebar-container {
             height: 100vh;
@@ -84,184 +85,184 @@
 </head>
 <body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
 <div class="flex h-screen">
-<aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
-<div class="px-6 py-4 flex items-center border-b border-gray-600">
-<img src="/images/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
-<h1 class="text-xl font-bold">JKM Confecciones</h1>
-</div>
-<nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">dashboard</span>
-                    Panel
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">list_alt</span>
-                    Pedidos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">inventory_2</span>
-                    Productos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">people</span>
-                    Clientes
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">receipt_long</span>
-                    Gestión de Cotizaciones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">category</span>
-                    Categorías/ Colecciones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">style</span>
-                    Tallas/Variantes
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">sell</span>
-                    Precios, Descuentos y Promociones
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">admin_panel_settings</span>
-                    Gestión de Roles y Permisos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">inventory</span>
-                    Control de Inventario
-                </a>
-<a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">upload_file</span>
-                    Carga Masiva de Datos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">security</span>
-                    Registro de Auditoría de Seguridad
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">edit</span>
-                    Edicion de Productos
-                </a>
-<a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-<span class="material-icons mr-3">notifications</span>
-                    Notificaciones
-                </a>
-</nav>
-<div class="px-6 py-4 border-t border-gray-600 mt-auto">
-<button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
-<span class="material-icons mr-2">support_agent</span>
-Soporte WhatsApp
-</button>
-</div>
-</aside>
-<main class="flex-1 ml-64 p-8">
-<div class="max-w-7xl mx-auto">
-<h2 class="text-3xl font-bold mb-2 text-text-light dark:text-text-dark">Carga Masiva de Datos</h2>
-<p class="text-gray-600 dark:text-gray-400 mb-8">Arrastra y suelta tus archivos CSV o Excel aquí para cargar datos en lote. Asegúrate de que los archivos sigan el formato estándar para evitar errores.</p>
-
-<!-- Zona de carga de archivos mejorada -->
-<div class="bg-card-light dark:bg-card-dark rounded-lg shadow-lg p-6 mb-6">
-    <div id="dropZone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20">
-        <div class="flex flex-col items-center">
-            <span class="material-icons text-6xl text-gray-400 mb-4">cloud_upload</span>
-            <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-2">Arrastra y suelta archivos aquí</h3>
-            <p class="text-gray-500 dark:text-gray-400 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
-            <p class="text-sm text-gray-400 dark:text-gray-500 mb-6">o</p>
-            <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls" multiple>
-            <button id="selectFileBtn" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
-                <span class="material-icons mr-2 text-sm">folder_open</span>
-                Seleccionar archivo
+    <aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
+        <div class="px-6 py-4 flex items-center border-b border-gray-600">
+            <img src="/images/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
+            <h1 class="text-xl font-bold">JKM Confecciones</h1>
+        </div>
+        <nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">dashboard</span>
+                Panel
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">list_alt</span>
+                Pedidos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory_2</span>
+                Productos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">people</span>
+                Clientes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">receipt_long</span>
+                Gestión de Cotizaciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">category</span>
+                Categorías/ Colecciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">style</span>
+                Tallas/Variantes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">sell</span>
+                Precios, Descuentos y Promociones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">admin_panel_settings</span>
+                Gestión de Roles y Permisos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory</span>
+                Control de Inventario
+            </a>
+            <a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">upload_file</span>
+                Carga Masiva de Datos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">security</span>
+                Registro de Auditoría de Seguridad
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">edit</span>
+                Edicion de Productos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">notifications</span>
+                Notificaciones
+            </a>
+        </nav>
+        <div class="px-6 py-4 border-t border-gray-600 mt-auto">
+            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
+                <span class="material-icons mr-2">support_agent</span>
+                Soporte WhatsApp
             </button>
         </div>
-    </div>
-    
-    <!-- Lista de archivos seleccionados -->
-    <div id="fileList" class="mt-4 hidden">
-        <h4 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">Archivos seleccionados:</h4>
-        <div id="fileItems" class="space-y-2"></div>
-    </div>
-</div>
+    </aside>
+    <main class="flex-1 ml-64 p-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-2 text-text-light dark:text-text-dark">Carga Masiva de Datos</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Arrastra y suelta tus archivos CSV o Excel aquí para cargar datos en lote. Asegúrate de que los archivos sigan el formato estándar para evitar errores.</p>
 
-<!-- Botón para descargar plantilla -->
-<div class="flex justify-between items-center mb-8">
-    <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-500 transition-colors duration-200">
-        <span class="material-icons mr-2 text-sm">download</span>
-        Descargar Plantilla de Formato Estándar
-    </button>
-    <div class="text-sm text-gray-500 dark:text-gray-400">
-        <span class="material-icons text-sm mr-1">info</span>
-        Asegúrate de que los archivos sigan el formato estándar para evitar errores
-    </div>
-</div>
-<h3 class="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">Vista Previa de Datos</h3>
-<div class="bg-card-light dark:bg-card-dark shadow-md rounded-lg overflow-hidden">
-<table class="min-w-full divide-y divide-border-light dark:divide-border-dark">
-<thead class="bg-gray-50 dark:bg-gray-700">
-<tr>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Fila</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Código de Producto</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Descripción</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Precio</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Stock</th>
-<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Estado</th>
-</tr>
-</thead>
-<tbody class="bg-card-light dark:bg-card-dark divide-y divide-border-light dark:divide-border-dark">
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">1</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-001</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Uniforme escolar completo</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">50.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">100</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">2</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-002</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Camisa de uniforme</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">25.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">200</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">3</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-003</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Pantalón de uniforme</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">30.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">150</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">4</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-004</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Falda de uniforme</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">28.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">120</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">5</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-005</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Chaqueta de uniforme</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">40.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">80</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="flex justify-end mt-8">
-<button id="importBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-    <span class="material-icons mr-2 text-sm">upload</span>
-    Importar Datos
-    </button>
-</div>
+            <!-- Zona de carga de archivos mejorada -->
+            <div class="bg-card-light dark:bg-card-dark rounded-lg shadow-lg p-6 mb-6">
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center transition-all duration-300 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20">
+                    <div class="flex flex-col items-center">
+                        <span class="material-icons text-6xl text-gray-400 mb-4">cloud_upload</span>
+                        <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-2">Arrastra y suelta archivos aquí</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
+                        <p class="text-sm text-gray-400 dark:text-gray-500 mb-6">o</p>
+                        <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls" multiple>
+                        <button id="selectFileBtn" class="bg-primary hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+                            <span class="material-icons mr-2 text-sm">folder_open</span>
+                            Seleccionar archivo
+                        </button>
+                    </div>
+                </div>
 
-<!-- Margen inferior para mejor espaciado -->
-<div class="pb-16"></div>
+                <!-- Lista de archivos seleccionados -->
+                <div id="fileList" class="mt-4 hidden">
+                    <h4 class="text-lg font-semibold text-text-light dark:text-text-dark mb-2">Archivos seleccionados:</h4>
+                    <div id="fileItems" class="space-y-2"></div>
+                </div>
+            </div>
 
-</div>
-</main>
+            <!-- Botón para descargar plantilla -->
+            <div class="flex justify-between items-center mb-8">
+                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-500 transition-colors duration-200">
+                    <span class="material-icons mr-2 text-sm">download</span>
+                    Descargar Plantilla de Formato Estándar
+                </button>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <span class="material-icons text-sm mr-1">info</span>
+                    Asegúrate de que los archivos sigan el formato estándar para evitar errores
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold mb-4 text-text-light dark:text-text-dark">Vista Previa de Datos</h3>
+            <div class="bg-card-light dark:bg-card-dark shadow-md rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-border-light dark:divide-border-dark">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Fila</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Código de Producto</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Descripción</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Precio</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Stock</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" scope="col">Estado</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-card-light dark:bg-card-dark divide-y divide-border-light dark:divide-border-dark">
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">1</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-001</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Uniforme escolar completo</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">50.00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">100</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">2</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-002</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Camisa de uniforme</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">25.00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">200</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">3</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-003</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Pantalón de uniforme</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">30.00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">150</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">4</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-004</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Falda de uniforme</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">28.00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">120</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">5</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-red-600 dark:text-red-400">UNF-005</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">Chaqueta de uniforme</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">40.00</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">80</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Válido</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-end mt-8">
+                <button id="importBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-icons mr-2 text-sm">upload</span>
+                    Importar Datos
+                </button>
+            </div>
+
+            <!-- Margen inferior para mejor espaciado -->
+            <div class="pb-16"></div>
+
+        </div>
+    </main>
 </div><!-- JavaScript para funcionalidad de arrastrar y soltar -->
 <script>
     const dropZone = document.getElementById('dropZone');
@@ -270,7 +271,7 @@ Soporte WhatsApp
     const fileList = document.getElementById('fileList');
     const fileItems = document.getElementById('fileItems');
     const importBtn = document.getElementById('importBtn');
-    
+
     let selectedFiles = [];
 
     // Eventos del botón seleccionar archivo
@@ -300,7 +301,7 @@ Soporte WhatsApp
         e.preventDefault();
         dropZone.classList.remove('border-blue-400', 'bg-blue-50');
         dropZone.classList.remove('dark:bg-blue-900/20');
-        
+
         const files = e.dataTransfer.files;
         handleFiles(files);
     });
@@ -309,18 +310,18 @@ Soporte WhatsApp
     function handleFiles(files) {
         const allowedTypes = ['.csv', '.xlsx', '.xls'];
         const validFiles = [];
-        
+
         for (let file of files) {
             const fileName = file.name.toLowerCase();
             const isValid = allowedTypes.some(type => fileName.endsWith(type));
-            
+
             if (isValid) {
                 validFiles.push(file);
             } else {
                 alert(`El archivo "${file.name}" no es un formato válido. Solo se permiten archivos CSV y Excel.`);
             }
         }
-        
+
         if (validFiles.length > 0) {
             selectedFiles = [...selectedFiles, ...validFiles];
             displayFiles();
@@ -332,11 +333,11 @@ Soporte WhatsApp
         if (selectedFiles.length > 0) {
             fileList.classList.remove('hidden');
             fileItems.innerHTML = '';
-            
+
             selectedFiles.forEach((file, index) => {
                 const fileItem = document.createElement('div');
                 fileItem.className = 'flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg';
-                
+
                 fileItem.innerHTML = `
                     <div class="flex items-center">
                         <span class="material-icons text-green-600 mr-2">description</span>
@@ -347,10 +348,10 @@ Soporte WhatsApp
                         <span class="material-icons text-sm">close</span>
                     </button>
                 `;
-                
+
                 fileItems.appendChild(fileItem);
             });
-            
+
             importBtn.disabled = false;
         } else {
             fileList.classList.add('hidden');
@@ -378,11 +379,11 @@ Soporte WhatsApp
         if (selectedFiles.length > 0) {
             // Aquí iría la lógica para procesar los archivos
             alert(`Importando ${selectedFiles.length} archivo(s)...`);
-            
+
             // Simular proceso de importación
             importBtn.innerHTML = '<span class="material-icons mr-2 text-sm animate-spin">sync</span>Importando...';
             importBtn.disabled = true;
-            
+
             setTimeout(() => {
                 importBtn.innerHTML = '<span class="material-icons mr-2 text-sm">check</span>Importado Exitosamente';
                 setTimeout(() => {

@@ -1,152 +1,177 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Usuario - JKM Confecciones</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario - JKM Confecciones</title>
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- CSS personalizado -->
-  <link th:href="@{/css/jkm_style.css}" rel="stylesheet">
+    <!-- Script de alertas -->
+    <script th:src="@{/js/alerts.js}" defer></script>
 
-  <!-- Script de alertas -->
-  <script th:src="@{/js/alerts.js}" defer></script>
+    <!-- Fuente Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Fuente Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        body {
+          font-family: 'Poppins', sans-serif;
+          background-color: #f0f4f8;
+        }
+
+        .btn-primary-custom {
+          background-color: #9A1E2E;
+          border: none;
+        }
+
+        .btn-primary-custom:hover {
+          background-color: #8a1a27;
+        }
+
+        .alert-container {
+          margin-bottom: 1rem;
+        }
+
+        .card-custom {
+          border-radius: 1rem;
+          box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-container {
+          max-width: 450px;
+          width: 100%;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
 
-<div class="flex justify-center items-center min-h-screen">
+<body>
 
-  <div class="flex bg-white shadow-lg rounded-lg w-full max-w-4xl">
-    <!-- Sección izquierda -->
-    <div class="w-full lg:w-1/2 p-8">
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card card-custom w-100" style="max-width: 900px;">
+        <div class="row g-0">
 
-      <div class="text-left mb-4">
-        <div class="flex items-center gap-3">
-          <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" class="w-10 h-10">
-          <h1 class="text-2xl font-bold text-carbon">JKM Confecciones</h1>
+            <!-- Sección izquierda -->
+            <div class="col-lg-6 p-4 d-flex flex-column justify-content-center">
+                <div class="mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <img th:src="@{/images/JKM_Confecciones.png}" alt="Logo JK" style="width:40px; height:40px;">
+                        <h1 class="h5 mb-0">JKM Confecciones</h1>
+                    </div>
+                    <hr class="mb-4">
+                </div>
+
+                <h2 class="h5 text-center fw-bold mb-3">Crea tu Cuenta</h2>
+                <p class="text-center text-muted mb-4">
+                    Únete a JK Confecciones para agilizar tus compras y cotizaciones.
+                </p>
+
+                <!-- Mensajes dinámicos -->
+                <div id="alert-container" class="alert-container"></div>
+
+                <!-- Formulario de registro -->
+                <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation form-container mx-auto" id="registroForm" novalidate>
+                    <div class="mb-3">
+                        <input th:field="*{nombre}" type="text" placeholder="Nombre completo" class="form-control" required>
+                        <div class="invalid-feedback">Por favor ingresa tu nombre completo</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <input th:field="*{correo}" type="email" placeholder="Correo electrónico" class="form-control" required>
+                        <div class="invalid-feedback">Por favor ingresa un correo válido</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <input th:field="*{contraseña}" type="password" placeholder="Contraseña" class="form-control" required>
+                        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <input th:field="*{telefono}" type="text" placeholder="Teléfono" class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <input th:field="*{direccion}" type="text" placeholder="Dirección" class="form-control">
+                    </div>
+
+                    <!-- reCAPTCHA -->
+                    <div class="d-flex justify-content-center my-3">
+                        <div class="g-recaptcha" data-sitekey="6Ldn-PArAAAAACYP7hzG-KAvcBkTUEZunA_k4e3_"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-primary-custom w-100">Crear Cuenta</button>
+                </form>
+
+                <p class="mt-3 text-center text-muted">
+                    ¿Ya tienes una cuenta?
+                    <a th:href="@{/login}" class="text-decoration-underline fw-semibold">Iniciar sesión</a>
+                </p>
+            </div>
+
+            <!-- Sección derecha - Imagen -->
+            <div class="col-lg-6 d-none d-lg-flex bg-light justify-content-center align-items-center p-3">
+                <div class="w-100 h-100 rounded-3 overflow-hidden shadow">
+                    <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro" class="img-fluid h-100 w-100 object-fit-cover">
+                </div>
+            </div>
+
         </div>
-      </div>
-
-      <div class="border-b-2 border-primary-blue mb-4"></div>
-
-      <h2 class="text-title-main text-carbon font-extrabold text-center mb-4">Crea tu Cuenta</h2>
-      <p class="text-center text-gray-600 mb-6">
-        Únete a JK Confecciones para agilizar tus compras y cotizaciones.
-      </p>
-
-      <!-- Mensajes dinámicos -->
-      <div th:if="${error}" 
-           class="alert alert-error mb-4 text-center" 
-           th:text="${error}"></div>
-
-      <div th:if="${mensaje}" 
-           class="alert alert-success mb-4 text-center" 
-           th:text="${mensaje}"></div>
-
-      <!-- Formulario de registro -->
-      <form th:action="@{/registro}" th:object="${usuario}" method="post" class="space-y-4" id="registroForm">
-
-        <input th:field="*{nombre}" type="text" placeholder="Nombre completo" required
-               class="form-input w-full">
-
-        <input th:field="*{correo}" type="email" placeholder="Correo electrónico" required
-               class="form-input w-full">
-
-        <input th:field="*{contraseña}" type="password" placeholder="Contraseña" required
-               class="form-input w-full">
-
-        <input th:field="*{telefono}" type="text" placeholder="Teléfono"
-               class="form-input w-full">
-
-        <input th:field="*{direccion}" type="text" placeholder="Dirección"
-               class="form-input w-full">
-
-        <button type="submit"
-                class="btn-primary w-full text-lg font-semibold mt-4">
-          Crear Cuenta
-        </button>
-      </form>
-
-      <p class="mt-4 text-center text-gray-600">
-        ¿Ya tienes una cuenta?
-        <a th:href="@{/login}" class="text-primary-blue hover:text-primary-red transition-colors underline font-semibold">
-          Iniciar sesión
-        </a>
-      </p>
-
     </div>
-
-    <!-- Sección derecha - Imagen -->
-    <div class="hidden lg:flex lg:w-1/2 bg-gray-200 justify-center items-center">
-      <div class="w-full h-full rounded-2xl overflow-hidden shadow-lg">
-        <img th:src="@{/images/Img_niños.png}" alt="Imagen de registro"
-             class="w-full h-full object-cover">
-      </div>
-    </div>
-
-  </div>
 </div>
 
-<!-- Script de validación -->
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
       const registroForm = document.getElementById('registroForm');
-      if (registroForm) {
-          registroForm.addEventListener('submit', function(e) {
-              const nombre = document.querySelector('[name="nombre"]').value;
-              const correo = document.querySelector('[name="correo"]').value;
-              const contraseña = document.querySelector('[name="contraseña"]').value;
 
-              if (!validateRegistroForm(nombre, correo, contraseña)) e.preventDefault();
-          });
+      // Validación personalizada
+      registroForm.addEventListener('submit', function(e) {
+        const nombre = registroForm.querySelector('[name="nombre"]').value;
+        const correo = registroForm.querySelector('[name="correo"]').value;
+        const contraseña = registroForm.querySelector('[name="contraseña"]').value;
+        const captchaResponse = grecaptcha.getResponse();
+
+        if (!validateForm(nombre, correo, contraseña, captchaResponse)) e.preventDefault();
+      });
+
+      function validateForm(nombre, correo, contraseña, captchaResponse) {
+        if (!nombre.trim()) { showError('Por favor ingresa tu nombre completo'); return false; }
+        if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo)) { showError('Por favor ingresa un correo válido'); return false; }
+        if (!contraseña || contraseña.length < 6) { showError('La contraseña debe tener al menos 6 caracteres'); return false; }
+        if (!captchaResponse) { showError('Por favor completa el reCAPTCHA'); return false; }
+        return true;
       }
 
-      setTimeout(() => {
-          document.querySelectorAll('.alert-error, .alert-success')
-              .forEach(el => el.style.display = 'none');
-      }, 4000);
-  });
-
-  function validateRegistroForm(nombre, correo, contraseña) {
-      if (!nombre || nombre.trim() === '') {
-          showError('Por favor ingresa tu nombre completo');
-          return false;
+      function showError(message) {
+        const alertContainer = document.getElementById('alert-container');
+        alertContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+          <strong>Error:</strong> ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>`;
+        setTimeout(() => { alertContainer.innerHTML = ''; }, 4000);
       }
-      if (!correo || !isValidEmail(correo)) {
-          showError('Por favor ingresa un correo electrónico válido');
-          return false;
-      }
-      if (!contraseña || contraseña.length < 6) {
-          showError('La contraseña debe tener al menos 6 caracteres');
-          return false;
-      }
-      return true;
-  }
 
-  function isValidEmail(email) {
-      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
-  }
-
-  function showError(message) {
-      const alertContainer = document.createElement('div');
-      alertContainer.className = 'alert alert-error text-center mb-4';
-      alertContainer.innerHTML = `<strong>Error:</strong> ${message}`;
-      document.querySelector('.space-y-4').prepend(alertContainer);
-      setTimeout(() => alertContainer.remove(), 4000);
-  }
+      // Bootstrap validación de formularios
+      (function () {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(function (form) {
+          form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+          }, false);
+        });
+      })();
+    });
 </script>
-
-<!-- Estilos adicionales -->
-<style>
-  .shadow-lg { box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15); }
-  .rounded-2xl { border-radius: 1rem; }
-  body { background-color: var(--soft-gray); }
-</style>
 
 </body>
 </html>

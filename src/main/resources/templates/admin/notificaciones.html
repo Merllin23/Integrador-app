@@ -51,31 +51,31 @@
             -webkit-font-feature-settings: 'liga';
             -webkit-font-smoothing: antialiased;
         }
-        
+
         /* Estilos personalizados para scrollbar */
         .scrollbar-thin {
             scrollbar-width: thin;
             scrollbar-color: #4A5568 #1A202C;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-track {
             background: #1A202C;
             border-radius: 3px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb {
             background: #4A5568;
             border-radius: 3px;
         }
-        
+
         .scrollbar-thin::-webkit-scrollbar-thumb:hover {
             background: #718096;
         }
-        
+
         /* Asegurar que el sidebar mantenga su altura */
         .sidebar-container {
             height: 100vh;
@@ -84,234 +84,234 @@
     </style>
 </head>
 <body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
-            <div class="px-6 py-4 flex items-center border-b border-gray-600">
-                <img src="/src/main/resources/static/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
-                <h1 class="text-xl font-bold">JKM Confecciones</h1>
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-sidebar-light text-white flex flex-col fixed sidebar-container">
+        <div class="px-6 py-4 flex items-center border-b border-gray-600">
+            <img src="/src/main/resources/static/logoJKM.jpeg" alt="JK Confecciones Logo" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-md mr-3">
+            <h1 class="text-xl font-bold">JKM Confecciones</h1>
+        </div>
+        <nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">dashboard</span>
+                Panel
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">list_alt</span>
+                Pedidos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory_2</span>
+                Productos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">people</span>
+                Clientes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">receipt_long</span>
+                Gestión de Cotizaciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">category</span>
+                Categorías/ Colecciones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">style</span>
+                Tallas/Variantes
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">sell</span>
+                Precios, Descuentos y Promociones
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">admin_panel_settings</span>
+                Gestión de Roles y Permisos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">inventory</span>
+                Control de Inventario
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">upload_file</span>
+                Carga Masiva de Datos
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">security</span>
+                Registro de Auditoría de Seguridad
+            </a>
+            <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">edit</span>
+                Edicion de Productos
+            </a>
+            <a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
+                <span class="material-icons mr-3">notifications</span>
+                Notificaciones
+            </a>
+        </nav>
+        <div class="px-6 py-4 border-t border-gray-600 mt-auto">
+            <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
+                <span class="material-icons mr-2">support_agent</span>
+                Soporte WhatsApp
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 ml-64 p-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-text-light dark:text-text-dark">Notificaciones</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-8">Gestiona tus notificaciones</p>
+
+            <!-- Tabs -->
+            <div class="border-b border-gray-200 mb-8">
+                <nav class="flex space-x-8" aria-label="Tabs">
+                    <button class="tab-button active border-b-2 border-red-500 py-4 px-1 text-sm font-medium text-red-600" onclick="switchTab('todos')">
+                        Todos
+                    </button>
+                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('no-leidas')">
+                        No leídas
+                    </button>
+                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('archivadas')">
+                        Archivadas
+                    </button>
+                </nav>
             </div>
-            <nav class="flex-1 px-4 py-2 space-y-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">dashboard</span>
-                    Panel
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">list_alt</span>
-                    Pedidos
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">inventory_2</span>
-                    Productos
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">people</span>
-                    Clientes
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">receipt_long</span>
-                    Gestión de Cotizaciones
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">category</span>
-                    Categorías/ Colecciones
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">style</span>
-                    Tallas/Variantes
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">sell</span>
-                    Precios, Descuentos y Promociones
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">admin_panel_settings</span>
-                    Gestión de Roles y Permisos
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">inventory</span>
-                    Control de Inventario
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">upload_file</span>
-                    Carga Masiva de Datos
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">security</span>
-                    Registro de Auditoría de Seguridad
-                </a>
-                <a class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">edit</span>
-                    Edicion de Productos
-                </a>
-                <a class="flex items-center px-4 py-2 bg-white text-primary rounded transition-colors duration-200" href="#">
-                    <span class="material-icons mr-3">notifications</span>
-                    Notificaciones
-                </a>
-            </nav>
-            <div class="px-6 py-4 border-t border-gray-600 mt-auto">
-                <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center shadow-lg">
-                    <span class="material-icons mr-2">support_agent</span>
-                    Soporte WhatsApp
-                </button>
-            </div>
-        </aside>
 
-        <main class="flex-1 ml-64 p-8">
-            <div class="max-w-7xl mx-auto">
-                <h2 class="text-3xl font-bold mb-8 text-text-light dark:text-text-dark">Notificaciones</h2>
-                <p class="text-gray-500 dark:text-gray-400 mb-8">Gestiona tus notificaciones</p>
-
-                <!-- Tabs -->
-                <div class="border-b border-gray-200 mb-8">
-                    <nav class="flex space-x-8" aria-label="Tabs">
-                        <button class="tab-button active border-b-2 border-red-500 py-4 px-1 text-sm font-medium text-red-600" onclick="switchTab('todos')">
-                            Todos
-                        </button>
-                        <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('no-leidas')">
-                            No leídas
-                        </button>
-                        <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('archivadas')">
-                            Archivadas
-                        </button>
-                    </nav>
-                </div>
-
-                <!-- Notifications Sections -->
-                <div class="space-y-8">
-                    <!-- Nuevas Cotizaciones -->
-                    <section>
-                        <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Nuevas Cotizaciones</h3>
-                        <div class="space-y-3">
-                            <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-blue-600 text-xl">description</span>
-                                        </div>
+            <!-- Notifications Sections -->
+            <div class="space-y-8">
+                <!-- Nuevas Cotizaciones -->
+                <section>
+                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Nuevas Cotizaciones</h3>
+                    <div class="space-y-3">
+                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="material-icons text-blue-600 text-xl">description</span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Uniformes Escolares S.A.</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12345</p>
-                                    </div>
-                                    <div class="flex-shrink-0">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Uniformes Escolares S.A.</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12345</p>
+                                </div>
+                                <div class="flex-shrink-0">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Nuevo
                                         </span>
-                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-blue-600 text-xl">description</span>
-                                        </div>
+                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <span class="material-icons text-blue-600 text-xl">description</span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Equipamiento Escolar Ltda.</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12346</p>
-                                    </div>
-                                    <div class="flex-shrink-0">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Equipamiento Escolar Ltda.</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12346</p>
+                                </div>
+                                <div class="flex-shrink-0">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Nuevo
                                         </span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </div>
+                </section>
 
-                    <!-- Stock Crítico -->
-                    <section>
-                        <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Stock Crítico</h3>
-                        <div class="space-y-3">
-                            <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-orange-600 text-xl">warning</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Camisas Escolares Azules</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 67890</p>
-                                    </div>
-                                    <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                            Crítico
-                                        </span>
+                <!-- Stock Crítico -->
+                <section>
+                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Stock Crítico</h3>
+                    <div class="space-y-3">
+                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="material-icons text-orange-600 text-xl">warning</span>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-orange-600 text-xl">warning</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Pantalones Escolares Grises</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 12348</p>
-                                    </div>
-                                    <div class="flex-shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Camisas Escolares Azules</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 67890</p>
+                                </div>
+                                <div class="flex-shrink-0">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                                             Crítico
                                         </span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
 
-                    <!-- Cambios de Precio -->
-                    <section>
-                        <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Cambios de Precio</h3>
-                        <div class="space-y-3">
-                            <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                            <span class="material-icons text-purple-600 text-xl">sell</span>
-                                        </div>
+                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="material-icons text-orange-600 text-xl">warning</span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Cambio de precio para Chaquetas de Uniforme Escolar</h4>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 98765</p>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Pantalones Escolares Grises</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 12348</p>
+                                </div>
+                                <div class="flex-shrink-0">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                            Crítico
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cambios de Precio -->
+                <section>
+                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Cambios de Precio</h3>
+                    <div class="space-y-3">
+                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="material-icons text-purple-600 text-xl">sell</span>
                                     </div>
-                                    <div class="flex-shrink-0">
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Cambio de precio para Chaquetas de Uniforme Escolar</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 98765</p>
+                                </div>
+                                <div class="flex-shrink-0">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                             Actualizado
                                         </span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
-                </div>
-                
-                <!-- Margen inferior para mejor espaciado -->
-                <div class="pb-16"></div>
+                    </div>
+                </section>
             </div>
-        </main>
-    </div>
 
-    <script>
-        function switchTab(tabName) {
-            // Remove active class from all tabs
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active', 'border-red-500', 'text-red-600');
-                button.classList.add('border-transparent', 'text-gray-500');
-            });
+            <!-- Margen inferior para mejor espaciado -->
+            <div class="pb-16"></div>
+        </div>
+    </main>
+</div>
 
-            // Add active class to clicked tab
-            event.target.classList.add('active', 'border-red-500', 'text-red-600');
-            event.target.classList.remove('border-transparent', 'text-gray-500');
+<script>
+    function switchTab(tabName) {
+        // Remove active class from all tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.classList.remove('active', 'border-red-500', 'text-red-600');
+            button.classList.add('border-transparent', 'text-gray-500');
+        });
 
-            // Here you would typically show/hide content based on the selected tab
-            console.log('Switched to tab:', tabName);
-        }
-    </script>
+        // Add active class to clicked tab
+        event.target.classList.add('active', 'border-red-500', 'text-red-600');
+        event.target.classList.remove('border-transparent', 'text-gray-500');
+
+        // Here you would typically show/hide content based on the selected tab
+        console.log('Switched to tab:', tabName);
+    }
+</script>
