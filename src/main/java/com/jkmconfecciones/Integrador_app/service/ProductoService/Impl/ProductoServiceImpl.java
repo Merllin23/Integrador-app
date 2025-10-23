@@ -24,7 +24,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen) {
-        // Guardar imagen en static/productos y almacenar URL relativa
+        // Guardar imagen en static/productos y almacenar URL
         if (imagen != null && !imagen.isEmpty()) {
             try {
                 String carpetaDestino = "src/main/resources/static/productos/";
