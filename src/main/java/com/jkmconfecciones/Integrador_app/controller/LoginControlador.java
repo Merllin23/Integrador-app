@@ -17,7 +17,7 @@ public class LoginControlador {
         String rol = auth.getAuthorities().iterator().next().getAuthority();
 
         if (rol.equals("ROLE_ADMINISTRADOR")) {
-            return "redirect:/admin/admin";
+            return "redirect:/admin/panel";
         } else if (rol.equals("ROLE_USUARIO")) {
             return "redirect:/usuario/usuario";
         } else {
