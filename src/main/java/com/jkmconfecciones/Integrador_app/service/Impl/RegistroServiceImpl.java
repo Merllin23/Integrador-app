@@ -29,19 +29,18 @@ public class RegistroServiceImpl implements RegistroService {
     private final Map<String, Integer> registrosPorIp = new HashMap<>();
     private final Map<String, LocalDateTime> ultimoIntentoIp = new HashMap<>();
 
-    // ✅ Regex correcto (sin barras de más)
     private static final Pattern CORREO_REGEX =
             Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     @Override
     public String registrarUsuario(Usuario usuario, String captchaToken, String ip) {
 
-        // 1️⃣ Validar CAPTCHA
+        // Validar CAPTCHA
         if (captchaToken == null || captchaToken.isBlank()) {
             return "Por favor, completa el CAPTCHA.";
         }
 
-        // 2️⃣ Limitar registros por IP
+        // Limitar registros por IP
         registrosPorIp.putIfAbsent(ip, 0);
         LocalDateTime ahora = LocalDateTime.now();
         LocalDateTime ultimo = ultimoIntentoIp.get(ip);
@@ -54,7 +53,7 @@ public class RegistroServiceImpl implements RegistroService {
             return "Límite de cuentas por IP alcanzado. Intenta más tarde.";
         }
 
-        // 3️⃣ Validaciones básicas
+        // Validaciones básicas
         if (usuario.getNombre() == null || usuario.getNombre().isBlank()) {
             return "El nombre es obligatorio.";
         }
@@ -63,7 +62,7 @@ public class RegistroServiceImpl implements RegistroService {
             return "El correo es obligatorio.";
         }
 
-        // 4️⃣ Validación real del formato del correo
+        // Validación real del formato del correo
         if (!CORREO_REGEX.matcher(usuario.getCorreo().trim()).matches()) {
             return "Por favor ingresa un correo electrónico válido.";
         }
@@ -72,12 +71,12 @@ public class RegistroServiceImpl implements RegistroService {
             return "El correo ya está registrado.";
         }
 
-        // 5️⃣ Validación de contraseña segura
+        // Validación de contraseña segura
         if (!esContrasenaSegura(usuario.getContraseña())) {
             return "La contraseña debe tener al menos 8 caracteres, un número y una letra.";
         }
 
-        // 6️⃣ Configurar datos del nuevo usuario
+        // Configurar datos del nuevo usuario
         Rol rolUsuario = rolRepositorio.findAll().stream()
                 .filter(r -> r.getNombreRol().equalsIgnoreCase("Usuario"))
                 .findFirst()
@@ -88,10 +87,10 @@ public class RegistroServiceImpl implements RegistroService {
         usuario.setFechaRegistro(LocalDateTime.now());
         usuario.setEstado("activo");
 
-        // 7️⃣ Guardar en BD
+        // Guardar en BD
         usuarioRepositorio.save(usuario);
 
-        // 8️⃣ Registrar intento por IP
+        // Registrar intento por IP
         registrosPorIp.put(ip, registrosPorIp.get(ip) + 1);
         ultimoIntentoIp.put(ip, ahora);
 
