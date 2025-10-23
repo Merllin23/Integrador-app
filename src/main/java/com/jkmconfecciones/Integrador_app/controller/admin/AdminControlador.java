@@ -1,14 +1,29 @@
 package com.jkmconfecciones.Integrador_app.controller.admin;
 
+import com.jkmconfecciones.Integrador_app.entidades.*;
+import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.ProductoService.CategoriaService;
+import com.jkmconfecciones.Integrador_app.service.ProductoService.ColeccionService;
+import com.jkmconfecciones.Integrador_app.service.ProductoService.ColegioService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
+@RequiredArgsConstructor
 public class AdminControlador {
+
+    private final CategoriaService categoriaService;
+    private final ColeccionService coleccionService;
+    private final ColegioService colegioService;
+    private final ProductoService productoService;
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -97,6 +112,10 @@ public class AdminControlador {
         model.addAttribute("currentPage", "edicionProducto");
         model.addAttribute("pageTitle", "Añadir Producto - JKM Confecciones");
 
+        model.addAttribute("categorias", categoriaService.listarCategorias());
+        model.addAttribute("colecciones", coleccionService.listarColecciones());
+        model.addAttribute("colegios", colegioService.listarColegios());
+
         model.addAttribute("mainContent", "admin/productoForm :: mainContent");
         model.addAttribute("extraCss", "admin/productoForm :: extraCss");
         model.addAttribute("extraJs", "admin/productoForm :: extraJs");
@@ -114,4 +133,44 @@ public class AdminControlador {
         model.addAttribute("extraJs", "admin/productos :: extraJs");
         return "fragments/admin-layout";
     }
+
+    @PostMapping("/productos/guardar")
+    public String guardarProducto(
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") Double precio,
+            @RequestParam("categoriaId") Long categoriaId,
+            @RequestParam("coleccionId") Long coleccionId,
+            @RequestParam(value = "colegioId", required = false) List<Long> colegioIds,
+            @RequestParam(value = "tallas", required = false) List<String> tallas,
+            @RequestParam("imagen") MultipartFile imagen
+    ) {
+        Producto p = new Producto();
+        p.setNombre(nombre);
+        p.setDescripcion(descripcion);
+        p.setPrecioBase(precio);
+
+        Categoria cat = new Categoria();
+        cat.setId(categoriaId.intValue());
+        p.setCategoria(cat);
+
+        Coleccion col = new Coleccion();
+        col.setId(coleccionId.intValue());
+        p.setColeccion(col);
+
+        if (colegioIds != null) {
+            Set<Colegio> colegios = new HashSet<>();
+            for (Long id : colegioIds) {
+                Colegio co = new Colegio();
+                co.setId(id.intValue());
+                colegios.add(co);
+            }
+            p.setColegios(colegios);
+        }
+
+        productoService.crearProducto(p, tallas, imagen);
+
+        return "redirect:/admin/productos";
+    }
+
 }

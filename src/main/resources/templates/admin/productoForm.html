@@ -55,30 +55,41 @@
                     </button>
 
                     <!-- Preview -->
-                    <div id="preview" class="mt-4 hidden">
+                    <div id="preview" class="mt-4 hidden text-center">
                         <img id="previewImg" alt="Vista previa" class="mx-auto w-40 h-40 object-cover rounded-lg shadow"/>
                         <p id="previewName" class="mt-2 text-xs text-gray-600"></p>
                     </div>
                 </div>
             </div>
 
+            <!-- Categoría -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <label for="categoriaId" class="text-sm font-medium text-gray-700 block mb-2">Categoría</label>
+                <select id="categoriaId" name="categoriaId"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                    <option value="" selected disabled>Seleccionar categoría</option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}">Categoría ejemplo</option>
+                </select>
+            </div>
+
+            <!-- Colección -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <label for="coleccionId" class="text-sm font-medium text-gray-700 block mb-2">Colección</label>
+                <select id="coleccionId" name="coleccionId"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                    <option value="" selected disabled>Seleccionar colección</option>
+                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}">Colección ejemplo</option>
+                </select>
+            </div>
+
             <!-- Colegio asociado -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
-                <div class="relative">
-                    <select id="colegioId" name="colegioId"
-                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
-                        <option value="" selected disabled>Seleccionar colegio</option>
-                        <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}">Colegio ejemplo</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
-                        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                  d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z"
-                                  clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                </div>
+                <select id="colegioId" name="colegioId"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                    <option value="" selected disabled>Seleccionar colegio</option>
+                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}">Colegio ejemplo</option>
+                </select>
             </div>
 
             <!-- Tallas -->
@@ -143,6 +154,7 @@
             if (!dz || !fileInput) return;
 
             const openPicker = () => fileInput.click();
+
             const showPreview = (file) => {
                 if (!file) return;
                 const url = URL.createObjectURL(file);
@@ -154,6 +166,7 @@
             const addDragStyles = () => dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
             const removeDragStyles = () => dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
 
+            // Eventos de arrastrar
             ['dragenter', 'dragover'].forEach(evt =>
                 dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); addDragStyles(); })
             );
@@ -163,12 +176,20 @@
 
             dz.addEventListener('drop', e => {
                 const f = e.dataTransfer?.files?.[0];
-                if (f) { fileInput.files = e.dataTransfer.files; showPreview(f); }
+                if (f) {
+                    fileInput.files = e.dataTransfer.files; // Asigna el archivo al input
+                    showPreview(f); // Muestra preview
+                }
             });
 
             dz.addEventListener('click', openPicker);
             btn?.addEventListener('click', openPicker);
-            fileInput.addEventListener('change', () => showPreview(fileInput.files?.[0]));
+
+            // Preview cuando se selecciona desde el input
+            fileInput.addEventListener('change', () => {
+                const f = fileInput.files?.[0];
+                showPreview(f);
+            });
         })();
     </script>
 </th:block>
