@@ -52,8 +52,9 @@ public class Producto {
     )
     private Set<Promocion> promociones;
 
-    @OneToMany(mappedBy = "producto")
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductoTalla> tallas;
+
 }
 
 

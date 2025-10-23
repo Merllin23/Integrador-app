@@ -23,7 +23,7 @@ public class ProductoServiceImpl implements ProductoService {
     private final ColegioRepositorio colegioRepositorio;
 
     @Override
-    public Producto crearProducto(Producto producto, List<String> tallas, MultipartFile imagen) {
+    public Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen) {
         // Guardar imagen en static/productos y almacenar URL relativa
         if (imagen != null && !imagen.isEmpty()) {
             try {
@@ -35,27 +35,17 @@ public class ProductoServiceImpl implements ProductoService {
 
                 Files.copy(imagen.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 
-                // Guardar URL relativa en la BD
                 producto.setImagenUrl("/productos/" + nombreArchivo);
             } catch (Exception e) {
                 throw new RuntimeException("Error al guardar la imagen del producto", e);
             }
         }
 
-        // Asociar tallas
-        if (tallas != null && !tallas.isEmpty()) {
-            List<ProductoTalla> listaTallas = tallas.stream()
-                    .map(nombreTalla -> {
-                        Talla talla = tallaRepositorio.findByNombreTalla(nombreTalla)
-                                .orElseThrow(() -> new RuntimeException("Talla no encontrada: " + nombreTalla));
-                        ProductoTalla pt = new ProductoTalla();
-                        pt.setProducto(producto);
-                        pt.setTalla(talla);
-                        pt.setCantidadStock(0); // stock inicial
-                        pt.setPrecioUnitarioFinal(producto.getPrecioBase());
-                        return pt;
-                    })
-                    .collect(Collectors.toList());
+        // Asociar tallas con stock
+        if (listaTallas != null && !listaTallas.isEmpty()) {
+            for (ProductoTalla pt : listaTallas) {
+                pt.setProducto(producto);
+            }
             producto.setTallas(listaTallas);
         }
 
@@ -67,7 +57,11 @@ public class ProductoServiceImpl implements ProductoService {
                     .collect(Collectors.toSet()));
         }
 
-        // Guardar producto con relaciones
         return productoRepositorio.save(producto);
+    }
+
+    @Override
+    public List<Producto> listarProductos() {
+        return productoRepositorio.findAll();
     }
 }

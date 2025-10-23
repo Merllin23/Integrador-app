@@ -82,36 +82,30 @@
                 </select>
             </div>
 
-            <!-- Colegio asociado -->
+            <!-- Colegio asociado  -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
-                <select id="colegioId" name="colegioId"
+                <select id="colegioId" name="colegioId" size="5"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
                     <option value="" selected disabled>Seleccionar colegio</option>
                     <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}">Colegio ejemplo</option>
                 </select>
             </div>
 
-            <!-- Tallas -->
+
+            <!-- Tallas con stock -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <p class="text-sm font-medium text-gray-700 mb-3">Tallas disponibles</p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                        <input type="checkbox" name="tallas" value="S" class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
-                        <span>S</span>
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                        <input type="checkbox" name="tallas" value="M" class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
-                        <span>M</span>
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                        <input type="checkbox" name="tallas" value="L" class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
-                        <span>L</span>
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-700">
-                        <input type="checkbox" name="tallas" value="XL" class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
-                        <span>XL</span>
-                    </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" th:each="t : ${tallas}">
+                    <div class="flex flex-col gap-1">
+                        <label class="flex items-center gap-2 text-sm text-gray-700">
+                            <input type="checkbox" name="tallas" th:value="${t.id}"
+                                   class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
+                            <span th:text="${t.nombreTalla}">Talla</span>
+                        </label>
+                        <input type="number" name="stock__${t.id}" min="0" value="0"
+                               placeholder="Stock" class="w-full px-2 py-1 border border-gray-300 rounded-lg text-sm">
+                    </div>
                 </div>
             </div>
 
@@ -166,7 +160,6 @@
             const addDragStyles = () => dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
             const removeDragStyles = () => dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
 
-            // Eventos de arrastrar
             ['dragenter', 'dragover'].forEach(evt =>
                 dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); addDragStyles(); })
             );
@@ -177,15 +170,14 @@
             dz.addEventListener('drop', e => {
                 const f = e.dataTransfer?.files?.[0];
                 if (f) {
-                    fileInput.files = e.dataTransfer.files; // Asigna el archivo al input
-                    showPreview(f); // Muestra preview
+                    fileInput.files = e.dataTransfer.files;
+                    showPreview(f);
                 }
             });
 
             dz.addEventListener('click', openPicker);
             btn?.addEventListener('click', openPicker);
 
-            // Preview cuando se selecciona desde el input
             fileInput.addEventListener('change', () => {
                 const f = fileInput.files?.[0];
                 showPreview(f);

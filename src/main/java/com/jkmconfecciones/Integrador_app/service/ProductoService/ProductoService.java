@@ -1,10 +1,12 @@
 package com.jkmconfecciones.Integrador_app.service.ProductoService;
 
 import com.jkmconfecciones.Integrador_app.entidades.Producto;
+import com.jkmconfecciones.Integrador_app.entidades.ProductoTalla;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface ProductoService {
-    Producto crearProducto(Producto producto, List<String> tallas, MultipartFile imagen);
+    Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen);
+    List<Producto> listarProductos();
 }
