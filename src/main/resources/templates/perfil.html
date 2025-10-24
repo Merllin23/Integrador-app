@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Perfil e Historial de Cotizaciones – JK Confecciones</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandBlue: '#0C2A4A',
+            brandRed: '#B3131B',
+            soft: '#EEF2F6'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'Avenir', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-white text-slate-800 font-sans">
+
+  <header class="bg-brandBlue text-white">
+    <div class="max-w-6xl mx-auto h-16 px-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+
+        <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/20 bg-white/10 grid place-items-center">
+          <img src="JKM_Confecciones.png" alt="JK" class="w-full h-full object-cover hidden" 
+               onerror="this.parentElement.querySelector('span').classList.remove('hidden')">
+          <span class="font-bold">JK</span>
+        </div>
+        <span class="text-xl font-semibold">JK Confecciones</span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-6 text-white/90">
+        <a href="#" class="hover:text-white">Inicio</a>
+        <a href="#" class="hover:text-white">Catálogo</a>
+        <a href="#" class="hover:text-white">Nosotros</a>
+        <a href="#" class="hover:text-white">Contacto</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center bg-white/10 rounded-lg overflow-hidden">
+          <div class="w-9 h-9 grid place-items-center text-white/80">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <input type="text" placeholder="Search" class="h-9 bg-transparent px-2 text-sm placeholder:text-white/70 focus:outline-none">
+        </div>
+
+        <button class="p-2 rounded hover:bg-white/10" title="Carrito">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l3-8H6.4M7 13l-1.2 6h11.4M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm8 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+          </svg>
+        </button>
+
+    
+        <div class="w-8 h-8 rounded-full overflow-hidden ring-2 ring-white/20">
+          <img src="cliente_1.jpg" alt="Usuario" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+
+    <section class="flex items-start gap-4">
+      <div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-slate-200 shrink-0">
+        <img src="cliente_1.jpg" alt="Sofía Ramírez" class="w-full h-full object-cover">
+      </div>
+      <div class="min-w-0">
+        <h2 class="text-xl sm:text-2xl font-bold">Sofía Ramírez</h2>
+        <p class="text-slate-500 text-sm">sofia.ramirez@email.com</p>
+        <p class="text-slate-500 text-sm mt-1">Tu cotización del Colegio San Gabriel está lista para revisar</p>
+      </div>
+    </section>
+
+    <h3 class="text-xl sm:text-2xl font-extrabold mt-10 mb-4">Mis Proyectos de Uniformes</h3>
+
+    <section class="space-y-8">
+
+      <article class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div class="md:col-span-2">
+          <p class="text-sm text-slate-500">
+            Total de Artículos: <span class="font-medium text-slate-700">150</span> |
+            Fecha de Envío: <span class="font-medium text-slate-700">2026-02-26</span>
+          </p>
+          <h4 class="mt-2 font-extrabold text-lg">Cotización #12345</h4>
+          <p class="text-slate-600 text-sm">Colegio Santa María</p>
+          <span class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-slate-100 text-slate-700">
+            Enviada
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+        <div class="rounded-xl overflow-hidden bg-soft">
+          <img src="sombrero.png" alt="Uniforme 1" class="w-full h-44 object-cover">
+        </div>
+      </article>
+
+      <article class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div class="md:col-span-2">
+          <p class="text-sm text-slate-500">
+            Total de Artículos: <span class="font-medium text-slate-700">200</span> |
+            Fecha de Envío: <span class="font-medium text-slate-700">2026-01-15</span>
+          </p>
+          <h4 class="mt-2 font-extrabold text-lg">Cotización #67890</h4>
+          <p class="text-slate-600 text-sm">Colegio San Gabriel</p>
+          <span class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-700">
+            Aprobada
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+        <div class="rounded-xl overflow-hidden bg-soft">
+          <img src="polo_depo.png" alt="Uniforme 2" class="w-full h-44 object-cover">
+        </div>
+      </article>
+
+      <article class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+        <div class="md:col-span-2">
+          <p class="text-sm text-slate-500">
+            Total de Artículos: <span class="font-medium text-slate-700">100</span> |
+            Fecha de Envío: <span class="font-medium text-slate-700">2025-11-15</span>
+          </p>
+          <h4 class="mt-2 font-extrabold text-lg">Cotización #11223</h4>
+          <p class="text-slate-600 text-sm">Colegio San Gabriel</p>
+          <span class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 rounded-full text-sm font-semibold bg-rose-100 text-rose-700">
+            Rechazada
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>
+            </svg>
+          </span>
+        </div>
+        <div class="rounded-xl overflow-hidden bg-soft">
+          <img src="mochila.png" alt="Uniforme 3" class="w-full h-44 object-cover">
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmación de Cotización - JK Confecciones</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-slate-800 font-sans">
+
+  <header class="bg-[#0c2a4a] text-white">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white bg-white/10">
+          <img src="JMK_Confecciones.png" alt="Logo JK" class="w-full h-full object-cover">
+        </div>
+        <span class="text-xl font-semibold">JK Confecciones</span>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 opacity-90">
+        <a href="index.html" class="hover:opacity-100">Inicio</a>
+        <a href="catalogo.html" class="hover:opacity-100">Catálogo</a>
+        <a href="nosotros.html" class="hover:opacity-100">Nosotros</a>
+        <a href="contacto.html" class="hover:opacity-100">Contacto</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <button class="p-2 rounded hover:bg-white/10" title="Buscar">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </button>
+        <div class="w-8 h-8 rounded-full bg-white/20 grid place-items-center">👤</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex flex-col items-center justify-center min-h-[80vh] px-4 text-center">
+    <div class="max-w-2xl w-full">
+      <h1 class="text-3xl font-extrabold mb-4 text-slate-900">
+        ¡Gracias! Su Uniforme está en Fila de Cotización
+      </h1>
+      <p class="text-slate-600 mb-10 text-lg">
+        Recibirá la ficha de su pedido con el ID:
+        <span class="font-semibold text-slate-900">#15623</span> en su chat personal.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="https://wa.me/" target="_blank"
+           class="bg-[#b3131b] text-white font-semibold px-6 py-3 rounded-lg hover:bg-[#981116] transition">
+           Continuar a WhatsApp para Confirmación
+        </a>
+        <a href="historial.html"
+           class="border border-[#0c2a4a] text-[#0c2a4a] font-semibold px-6 py-3 rounded-lg hover:bg-[#0c2a4a]/10 transition">
+           Revisar Historial
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center py-4 text-sm text-slate-500 border-t">
+    © 2025 JK Confecciones. Todos los derechos reservados.
+  </footer>
+
+</body>
+</html>
