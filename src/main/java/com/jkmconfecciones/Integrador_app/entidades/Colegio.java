@@ -6,7 +6,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "colegio")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Colegio {

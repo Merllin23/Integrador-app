@@ -211,10 +211,9 @@ public class AdminControlador {
 
         return "redirect:/admin/productos";
     }
-    @GetMapping("/productos/{id}/eliminar")
-    public String eliminarProducto(@PathVariable Integer id) {
-        productoService.eliminarProducto(id);
-        return "redirect:/admin/productos";
-    }
-    
+      @GetMapping("/productos/{id}/eliminar")
+      public String eliminarProducto(@PathVariable Integer id) {
+          productoService.eliminarProducto(id);
+          return "redirect:/admin/productos";
+      }
 }
