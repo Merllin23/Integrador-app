@@ -64,4 +64,27 @@ public class ProductoServiceImpl implements ProductoService {
     public List<Producto> listarProductos() {
         return productoRepositorio.findAll();
     }
+
+    @Override
+    public List<Producto> listarProductosPorColegio(Integer colegioId) {
+        return productoRepositorio.findByColegioId(colegioId);
+    }
+
+    @Override
+    public void eliminarProducto(Integer id) {
+        Producto producto = productoRepositorio.findById(id.longValue())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
+        
+        // Eliminar imagen de los archivos locales
+        /*if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
+            try {
+                String rutaImagen = "src/main/resources/static" + producto.getImagenUrl();
+                Path path = Paths.get(rutaImagen);
+                Files.deleteIfExists(path);
+            } catch (Exception e) {
+                System.err.println("Error al eliminar la imagen de producto: " + e.getMessage());
+            }
+        }*/
+        productoRepositorio.deleteById(id.longValue());
+    }
 }

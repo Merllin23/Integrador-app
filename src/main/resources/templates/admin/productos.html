@@ -29,8 +29,8 @@
             <div class="relative w-full sm:max-w-md">
                 <select id="filterColegio" name="colegioId"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none pr-10">
-                    <option value="" selected>Seleccionar Colegio</option>
-                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}"></option>
+                    <option value="" th:selected="${colegioSeleccionado == null}">Seleccionar Colegio</option>
+                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${colegioSeleccionado != null && colegioSeleccionado == col.id}"></option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
                     <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -96,6 +96,22 @@
 <!-- JS adicional -->
 <th:block th:fragment="extraJs">
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterColegio = document.getElementById('filterColegio');
+
+            if (filterColegio) {
+                filterColegio.addEventListener('change', function () {
+                    const colegioId = this.value;
+
+                    let url = /*[[@{/admin/productos}]]*/ '/admin/productos';
+                    if (colegioId && colegioId !== '') {
+                        url += '?colegioId=' + colegioId;
+                    }
+                    //redirige a la url nueva
+                    window.location.href = url;
+                });
+            }
+        });
         console.log("Vista de productos cargada correctamente");
     </script>
 </th:block>
