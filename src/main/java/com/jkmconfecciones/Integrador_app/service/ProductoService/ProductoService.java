@@ -11,4 +11,6 @@ public interface ProductoService {
     List<Producto> listarProductos();
     List<Producto> listarProductosPorColegio(Integer colegioId);
     void eliminarProducto(Integer id);
+    Producto buscarPorId(Integer id);
+    Producto actualizarProducto(Producto producto, List<ProductoTalla> listaTallas, org.springframework.web.multipart.MultipartFile imagen);
 }
