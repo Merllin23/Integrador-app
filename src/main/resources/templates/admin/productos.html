@@ -66,7 +66,7 @@
                         <td class="px-6 py-4 text-gray-900" th:text="${p.nombre}"></td>
                         <td class="px-6 py-4">
                             <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
-                                <img th:if="${p.imagenUrl}" th:src="${p.imagenUrl}" alt="thumb" class="w-full h-full object-cover"/>
+                                <img th:if="${p.imagenUrl}" th:src="@{${p.imagenUrl}}" alt="thumb" class="w-full h-full object-cover"/>
                                 <svg th:unless="${p.imagenUrl}" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                                      viewBox="0 0 24 24" class="w-5 h-5 text-gray-400">
                                     <path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l4-4h12a2 2 0 0 0 2-2z"/>

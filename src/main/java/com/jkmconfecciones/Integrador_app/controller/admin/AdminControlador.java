@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -132,14 +133,28 @@ public class AdminControlador {
         model.addAttribute("colegios", colegioService.listarColegios());
         model.addAttribute("tallas", tallaService.listarTallas());
 
-        // acción del formulario
-        model.addAttribute("formAction", "/admin/productos/" + id + "/editar");
+        // IDs de colegios asociados
+        Set<Integer> colegiosIds = producto.getColegios().stream()
+                .map(Colegio::getId)
+                .collect(Collectors.toSet());
+        model.addAttribute("colegiosIds", colegiosIds);
 
+        // Crear mapa de tallas por id para facilitar Thymeleaf
+        Map<Integer, ProductoTalla> mapaTallas = new HashMap<>();
+        if (producto.getTallas() != null) {
+            for (ProductoTalla pt : producto.getTallas()) {
+                mapaTallas.put(pt.getTalla().getId(), pt);
+            }
+        }
+        model.addAttribute("mapaTallas", mapaTallas);
+
+        model.addAttribute("formAction", "/admin/productos/" + id + "/editar");
         model.addAttribute("mainContent", "admin/productoForm :: mainContent");
         model.addAttribute("extraCss", "admin/productoForm :: extraCss");
         model.addAttribute("extraJs", "admin/productoForm :: extraJs");
         return "fragments/admin-layout";
     }
+
 
     @PostMapping("/productos/{id}/editar")
     public String guardarEdicionProducto(
@@ -149,7 +164,7 @@ public class AdminControlador {
             @RequestParam("precio") Double precio,
             @RequestParam("categoriaId") Long categoriaId,
             @RequestParam("coleccionId") Long coleccionId,
-            @RequestParam(value = "colegioId", required = false) List<Long> colegioIds,
+            @RequestParam(value = "colegioId", required = false) Long colegioId,
             @RequestParam(value = "tallas", required = false) List<Integer> tallaIds,
             @RequestParam Map<String, String> allParams,
             @RequestParam(name = "imagen", required = false) MultipartFile imagen
@@ -168,15 +183,12 @@ public class AdminControlador {
         col.setId(coleccionId.intValue());
         p.setColeccion(col);
 
-        if (colegioIds != null) {
-            Set<Colegio> colegios = new HashSet<>();
-            for (Long cid : colegioIds) {
-                Colegio co = new Colegio();
-                co.setId(cid.intValue());
-                colegios.add(co);
-            }
-            p.setColegios(colegios);
+        if (colegioId != null) {
+            Colegio colegio = new Colegio();
+            colegio.setId(colegioId.intValue());
+            p.setColegios(Set.of(colegio));
         }
+
 
         // crear lista de productoTalla con stock
         List<ProductoTalla> listaTallas = new ArrayList<>();

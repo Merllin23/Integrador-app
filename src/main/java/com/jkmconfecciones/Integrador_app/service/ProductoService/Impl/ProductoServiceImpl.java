@@ -4,7 +4,6 @@ import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.repositorios.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.ProductoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,24 +22,13 @@ public class ProductoServiceImpl implements ProductoService {
     private final TallaRepositorio tallaRepositorio;
     private final ColegioRepositorio colegioRepositorio;
 
+    private final String CARPETA_IMAGENES = "C:\\jkm\\productos\\";
+
     @Override
     public Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen) {
-        // Guardar imagen en static/productos y almacenar URL
+        // Guardar imagen en carpeta física
         if (imagen != null && !imagen.isEmpty()) {
-            try {
-                String carpetaDestino = new ClassPathResource("static/productos/").getFile().getAbsolutePath();
-                Files.createDirectories(Paths.get(carpetaDestino));
-
-                String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-                Path rutaDestino = Paths.get(carpetaDestino, nombreArchivo);
-
-                Files.copy(imagen.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
-
-                producto.setImagenUrl("/productos/" + nombreArchivo);
-
-            } catch (Exception e) {
-                throw new RuntimeException("Error al guardar la imagen del producto", e);
-            }
+            producto.setImagenUrl(guardarImagen(imagen));
         }
 
         // Asociar tallas con stock
@@ -77,20 +65,19 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepositorio.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
 
-        // Eliminar imagen de los archivos locales
-        /*if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
+        // Eliminar imagen física si existe
+        if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
             try {
-                String rutaImagen = "src/main/resources/static" + producto.getImagenUrl();
-                Path path = Paths.get(rutaImagen);
+                Path path = Paths.get(CARPETA_IMAGENES + producto.getImagenUrl().substring("/productos/".length()));
                 Files.deleteIfExists(path);
             } catch (Exception e) {
                 System.err.println("Error al eliminar la imagen de producto: " + e.getMessage());
             }
-        }*/
+        }
+
         productoRepositorio.deleteById(id.longValue());
     }
 
-    
     @Override
     public Producto buscarPorId(Integer id) {
         return productoRepositorio.findById(id.longValue())
@@ -102,7 +89,7 @@ public class ProductoServiceImpl implements ProductoService {
         Producto existente = productoRepositorio.findById(producto.getId().longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + producto.getId()));
 
-        // actualizar campos
+        // Actualizar campos básicos
         existente.setNombre(producto.getNombre());
         existente.setDescripcion(producto.getDescripcion());
         existente.setPrecioBase(producto.getPrecioBase());
@@ -118,33 +105,21 @@ public class ProductoServiceImpl implements ProductoService {
             existente.setColeccion(col);
         }
 
-        // si sube una imagen nueva, elimina la anterior y conserva la nueva imagen
+        // Actualizar imagen si se sube nueva
         if (imagen != null && !imagen.isEmpty()) {
+            // Eliminar imagen anterior
             if (existente.getImagenUrl() != null && !existente.getImagenUrl().isEmpty()) {
                 try {
-                    String rutaImagen = "src/main/resources/static" + existente.getImagenUrl();
-                    Path path = Paths.get(rutaImagen);
+                    Path path = Paths.get(CARPETA_IMAGENES + existente.getImagenUrl().substring("/productos/".length()));
                     Files.deleteIfExists(path);
                 } catch (Exception e) {
                     System.err.println("Error al eliminar imagen antigua: " + e.getMessage());
                 }
             }
-
-            try {
-                String carpetaDestino = "src/main/resources/static/productos/";
-                Files.createDirectories(Paths.get(carpetaDestino));
-
-                String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-                Path rutaDestino = Paths.get(carpetaDestino + nombreArchivo);
-
-                Files.copy(imagen.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
-                existente.setImagenUrl("/productos/" + nombreArchivo);
-            } catch (Exception e) {
-                throw new RuntimeException("Error al guardar la imagen del producto", e);
-            }
+            existente.setImagenUrl(guardarImagen(imagen));
         }
 
-        // actualizar y asociar colegios
+        // Actualizar y asociar colegios
         if (producto.getColegios() != null && !producto.getColegios().isEmpty()) {
             existente.setColegios(producto.getColegios().stream()
                     .map(colegio -> colegioRepositorio.findById(colegio.getId())
@@ -152,44 +127,47 @@ public class ProductoServiceImpl implements ProductoService {
                     .collect(Collectors.toSet()));
         }
 
-        // actualizar asociar tallas
-        // para evitar duplicidad de datos: actualizamos, agregamos y eliminamos segun sea necesario
+        // Actualizar asociar tallas
         if (listaTallas != null) {
-            //creamos un mapa de tallas nuevas por id para una busqueda rapida
-            java.util.Map<Integer, ProductoTalla> nuevasTallasMap = new java.util.HashMap<>();
+            Map<Integer, ProductoTalla> nuevasTallasMap = new HashMap<>();
             for (ProductoTalla pt : listaTallas) {
                 nuevasTallasMap.put(pt.getTalla().getId(), pt);
             }
-            
-            // usamos iterar sobre las tallas existentes para eliminar de forma segura
-            java.util.Iterator<ProductoTalla> iterator = existente.getTallas().iterator();
+
+            Iterator<ProductoTalla> iterator = existente.getTallas().iterator();
             while (iterator.hasNext()) {
                 ProductoTalla tallaExistente = iterator.next();
                 Integer tallaId = tallaExistente.getTalla().getId();
-                
                 if (nuevasTallasMap.containsKey(tallaId)) {
-                    // actualiza la talla existente con los nuevos valores
                     ProductoTalla nuevaTalla = nuevasTallasMap.get(tallaId);
                     tallaExistente.setCantidadStock(nuevaTalla.getCantidadStock());
                     tallaExistente.setPrecioUnitarioFinal(nuevaTalla.getPrecioUnitarioFinal());
-                    // remueve el mapa cuando ya fue procesado
                     nuevasTallasMap.remove(tallaId);
                 } else {
-                    // si no está en las nuevas tallas, se elimina
                     iterator.remove();
                 }
             }
-            
-            // agregar las tallas nuevas que quedaron en el mapa
+
             for (ProductoTalla nuevaTalla : nuevasTallasMap.values()) {
                 nuevaTalla.setProducto(existente);
                 existente.getTallas().add(nuevaTalla);
             }
         } else {
-            // Si no hay tallas, limpiar colección
             existente.getTallas().clear();
         }
 
         return productoRepositorio.save(existente);
+    }
+
+    private String guardarImagen(MultipartFile imagen) {
+        try {
+            Files.createDirectories(Paths.get(CARPETA_IMAGENES));
+            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
+            Path rutaDestino = Paths.get(CARPETA_IMAGENES, nombreArchivo);
+            Files.copy(imagen.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
+            return "/productos/" + nombreArchivo; // URL para Thymeleaf
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar la imagen del producto", e);
+        }
     }
 }
