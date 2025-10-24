@@ -85,32 +85,45 @@
                 </select>
             </div>
 
-            <!-- Colegio asociado  -->
+            <!-- Colegio asociado -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
-                <select id="colegioId" name="colegioId" size="5"
+                <select id="colegioId" name="colegioId"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
                     <option value="" selected disabled>Seleccionar colegio</option>
-                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}">Colegio ejemplo</option>
+                    <option th:each="col : ${colegios}"
+                            th:value="${col.id}"
+                            th:text="${col.nombre}"
+                            th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}">
+                        Colegio ejemplo
+                    </option>
                 </select>
             </div>
 
-
-            <!-- Tallas con stock -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <p class="text-sm font-medium text-gray-700 mb-3">Tallas disponibles</p>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" th:each="t : ${tallas}">
                     <div class="flex flex-col gap-1">
+                        <!-- Checkbox de la talla -->
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="tallas" th:value="${t.id}"
-                                   class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500">
+                                   class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                                   th:checked="${mapaTallas != null and mapaTallas.containsKey(t.id)}">
                             <span th:text="${t.nombreTalla}">Talla</span>
                         </label>
-                        <input type="number" name="stock__${t.id}" min="0" value="0"
-                               placeholder="Stock" class="w-full px-2 py-1 border border-gray-300 rounded-lg text-sm">
+
+                        <!-- Input de stock -->
+                        <input type="number"
+                               th:name="'stock__' + ${t.id}"
+                               min="0"
+                               th:value="${mapaTallas != null and mapaTallas.containsKey(t.id) ? mapaTallas.get(t.id).cantidadStock : 0}"
+                               placeholder="Stock"
+                               class="w-full px-2 py-1 border border-gray-300 rounded-lg text-sm">
                     </div>
                 </div>
             </div>
+
+
 
             <!-- Botones -->
             <div class="flex items-center justify-end gap-3 pt-2">
