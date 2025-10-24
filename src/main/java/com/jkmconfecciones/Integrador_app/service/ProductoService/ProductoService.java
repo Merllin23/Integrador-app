@@ -9,4 +9,6 @@ import java.util.List;
 public interface ProductoService {
     Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen);
     List<Producto> listarProductos();
+    List<Producto> listarProductosPorColegio(Integer colegioId);
+    void eliminarProducto(Integer id);
 }

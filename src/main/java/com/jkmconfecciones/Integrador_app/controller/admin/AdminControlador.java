@@ -122,14 +122,21 @@ public class AdminControlador {
 
     @GetMapping("/productos")
     public String adminProductos(Model model,
-                                 @RequestParam(value = "colegioId", required = false) String colegioId) {
+                                 @RequestParam(value = "colegioId", required = false) Integer colegioId) {
         model.addAttribute("currentPage", "productos");
         model.addAttribute("pageTitle", "Gestión de Productos - JKM Confecciones");
 
-        List<Producto> productos = productoService.listarProductos();
+        List<Producto> productos;
+        if (colegioId != null && colegioId > 0) {
+            productos = productoService.listarProductosPorColegio(colegioId);
+        } else {
+            productos = productoService.listarProductos();
+        }
         model.addAttribute("productos", productos);
 
         model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("colegioSeleccionado", colegioId);
+
         model.addAttribute("mainContent", "admin/productos :: mainContent");
         model.addAttribute("extraCss", "admin/productos :: extraCss");
         model.addAttribute("extraJs", "admin/productos :: extraJs");
@@ -199,6 +206,12 @@ public class AdminControlador {
         p.setTallas(listaTallas);
         productoService.crearProducto(p, listaTallas, imagen);
 
+        return "redirect:/admin/productos";
+    }
+
+    @GetMapping("/productos/{id}/eliminar")
+    public String eliminarProducto(@PathVariable Integer id) {
+        productoService.eliminarProducto(id);
         return "redirect:/admin/productos";
     }
 }
