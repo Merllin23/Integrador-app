@@ -2,9 +2,7 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
-import com.jkmconfecciones.Integrador_app.service.ProductoService.CategoriaService;
-import com.jkmconfecciones.Integrador_app.service.ProductoService.ColeccionService;
-import com.jkmconfecciones.Integrador_app.service.ProductoService.ColegioService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @Controller
@@ -121,6 +117,94 @@ public class AdminControlador {
         model.addAttribute("extraCss", "admin/productoForm :: extraCss");
         model.addAttribute("extraJs", "admin/productoForm :: extraJs");
         return "fragments/admin-layout";
+    }
+
+    @GetMapping("/productos/{id}/editar")
+    public String adminEditarProducto(@PathVariable Integer id, Model model) {
+        model.addAttribute("currentPage", "edicionProducto");
+        model.addAttribute("pageTitle", "Editar Producto - JKM Confecciones");
+
+        Producto producto = productoService.buscarPorId(id);
+
+        model.addAttribute("producto", producto);
+        model.addAttribute("categorias", categoriaService.listarCategorias());
+        model.addAttribute("colecciones", coleccionService.listarColecciones());
+        model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("tallas", tallaService.listarTallas());
+
+        // acción del formulario
+        model.addAttribute("formAction", "/admin/productos/" + id + "/editar");
+
+        model.addAttribute("mainContent", "admin/productoForm :: mainContent");
+        model.addAttribute("extraCss", "admin/productoForm :: extraCss");
+        model.addAttribute("extraJs", "admin/productoForm :: extraJs");
+        return "fragments/admin-layout";
+    }
+
+    @PostMapping("/productos/{id}/editar")
+    public String guardarEdicionProducto(
+            @PathVariable Integer id,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("descripcion") String descripcion,
+            @RequestParam("precio") Double precio,
+            @RequestParam("categoriaId") Long categoriaId,
+            @RequestParam("coleccionId") Long coleccionId,
+            @RequestParam(value = "colegioId", required = false) List<Long> colegioIds,
+            @RequestParam(value = "tallas", required = false) List<Integer> tallaIds,
+            @RequestParam Map<String, String> allParams,
+            @RequestParam(name = "imagen", required = false) MultipartFile imagen
+    ) {
+        Producto p = new Producto();
+        p.setId(id);
+        p.setNombre(nombre);
+        p.setDescripcion(descripcion);
+        p.setPrecioBase(precio);
+
+        Categoria cat = new Categoria();
+        cat.setId(categoriaId.intValue());
+        p.setCategoria(cat);
+
+        Coleccion col = new Coleccion();
+        col.setId(coleccionId.intValue());
+        p.setColeccion(col);
+
+        if (colegioIds != null) {
+            Set<Colegio> colegios = new HashSet<>();
+            for (Long cid : colegioIds) {
+                Colegio co = new Colegio();
+                co.setId(cid.intValue());
+                colegios.add(co);
+            }
+            p.setColegios(colegios);
+        }
+
+        // crear lista de productoTalla con stock
+        List<ProductoTalla> listaTallas = new ArrayList<>();
+        if (tallaIds != null) {
+            for (Integer idTalla : tallaIds) {
+                String stockStr = allParams.get("stock__" + idTalla);
+                int stock = 0;
+                if (stockStr != null && !stockStr.isEmpty()) {
+                    try {
+                        stock = Integer.parseInt(stockStr);
+                    } catch (NumberFormatException e) {
+                        stock = 0;
+                    }
+                }
+
+                Talla talla = tallaService.buscarPorId(idTalla);
+                ProductoTalla pt = new ProductoTalla();
+                pt.setProducto(p);
+                pt.setTalla(talla);
+                pt.setCantidadStock(stock);
+                pt.setPrecioUnitarioFinal(p.getPrecioBase());
+                listaTallas.add(pt);
+            }
+        }
+
+        productoService.actualizarProducto(p, listaTallas, imagen);
+
+        return "redirect:/admin/productos";
     }
 
     @GetMapping("/productos")

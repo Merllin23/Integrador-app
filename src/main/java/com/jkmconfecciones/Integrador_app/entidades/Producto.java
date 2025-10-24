@@ -3,6 +3,8 @@ package com.jkmconfecciones.Integrador_app.entidades;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -42,7 +44,7 @@ public class Producto {
             joinColumns = @JoinColumn(name = "producto_id"),
             inverseJoinColumns = @JoinColumn(name = "colegio_id")
     )
-    private Set<Colegio> colegios;
+    private Set<Colegio> colegios = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -50,10 +52,10 @@ public class Producto {
             joinColumns = @JoinColumn(name = "producto_id"),
             inverseJoinColumns = @JoinColumn(name = "promocion_id")
     )
-    private Set<Promocion> promociones;
+    private Set<Promocion> promociones = new HashSet<>();
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductoTalla> tallas;
+    private List<ProductoTalla> tallas = new ArrayList<>();
 
 }
 

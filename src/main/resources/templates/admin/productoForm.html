@@ -16,12 +16,13 @@
             <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Agregar Nuevo Producto</h1>
         </div>
 
-        <form th:action="@{/admin/productos/guardar}" method="post" enctype="multipart/form-data" class="space-y-6">
+        <form th:action="${formAction} ?: @{/admin/productos/guardar}" method="post" enctype="multipart/form-data" class="space-y-6">
 
             <!-- Nombre -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="nombre" class="text-sm font-medium text-gray-700 block mb-2">Nombre del producto</label>
                 <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre"
+                        th:value="${producto != null ? producto.nombre : ''}"
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                        required>
             </div>
@@ -30,6 +31,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="descripcion" class="text-sm font-medium text-gray-700 block mb-2">Descripción</label>
                 <textarea id="descripcion" name="descripcion" placeholder="Ingrese la descripción"
+                            th:text="${producto != null ? producto.descripcion : ''}"
                           class="w-full min-h-[110px] px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-y"></textarea>
             </div>
 
@@ -38,6 +40,7 @@
                 <label for="precio" class="text-sm font-medium text-gray-700 block mb-2">Precio</label>
                 <div class="relative">
                     <input id="precio" name="precio" type="number" step="0.01" min="0" placeholder="Ingrese el precio"
+                            th:value="${producto != null && producto.precioBase != null ? producto.precioBase : ''}"
                            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 pr-10">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">$</span>
                 </div>
@@ -68,7 +71,7 @@
                 <select id="categoriaId" name="categoriaId"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
                     <option value="" selected disabled>Seleccionar categoría</option>
-                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}">Categoría ejemplo</option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${producto != null && producto.categoria != null && producto.categoria.id == cat.id}">Categoría ejemplo</option>
                 </select>
             </div>
 
@@ -78,7 +81,7 @@
                 <select id="coleccionId" name="coleccionId"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
                     <option value="" selected disabled>Seleccionar colección</option>
-                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}">Colección ejemplo</option>
+                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${producto != null && producto.coleccion != null && producto.coleccion.id == col.id}">Colección ejemplo</option>
                 </select>
             </div>
 
