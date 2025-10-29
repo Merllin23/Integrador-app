@@ -7,6 +7,9 @@ import com.jkmconfecciones.Integrador_app.repositorios.RolRepositorio;
 import com.jkmconfecciones.Integrador_app.service.RegistroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -53,7 +56,7 @@ public class RegistroServiceImpl implements RegistroService {
             return "Límite de cuentas por IP alcanzado. Intenta más tarde.";
         }
 
-        // Validaciones básicas
+        // Validaciones básicas de campos
         if (usuario.getNombre() == null || usuario.getNombre().isBlank()) {
             return "El nombre es obligatorio.";
         }
@@ -62,7 +65,6 @@ public class RegistroServiceImpl implements RegistroService {
             return "El correo es obligatorio.";
         }
 
-        // Validación real del formato del correo
         if (!CORREO_REGEX.matcher(usuario.getCorreo().trim()).matches()) {
             return "Por favor ingresa un correo electrónico válido.";
         }
@@ -71,9 +73,19 @@ public class RegistroServiceImpl implements RegistroService {
             return "El correo ya está registrado.";
         }
 
+        // Validación de teléfono y dirección
+        if (usuario.getTelefono() == null || usuario.getTelefono().isBlank()) {
+            return "El teléfono es obligatorio.";
+        }
+
+        if (usuario.getDireccion() == null || usuario.getDireccion().isBlank()) {
+            return "La dirección es obligatoria.";
+        }
+
         // Validación de contraseña segura
-        if (!esContrasenaSegura(usuario.getContraseña())) {
-            return "La contraseña debe tener al menos 8 caracteres, un número y una letra.";
+        String errorContrasena = validarContrasena(usuario.getContraseña());
+        if (errorContrasena != null) {
+            return errorContrasena;
         }
 
         // Configurar datos del nuevo usuario
@@ -90,6 +102,12 @@ public class RegistroServiceImpl implements RegistroService {
         // Guardar en BD
         usuarioRepositorio.save(usuario);
 
+        // Auto-login
+        User springUser = new User(usuario.getCorreo(), usuario.getContraseña(), Collections.emptyList());
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(springUser, null, springUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+
         // Registrar intento por IP
         registrosPorIp.put(ip, registrosPorIp.get(ip) + 1);
         ultimoIntentoIp.put(ip, ahora);
@@ -97,10 +115,14 @@ public class RegistroServiceImpl implements RegistroService {
         return "OK";
     }
 
-    private boolean esContrasenaSegura(String contrasena) {
-        if (contrasena == null || contrasena.length() < 8) return false;
-        boolean tieneLetra = contrasena.matches(".*[A-Za-z].*");
-        boolean tieneNumero = contrasena.matches(".*\\d.*");
-        return tieneLetra && tieneNumero;
+    // Validación de contraseña completa con mensajes específicos
+    private String validarContrasena(String contrasena) {
+        if (contrasena == null || contrasena.isBlank()) return "La contraseña no puede estar vacía.";
+        if (contrasena.length() < 8) return "La contraseña debe tener al menos 8 caracteres.";
+        if (!contrasena.matches(".*[A-Z].*")) return "La contraseña debe contener al menos una letra mayúscula.";
+        if (!contrasena.matches(".*[a-z].*")) return "La contraseña debe contener al menos una letra minúscula.";
+        if (!contrasena.matches(".*\\d.*")) return "La contraseña debe contener al menos un número.";
+        if (!contrasena.matches(".*[^A-Za-z0-9].*")) return "La contraseña debe contener al menos un carácter especial.";
+        return null; // válida
     }
 }

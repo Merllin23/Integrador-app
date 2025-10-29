@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SeguridadConfig {
@@ -18,6 +19,12 @@ public class SeguridadConfig {
 
     @Autowired
     private ManejadorExitoAutenticacion manejadorExito;
+
+    @Autowired
+    private RedireccionSiAutenticadoFilter redireccionSiAutenticadoFilter;
+
+    @Autowired
+    private NoCacheFilter noCacheFilter;
 
     @Bean
     public PasswordEncoder codificadorContrasena() {
@@ -34,7 +41,8 @@ public class SeguridadConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/registro", "/recuperar", "/restablecer","/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/", "/login", "/registro", "/recuperar", "/restablecer",
+                                "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/usuario/**").hasRole("USUARIO")
                         .anyRequest().authenticated()
@@ -42,15 +50,27 @@ public class SeguridadConfig {
                 .formLogin(login -> login
                         .loginPage("/login")
                         .loginProcessingUrl("/procesarLogin")
-                        .successHandler(manejadorExito)      // redirige y reinicia intentos
-                        .failureHandler(manejadorFallo)     // aumenta intentos fallidos
+                        .successHandler(manejadorExito)
+                        .failureHandler(manejadorFallo)
                         .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID") // 🔹 elimina cookie de sesión
+                        .clearAuthentication(true)
                         .permitAll()
-                );
+                )
+                .headers(headers -> headers
+                        .cacheControl(cache -> cache.disable())
+                        .frameOptions(frame -> frame.sameOrigin())
+                        .httpStrictTransportSecurity(hsts -> hsts.disable())
+                )
+
+                // Filtros personalizados
+                .addFilterBefore(noCacheFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(redireccionSiAutenticadoFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

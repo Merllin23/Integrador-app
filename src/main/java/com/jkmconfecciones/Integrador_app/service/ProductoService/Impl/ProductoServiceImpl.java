@@ -21,17 +21,16 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepositorio productoRepositorio;
     private final TallaRepositorio tallaRepositorio;
     private final ColegioRepositorio colegioRepositorio;
+    private final CategoriaRepositorio categoriaRepositorio;
 
     private final String CARPETA_IMAGENES = "C:\\jkm\\productos\\";
 
     @Override
     public Producto crearProducto(Producto producto, List<ProductoTalla> listaTallas, MultipartFile imagen) {
-        // Guardar imagen en carpeta física
         if (imagen != null && !imagen.isEmpty()) {
             producto.setImagenUrl(guardarImagen(imagen));
         }
 
-        // Asociar tallas con stock
         if (listaTallas != null && !listaTallas.isEmpty()) {
             for (ProductoTalla pt : listaTallas) {
                 pt.setProducto(producto);
@@ -39,11 +38,10 @@ public class ProductoServiceImpl implements ProductoService {
             producto.setTallas(listaTallas);
         }
 
-        // Asociar colegios
         if (producto.getColegios() != null && !producto.getColegios().isEmpty()) {
             producto.setColegios(producto.getColegios().stream()
-                    .map(colegio -> colegioRepositorio.findById(colegio.getId())
-                            .orElseThrow(() -> new RuntimeException("Colegio no encontrado: " + colegio.getId())))
+                    .map(c -> colegioRepositorio.findById(c.getId())
+                            .orElseThrow(() -> new RuntimeException("Colegio no encontrado: " + c.getId())))
                     .collect(Collectors.toSet()));
         }
 
@@ -65,7 +63,6 @@ public class ProductoServiceImpl implements ProductoService {
         Producto producto = productoRepositorio.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
 
-        // Eliminar imagen física si existe
         if (producto.getImagenUrl() != null && !producto.getImagenUrl().isEmpty()) {
             try {
                 Path path = Paths.get(CARPETA_IMAGENES + producto.getImagenUrl().substring("/productos/".length()));
@@ -80,8 +77,15 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public Producto buscarPorId(Integer id) {
-        return productoRepositorio.findById(id.longValue())
+        Producto p = productoRepositorio.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+
+        // Forzar carga de relaciones
+        if (p.getCategoria() != null) p.getCategoria().getNombre();
+        if (p.getColeccion() != null) p.getColeccion().getNombre();
+        p.getColegios().size(); // fuerza carga de la colección
+
+        return p;
     }
 
     @Override
@@ -89,7 +93,6 @@ public class ProductoServiceImpl implements ProductoService {
         Producto existente = productoRepositorio.findById(producto.getId().longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + producto.getId()));
 
-        // Actualizar campos básicos
         existente.setNombre(producto.getNombre());
         existente.setDescripcion(producto.getDescripcion());
         existente.setPrecioBase(producto.getPrecioBase());
@@ -105,9 +108,7 @@ public class ProductoServiceImpl implements ProductoService {
             existente.setColeccion(col);
         }
 
-        // Actualizar imagen si se sube nueva
         if (imagen != null && !imagen.isEmpty()) {
-            // Eliminar imagen anterior
             if (existente.getImagenUrl() != null && !existente.getImagenUrl().isEmpty()) {
                 try {
                     Path path = Paths.get(CARPETA_IMAGENES + existente.getImagenUrl().substring("/productos/".length()));
@@ -119,15 +120,13 @@ public class ProductoServiceImpl implements ProductoService {
             existente.setImagenUrl(guardarImagen(imagen));
         }
 
-        // Actualizar y asociar colegios
         if (producto.getColegios() != null && !producto.getColegios().isEmpty()) {
             existente.setColegios(producto.getColegios().stream()
-                    .map(colegio -> colegioRepositorio.findById(colegio.getId())
-                            .orElseThrow(() -> new RuntimeException("Colegio no encontrado: " + colegio.getId())))
+                    .map(c -> colegioRepositorio.findById(c.getId())
+                            .orElseThrow(() -> new RuntimeException("Colegio no encontrado: " + c.getId())))
                     .collect(Collectors.toSet()));
         }
 
-        // Actualizar asociar tallas
         if (listaTallas != null) {
             Map<Integer, ProductoTalla> nuevasTallasMap = new HashMap<>();
             for (ProductoTalla pt : listaTallas) {
@@ -165,9 +164,23 @@ public class ProductoServiceImpl implements ProductoService {
             String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
             Path rutaDestino = Paths.get(CARPETA_IMAGENES, nombreArchivo);
             Files.copy(imagen.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
-            return "/productos/" + nombreArchivo; // URL para Thymeleaf
+            return "/productos/" + nombreArchivo;
         } catch (Exception e) {
             throw new RuntimeException("Error al guardar la imagen del producto", e);
         }
+    }
+
+
+    @Override
+    public List<Producto> listarProductosFiltrados(Integer colegioId, Integer categoriaId) {
+        return productoRepositorio.filtrarProductos(
+                (colegioId != null && colegioId > 0) ? colegioId : null,
+                (categoriaId != null && categoriaId > 0) ? categoriaId : null
+        );
+    }
+
+    @Override
+    public List<Categoria> listarCategorias() {
+        return categoriaRepositorio.findAll();
     }
 }
