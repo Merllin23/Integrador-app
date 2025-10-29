@@ -127,49 +127,50 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const registroForm = document.getElementById('registroForm');
+        const registroForm = document.getElementById('registroForm');
 
-      // Validación personalizada
-      registroForm.addEventListener('submit', function(e) {
-        const nombre = registroForm.querySelector('[name="nombre"]').value;
-        const correo = registroForm.querySelector('[name="correo"]').value;
-        const contraseña = registroForm.querySelector('[name="contraseña"]').value;
-        const captchaResponse = grecaptcha.getResponse();
+        registroForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // prevenir envío automático
+            const nombre = registroForm.querySelector('[name="nombre"]').value.trim();
+            const correo = registroForm.querySelector('[name="correo"]').value.trim();
+            const contraseña = registroForm.querySelector('[name="contraseña"]').value.trim();
+            const telefono = registroForm.querySelector('[name="telefono"]').value.trim();
+            const direccion = registroForm.querySelector('[name="direccion"]').value.trim();
+            const captchaResponse = grecaptcha.getResponse();
 
-        if (!validateForm(nombre, correo, contraseña, captchaResponse)) e.preventDefault();
-      });
-
-      function validateForm(nombre, correo, contraseña, captchaResponse) {
-        if (!nombre.trim()) { showError('Por favor ingresa tu nombre completo'); return false; }
-        if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo)) { showError('Por favor ingresa un correo válido'); return false; }
-        if (!contraseña || contraseña.length < 6) { showError('La contraseña debe tener al menos 6 caracteres'); return false; }
-        if (!captchaResponse) { showError('Por favor completa el reCAPTCHA'); return false; }
-        return true;
-      }
-
-      function showError(message) {
-        const alertContainer = document.getElementById('alert-container');
-        alertContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
-          <strong>Error:</strong> ${message}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>`;
-        setTimeout(() => { alertContainer.innerHTML = ''; }, 4000);
-      }
-
-      // Bootstrap validación de formularios
-      (function () {
-        'use strict';
-        const forms = document.querySelectorAll('.needs-validation');
-        Array.from(forms).forEach(function (form) {
-          form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
+            const error = validarFormulario(nombre, correo, contraseña, telefono, direccion, captchaResponse);
+            if (error) {
+                mostrarError(error);
+                return false;
             }
-            form.classList.add('was-validated');
-          }, false);
+
+            registroForm.submit(); // si pasa todo, enviar
         });
-      })();
+
+        function validarFormulario(nombre, correo, contraseña, telefono, direccion, captchaResponse) {
+            if (!nombre) return 'Por favor ingresa tu nombre completo';
+            if (!correo) return 'El correo es obligatorio';
+            if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo)) return 'Ingresa un correo válido';
+            if (!contraseña) return 'La contraseña es obligatoria';
+            if (contraseña.length < 8) return 'La contraseña debe tener al menos 8 caracteres';
+            if (!/[A-Z]/.test(contraseña)) return 'La contraseña debe tener al menos una letra mayúscula';
+            if (!/[a-z]/.test(contraseña)) return 'La contraseña debe tener al menos una letra minúscula';
+            if (!/\d/.test(contraseña)) return 'La contraseña debe tener al menos un número';
+            if (!/[^A-Za-z0-9]/.test(contraseña)) return 'La contraseña debe tener al menos un carácter especial';
+            if (!telefono) return 'El teléfono es obligatorio';
+            if (!direccion) return 'La dirección es obligatoria';
+            if (!captchaResponse) return 'Completa el reCAPTCHA';
+            return null;
+        }
+
+        function mostrarError(msg) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                <strong>Error:</strong> ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>`;
+            setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
+        }
     });
 </script>
 

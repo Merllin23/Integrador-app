@@ -16,13 +16,13 @@
             <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Agregar Nuevo Producto</h1>
         </div>
 
-        <form th:action="${formAction} ?: @{/admin/productos/guardar}" method="post" enctype="multipart/form-data" class="space-y-6">
+        <form th:action="${formAction} ?: @{/admin/productos/guardar}" method="post" enctype="multipart/form-data" class="space-y-6" id="productoForm">
 
             <!-- Nombre -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="nombre" class="text-sm font-medium text-gray-700 block mb-2">Nombre del producto</label>
                 <input id="nombre" name="nombre" type="text" placeholder="Ingrese el nombre"
-                        th:value="${producto != null ? producto.nombre : ''}"
+                       th:value="${producto != null ? producto.nombre : ''}"
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                        required>
             </div>
@@ -31,8 +31,9 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="descripcion" class="text-sm font-medium text-gray-700 block mb-2">Descripción</label>
                 <textarea id="descripcion" name="descripcion" placeholder="Ingrese la descripción"
-                            th:text="${producto != null ? producto.descripcion : ''}"
-                          class="w-full min-h-[110px] px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-y"></textarea>
+                          th:text="${producto != null ? producto.descripcion : ''}"
+                          class="w-full min-h-[110px] px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-y"
+                          required></textarea>
             </div>
 
             <!-- Precio -->
@@ -40,8 +41,9 @@
                 <label for="precio" class="text-sm font-medium text-gray-700 block mb-2">Precio</label>
                 <div class="relative">
                     <input id="precio" name="precio" type="number" step="0.01" min="0" placeholder="Ingrese el precio"
-                            th:value="${producto != null && producto.precioBase != null ? producto.precioBase : ''}"
-                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 pr-10">
+                           th:value="${producto != null && producto.precioBase != null ? producto.precioBase : ''}"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 pr-10"
+                           required>
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">$</span>
                 </div>
             </div>
@@ -51,7 +53,7 @@
                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center dropzone" id="dropzone">
                     <p class="text-sm font-medium text-gray-700">Subir imagen del producto</p>
                     <p class="text-xs text-gray-500 mt-1">Haz clic o arrastra una imagen aquí</p>
-                    <input id="imagen" name="imagen" type="file" accept="image/*" class="hidden" />
+                    <input id="imagen" name="imagen" type="file" accept="image/*" class="hidden" required/>
                     <button type="button" id="btnUpload"
                             class="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium">
                         Subir imagen
@@ -69,9 +71,10 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="categoriaId" class="text-sm font-medium text-gray-700 block mb-2">Categoría</label>
                 <select id="categoriaId" name="categoriaId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        required>
                     <option value="" selected disabled>Seleccionar categoría</option>
-                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${producto != null && producto.categoria != null && producto.categoria.id == cat.id}">Categoría ejemplo</option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${producto != null && producto.categoria != null && producto.categoria.id == cat.id}"></option>
                 </select>
             </div>
 
@@ -79,9 +82,10 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="coleccionId" class="text-sm font-medium text-gray-700 block mb-2">Colección</label>
                 <select id="coleccionId" name="coleccionId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        required>
                     <option value="" selected disabled>Seleccionar colección</option>
-                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${producto != null && producto.coleccion != null && producto.coleccion.id == col.id}">Colección ejemplo</option>
+                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${producto != null && producto.coleccion != null && producto.coleccion.id == col.id}"></option>
                 </select>
             </div>
 
@@ -89,30 +93,24 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
                 <select id="colegioId" name="colegioId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10">
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        required>
                     <option value="" selected disabled>Seleccionar colegio</option>
-                    <option th:each="col : ${colegios}"
-                            th:value="${col.id}"
-                            th:text="${col.nombre}"
-                            th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}">
-                        Colegio ejemplo
-                    </option>
+                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}"></option>
                 </select>
             </div>
 
+            <!-- Tallas disponibles -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
-                <p class="text-sm font-medium text-gray-700 mb-3">Tallas disponibles</p>
+                <p class="text-sm font-medium text-gray-700 mb-3">Tallas disponibles (al menos una con stock > 0)</p>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" th:each="t : ${tallas}">
                     <div class="flex flex-col gap-1">
-                        <!-- Checkbox de la talla -->
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="tallas" th:value="${t.id}"
                                    class="h-4 w-4 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
                                    th:checked="${mapaTallas != null and mapaTallas.containsKey(t.id)}">
-                            <span th:text="${t.nombreTalla}">Talla</span>
+                            <span th:text="${t.nombreTalla}"></span>
                         </label>
-
-                        <!-- Input de stock -->
                         <input type="number"
                                th:name="'stock__' + ${t.id}"
                                min="0"
@@ -122,8 +120,6 @@
                     </div>
                 </div>
             </div>
-
-
 
             <!-- Botones -->
             <div class="flex items-center justify-end gap-3 pt-2">
@@ -173,14 +169,11 @@
                 previewWrap.classList.remove('hidden');
             };
 
-            const addDragStyles = () => dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
-            const removeDragStyles = () => dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
-
             ['dragenter', 'dragover'].forEach(evt =>
-                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); addDragStyles(); })
+                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400'); })
             );
             ['dragleave', 'drop'].forEach(evt =>
-                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); removeDragStyles(); })
+                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400'); })
             );
 
             dz.addEventListener('drop', e => {
@@ -197,6 +190,35 @@
             fileInput.addEventListener('change', () => {
                 const f = fileInput.files?.[0];
                 showPreview(f);
+            });
+
+            // Validación de formulario completo
+            document.getElementById('productoForm').addEventListener('submit', function(e) {
+                if (!fileInput.files.length) {
+                    alert('Debes subir una imagen del producto.');
+                    e.preventDefault();
+                    return;
+                }
+
+                const categoria = document.getElementById('categoriaId').value;
+                const coleccion = document.getElementById('coleccionId').value;
+                const colegio = document.getElementById('colegioId').value;
+                if (!categoria || !coleccion || !colegio) {
+                    alert('Debes seleccionar categoría, colección y colegio.');
+                    e.preventDefault();
+                    return;
+                }
+
+                const tallas = document.querySelectorAll('input[name="tallas"]:checked');
+                let stockValido = false;
+                tallas.forEach(t => {
+                    const stock = document.querySelector(`input[name="stock__${t.value}"]`).value;
+                    if (parseInt(stock) > 0) stockValido = true;
+                });
+                if (!stockValido) {
+                    alert('Debes seleccionar al menos una talla con stock mayor a 0.');
+                    e.preventDefault();
+                }
             });
         })();
     </script>

@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller.admin;
 
+import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
 
@@ -221,26 +222,44 @@ public class AdminControlador {
 
     @GetMapping("/productos")
     public String adminProductos(Model model,
-                                 @RequestParam(value = "colegioId", required = false) Integer colegioId) {
+                                 @RequestParam(value = "colegioId", required = false) Integer colegioId,
+                                 @RequestParam(value = "categoriaId", required = false) Integer categoriaId,
+                                 @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
+
+        int TAM_PAGINA = 6; // máximo productos por página
         model.addAttribute("currentPage", "productos");
         model.addAttribute("pageTitle", "Gestión de Productos - JKM Confecciones");
 
-        List<Producto> productos;
-        if (colegioId != null && colegioId > 0) {
-            productos = productoService.listarProductosPorColegio(colegioId);
-        } else {
-            productos = productoService.listarProductos();
-        }
-        model.addAttribute("productos", productos);
+        // Listado completo filtrado
+        List<Producto> productosFiltrados = productoService.listarProductosFiltrados(colegioId, categoriaId);
 
+        // Paginación
+        int totalProductos = productosFiltrados.size();
+        int totalPaginas = (int) Math.ceil((double) totalProductos / TAM_PAGINA);
+        pagina = Math.max(1, Math.min(pagina, totalPaginas)); // asegurar que no salga de rango
+
+        int desde = (pagina - 1) * TAM_PAGINA;
+        int hasta = Math.min(desde + TAM_PAGINA, totalProductos);
+        List<Producto> productosPagina = productosFiltrados.subList(desde, hasta);
+
+        model.addAttribute("productos", productosPagina);
+        model.addAttribute("paginaActual", pagina);
+        model.addAttribute("totalPaginas", totalPaginas);
+
+        // Filtros
         model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("categorias", productoService.listarCategorias());
         model.addAttribute("colegioSeleccionado", colegioId);
+        model.addAttribute("categoriaSeleccionada", categoriaId);
 
+        // Fragments
         model.addAttribute("mainContent", "admin/productos :: mainContent");
         model.addAttribute("extraCss", "admin/productos :: extraCss");
         model.addAttribute("extraJs", "admin/productos :: extraJs");
+
         return "fragments/admin-layout";
     }
+
 
     @PostMapping("/productos/guardar")
     public String guardarProducto(
@@ -312,4 +331,24 @@ public class AdminControlador {
           productoService.eliminarProducto(id);
           return "redirect:/admin/productos";
       }
+
+    @GetMapping("/productos/{id}/json")
+    @ResponseBody
+    public ProductoDetalleDTO obtenerProductoJson(@PathVariable Integer id) {
+        Producto p = productoService.buscarPorId(id);
+
+        ProductoDetalleDTO dto = new ProductoDetalleDTO();
+        dto.setId(p.getId());
+        dto.setNombre(p.getNombre());
+        dto.setDescripcion(p.getDescripcion());
+        dto.setPrecioBase(p.getPrecioBase());
+        dto.setImagenUrl(p.getImagenUrl());
+        dto.setCategoria(p.getCategoria() != null ? p.getCategoria().getNombre() : null);
+        dto.setColeccion(p.getColeccion() != null ? p.getColeccion().getNombre() : null);
+        dto.setColegios(p.getColegios().stream().map(Colegio::getNombre).toList());
+
+        return dto;
+    }
+
+
 }

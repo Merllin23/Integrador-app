@@ -19,10 +19,17 @@ public class RecuperarCuentaController {
 
     @PostMapping("/recuperar")
     public String procesarRecuperar(@RequestParam("correo") String correo, Model model) {
-        recuperarCuentaService.enviarCorreoRecuperacion(correo);
-        model.addAttribute("mensaje", "Si el correo está registrado, se enviará un enlace para restablecer la contraseña.");
+        boolean enviado = recuperarCuentaService.enviarCorreoRecuperacion(correo);
+
+        if(enviado) {
+            model.addAttribute("mensaje", "Se ha enviado un enlace de recuperación a tu correo.");
+        } else {
+            model.addAttribute("error", "El correo ingresado no está registrado.");
+        }
+
         return "recuperar-contrasena";
     }
+
 
     @GetMapping("/restablecer")
     public String mostrarFormularioRestablecer(@RequestParam("token") String token, Model model) {
@@ -45,13 +52,20 @@ public class RecuperarCuentaController {
             return "restablecer";
         }
 
-        boolean exito = recuperarCuentaService.actualizarContraseña(token, contraseña);
-        if (!exito) {
-            model.addAttribute("error", "El enlace es inválido o ha expirado.");
-            return "error_token";
+        try {
+            boolean exito = recuperarCuentaService.actualizarContraseña(token, contraseña);
+            if (!exito) {
+                model.addAttribute("error", "El enlace es inválido o ha expirado.");
+                return "error_token";
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage()); // muestra mensaje de contraseña insegura
+            model.addAttribute("token", token);
+            return "restablecer";
         }
 
         model.addAttribute("mensaje", "Tu contraseña se actualizó correctamente.");
         return "index";
     }
+
 }
