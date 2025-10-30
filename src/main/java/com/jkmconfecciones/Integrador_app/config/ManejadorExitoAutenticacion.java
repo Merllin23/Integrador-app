@@ -8,11 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 @Component
 public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ManejadorExitoAutenticacion.class); // 👈 Logger
 
     @Autowired
     private UsuarioService usuarioService;
@@ -22,8 +26,12 @@ public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        String correo = authentication.getName(); // el username
-        usuarioService.buscarPorCorreo(correo).ifPresent(usuarioService::reiniciarIntentos);
+        String correo = authentication.getName();
+
+        usuarioService.buscarPorCorreo(correo).ifPresent(usuario -> {
+            usuarioService.reiniciarIntentos(usuario);
+            log.info("Usuario '{}' inició sesión correctamente. Intentos reiniciados.", correo);
+        });
 
         response.sendRedirect("/redireccion");
     }
