@@ -4,16 +4,18 @@ import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
 
+import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -168,57 +170,84 @@ public class AdminControlador {
             @RequestParam(value = "colegioId", required = false) Long colegioId,
             @RequestParam(value = "tallas", required = false) List<Integer> tallaIds,
             @RequestParam Map<String, String> allParams,
-            @RequestParam(name = "imagen", required = false) MultipartFile imagen
+            @RequestParam(name = "imagen", required = false) MultipartFile imagen,
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
-        Producto p = new Producto();
-        p.setId(id);
-        p.setNombre(nombre);
-        p.setDescripcion(descripcion);
-        p.setPrecioBase(precio);
+        try {
+            Producto productoExistente = productoService.buscarPorId(id);
 
-        Categoria cat = new Categoria();
-        cat.setId(categoriaId.intValue());
-        p.setCategoria(cat);
+            productoExistente.setNombre(nombre);
+            productoExistente.setDescripcion(descripcion);
+            productoExistente.setPrecioBase(precio);
 
-        Coleccion col = new Coleccion();
-        col.setId(coleccionId.intValue());
-        p.setColeccion(col);
+            Categoria cat = new Categoria();
+            cat.setId(categoriaId.intValue());
+            productoExistente.setCategoria(cat);
 
-        if (colegioId != null) {
-            Colegio colegio = new Colegio();
-            colegio.setId(colegioId.intValue());
-            p.setColegios(Set.of(colegio));
-        }
+            Coleccion col = new Coleccion();
+            col.setId(coleccionId.intValue());
+            productoExistente.setColeccion(col);
 
-
-        // crear lista de productoTalla con stock
-        List<ProductoTalla> listaTallas = new ArrayList<>();
-        if (tallaIds != null) {
-            for (Integer idTalla : tallaIds) {
-                String stockStr = allParams.get("stock__" + idTalla);
-                int stock = 0;
-                if (stockStr != null && !stockStr.isEmpty()) {
-                    try {
-                        stock = Integer.parseInt(stockStr);
-                    } catch (NumberFormatException e) {
-                        stock = 0;
-                    }
-                }
-
-                Talla talla = tallaService.buscarPorId(idTalla);
-                ProductoTalla pt = new ProductoTalla();
-                pt.setProducto(p);
-                pt.setTalla(talla);
-                pt.setCantidadStock(stock);
-                pt.setPrecioUnitarioFinal(p.getPrecioBase());
-                listaTallas.add(pt);
+            if (colegioId != null) {
+                Colegio colegio = new Colegio();
+                colegio.setId(colegioId.intValue());
+                productoExistente.setColegios(Set.of(colegio));
             }
+
+            // Crear lista de ProductoTalla con stock
+            List<ProductoTalla> listaTallas = new ArrayList<>();
+            if (tallaIds != null) {
+                for (Integer idTalla : tallaIds) {
+                    String stockStr = allParams.get("stock__" + idTalla);
+                    int stock = 0;
+                    if (stockStr != null && !stockStr.isEmpty()) {
+                        try {
+                            stock = Integer.parseInt(stockStr);
+                        } catch (NumberFormatException e) {
+                            log.warn("Stock inválido para talla {}: '{}'", idTalla, stockStr);
+                        }
+                    }
+
+                    Talla talla = tallaService.buscarPorId(idTalla);
+                    ProductoTalla pt = new ProductoTalla();
+                    pt.setProducto(productoExistente);
+                    pt.setTalla(talla);
+                    pt.setCantidadStock(stock);
+                    pt.setPrecioUnitarioFinal(productoExistente.getPrecioBase());
+                    listaTallas.add(pt);
+                }
+            }
+
+            // Guardar actualización
+            productoService.actualizarProducto(productoExistente, listaTallas, imagen);
+
+            redirectAttributes.addFlashAttribute("exito", "Producto actualizado correctamente.");
+            log.info("Producto '{}' actualizado correctamente.", nombre);
+            return "redirect:/admin/productos";
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Error de validación al editar producto: {}", e.getMessage());
+            model.addAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            log.error("Error inesperado al editar producto: {}", e.getMessage(), e);
+            model.addAttribute("error", "Error inesperado: " + e.getMessage());
         }
 
-        productoService.actualizarProducto(p, listaTallas, imagen);
+        // Si hubo error, recarga el formulario
+        model.addAttribute("producto", productoService.buscarPorId(id));
+        model.addAttribute("categorias", categoriaService.listarCategorias());
+        model.addAttribute("colecciones", coleccionService.listarColecciones());
+        model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("tallas", tallaService.listarTallas());
 
-        return "redirect:/admin/productos";
+        model.addAttribute("mainContent", "admin/productoForm :: mainContent");
+        model.addAttribute("extraCss", "admin/productoForm :: extraCss");
+        model.addAttribute("extraJs", "admin/productoForm :: extraJs");
+        return "fragments/admin-layout";
     }
+
+
 
     @GetMapping("/productos")
     public String adminProductos(Model model,
@@ -271,62 +300,94 @@ public class AdminControlador {
             @RequestParam(value = "colegioId", required = false) List<Long> colegioIds,
             @RequestParam(value = "tallas", required = false) List<Integer> tallaIds,
             @RequestParam Map<String, String> allParams,
-            @RequestParam("imagen") MultipartFile imagen
+            @RequestParam("imagen") MultipartFile imagen,
+            RedirectAttributes redirectAttributes,
+            Model model
     ) {
-        Producto p = new Producto();
-        p.setNombre(nombre);
-        p.setDescripcion(descripcion);
-        p.setPrecioBase(precio);
+        try {
+            Producto p = new Producto();
+            p.setNombre(nombre);
+            p.setDescripcion(descripcion);
+            p.setPrecioBase(precio);
 
-        Categoria cat = new Categoria();
-        cat.setId(categoriaId.intValue());
-        p.setCategoria(cat);
+            Categoria cat = new Categoria();
+            cat.setId(categoriaId.intValue());
+            p.setCategoria(cat);
 
-        Coleccion col = new Coleccion();
-        col.setId(coleccionId.intValue());
-        p.setColeccion(col);
+            Coleccion col = new Coleccion();
+            col.setId(coleccionId.intValue());
+            p.setColeccion(col);
 
-        if (colegioIds != null) {
-            Set<Colegio> colegios = new HashSet<>();
-            for (Long id : colegioIds) {
-                Colegio co = new Colegio();
-                co.setId(id.intValue());
-                colegios.add(co);
-            }
-            p.setColegios(colegios);
-        }
-
-        // Crear lista de ProductoTalla con stock
-        List<ProductoTalla> listaTallas = new ArrayList<>();
-        if (tallaIds != null) {
-            for (Integer idTalla : tallaIds) {
-                String stockStr = allParams.get("stock__" + idTalla);
-                int stock = 0;
-                if (stockStr != null && !stockStr.isEmpty()) {
-                    try {
-                        stock = Integer.parseInt(stockStr);
-                    } catch (NumberFormatException e) {
-                        stock = 0;
-                    }
+            // Asociar colegios (si existen)
+            if (colegioIds != null) {
+                Set<Colegio> colegios = new HashSet<>();
+                for (Long id : colegioIds) {
+                    Colegio co = new Colegio();
+                    co.setId(id.intValue());
+                    colegios.add(co);
                 }
-
-                // Usando el metodo buscarporID
-                Talla talla = tallaService.buscarPorId(idTalla);
-                ProductoTalla pt = new ProductoTalla();
-                pt.setProducto(p);
-                pt.setTalla(talla);
-                pt.setCantidadStock(stock);
-                pt.setPrecioUnitarioFinal(p.getPrecioBase());
-                listaTallas.add(pt);
+                p.setColegios(colegios);
             }
+
+            // Crear lista de tallas con stock
+            List<ProductoTalla> listaTallas = new ArrayList<>();
+            if (tallaIds != null) {
+                for (Integer idTalla : tallaIds) {
+                    String stockStr = allParams.get("stock__" + idTalla);
+                    int stock = 0;
+                    if (stockStr != null && !stockStr.isEmpty()) {
+                        try {
+                            stock = Integer.parseInt(stockStr);
+                        } catch (NumberFormatException e) {
+                            log.warn("Stock inválido para talla {}: '{}'", idTalla, stockStr);
+                        }
+                    }
+
+                    Talla talla = tallaService.buscarPorId(idTalla);
+                    ProductoTalla pt = new ProductoTalla();
+                    pt.setProducto(p);
+                    pt.setTalla(talla);
+                    pt.setCantidadStock(stock);
+                    pt.setPrecioUnitarioFinal(p.getPrecioBase());
+                    listaTallas.add(pt);
+                }
+            }
+
+            productoService.crearProducto(p, listaTallas, imagen);
+
+            log.info("Producto '{}' registrado correctamente.", nombre);
+            redirectAttributes.addFlashAttribute("exito", "Producto registrado correctamente.");
+            return "redirect:/admin/productos";
+
+        } catch (IllegalArgumentException e) {
+            // Error de validación — recargar el formulario con layout
+            log.warn("Error de validación: {}", e.getMessage());
+            model.addAttribute("error", e.getMessage());
+
+        } catch (Exception e) {
+            // Error inesperado — recargar también el formulario con layout
+            log.error("Error inesperado en /productos/guardar: {}", e.getMessage(), e);
+            model.addAttribute("error", "Error inesperado: " + e.getMessage());
         }
 
-        p.setTallas(listaTallas);
-        productoService.crearProducto(p, listaTallas, imagen);
+        // recargar datos y retornar layout
+        model.addAttribute("currentPage", "edicionProducto");
+        model.addAttribute("pageTitle", "Añadir Producto - JKM Confecciones");
 
-        return "redirect:/admin/productos";
+        model.addAttribute("categorias", categoriaService.listarCategorias());
+        model.addAttribute("colecciones", coleccionService.listarColecciones());
+        model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("tallas", tallaService.listarTallas());
+
+        model.addAttribute("mainContent", "admin/productoForm :: mainContent");
+        model.addAttribute("extraCss", "admin/productoForm :: extraCss");
+        model.addAttribute("extraJs", "admin/productoForm :: extraJs");
+
+        return "fragments/admin-layout";
     }
-      @GetMapping("/productos/{id}/eliminar")
+
+
+    @GetMapping("/productos/{id}/eliminar")
       public String eliminarProducto(@PathVariable Integer id) {
           productoService.eliminarProducto(id);
           return "redirect:/admin/productos";

@@ -13,10 +13,34 @@
 <th:block th:fragment="mainContent">
     <div class="max-w-5xl 2xl:max-w-6xl mx-auto">
         <div class="mb-6">
-            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Agregar Nuevo Producto</h1>
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900"
+                th:text="${producto != null ? 'Editar Producto' : 'Agregar Nuevo Producto'}">
+                Agregar Nuevo Producto
+            </h1>
         </div>
 
-        <form th:action="${formAction} ?: @{/admin/productos/guardar}" method="post" enctype="multipart/form-data" class="space-y-6" id="productoForm">
+        <!-- Mensajes de éxito o error -->
+        <div th:if="${exito}"
+             class="mb-4 p-3 rounded-lg bg-green-100 border border-green-300 text-green-800 text-sm font-medium">
+            <i class="fa fa-check-circle mr-2"></i>
+            <span th:text="${exito}"></span>
+        </div>
+
+        <div th:if="${error}"
+             class="mb-4 p-3 rounded-lg bg-red-100 border border-red-300 text-red-800 text-sm font-medium">
+            <i class="fa fa-exclamation-circle mr-2"></i>
+            <span th:text="${error}"></span>
+        </div>
+
+        <!-- Formulario -->
+        <form th:action="${formAction} ?: @{/admin/productos/guardar}"
+              method="post"
+              enctype="multipart/form-data"
+              class="space-y-6"
+              id="productoForm">
+
+            <!-- Campo oculto en modo edición -->
+            <input type="hidden" name="idProducto" th:value="${producto != null ? producto.id : ''}"/>
 
             <!-- Nombre -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -50,18 +74,35 @@
 
             <!-- Imagen -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                <p class="text-sm font-medium text-gray-700 mb-3">Imagen del producto</p>
+
+                <!-- Imagen actual -->
+                <div th:if="${producto != null and producto.imagenUrl != null}" class="text-center mb-4">
+                    <p class="text-xs text-gray-500 mb-2">Imagen actual:</p>
+                    <img th:src="@{${producto.imagenUrl}}" alt="Imagen actual"
+                         class="mx-auto w-40 h-40 object-cover rounded-lg shadow border border-gray-300">
+                </div>
+
+                <!-- Dropzone -->
                 <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center dropzone" id="dropzone">
-                    <p class="text-sm font-medium text-gray-700">Subir imagen del producto</p>
+                    <p class="text-sm font-medium text-gray-700">
+                        <span th:text="${producto == null ? 'Subir imagen del producto' : 'Subir nueva imagen (opcional)'}"></span>
+                    </p>
                     <p class="text-xs text-gray-500 mt-1">Haz clic o arrastra una imagen aquí</p>
-                    <input id="imagen" name="imagen" type="file" accept="image/*" class="hidden" required/>
+
+                    <!-- Input según modo -->
+                    <input id="imagen" name="imagen" type="file" accept="image/*" class="hidden"
+                           th:attr="required=${producto == null}" />
+
                     <button type="button" id="btnUpload"
                             class="mt-4 inline-flex items-center px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium">
-                        Subir imagen
+                        Seleccionar imagen
                     </button>
 
-                    <!-- Preview -->
+                    <!-- Vista previa -->
                     <div id="preview" class="mt-4 hidden text-center">
-                        <img id="previewImg" alt="Vista previa" class="mx-auto w-40 h-40 object-cover rounded-lg shadow"/>
+                        <img id="previewImg" alt="Vista previa"
+                             class="mx-auto w-40 h-40 object-cover rounded-lg shadow"/>
                         <p id="previewName" class="mt-2 text-xs text-gray-600"></p>
                     </div>
                 </div>
@@ -71,10 +112,12 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="categoriaId" class="text-sm font-medium text-gray-700 block mb-2">Categoría</label>
                 <select id="categoriaId" name="categoriaId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                         required>
                     <option value="" selected disabled>Seleccionar categoría</option>
-                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}" th:selected="${producto != null && producto.categoria != null && producto.categoria.id == cat.id}"></option>
+                    <option th:each="cat : ${categorias}" th:value="${cat.id}" th:text="${cat.nombre}"
+                            th:selected="${producto != null && producto.categoria != null && producto.categoria.id == cat.id}">
+                    </option>
                 </select>
             </div>
 
@@ -82,25 +125,29 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="coleccionId" class="text-sm font-medium text-gray-700 block mb-2">Colección</label>
                 <select id="coleccionId" name="coleccionId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                         required>
                     <option value="" selected disabled>Seleccionar colección</option>
-                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${producto != null && producto.coleccion != null && producto.coleccion.id == col.id}"></option>
+                    <option th:each="col : ${colecciones}" th:value="${col.id}" th:text="${col.nombre}"
+                            th:selected="${producto != null && producto.coleccion != null && producto.coleccion.id == col.id}">
+                    </option>
                 </select>
             </div>
 
-            <!-- Colegio asociado -->
+            <!-- Colegio -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
                 <select id="colegioId" name="colegioId"
-                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 appearance-none pr-10"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                         required>
                     <option value="" selected disabled>Seleccionar colegio</option>
-                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}" th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}"></option>
+                    <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}"
+                            th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}">
+                    </option>
                 </select>
             </div>
 
-            <!-- Tallas disponibles -->
+            <!-- Tallas -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
                 <p class="text-sm font-medium text-gray-700 mb-3">Tallas disponibles (al menos una con stock > 0)</p>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" th:each="t : ${tallas}">
@@ -165,15 +212,21 @@
                 if (!file) return;
                 const url = URL.createObjectURL(file);
                 previewImg.src = url;
-                previewName.textContent = file.name + ` (${Math.round(file.size / 1024)} KB)`;
+                previewName.textContent = `${file.name} (${Math.round(file.size / 1024)} KB)`;
                 previewWrap.classList.remove('hidden');
             };
 
             ['dragenter', 'dragover'].forEach(evt =>
-                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400'); })
+                dz.addEventListener(evt, e => {
+                    e.preventDefault(); e.stopPropagation();
+                    dz.classList.add('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
+                })
             );
             ['dragleave', 'drop'].forEach(evt =>
-                dz.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400'); })
+                dz.addEventListener(evt, e => {
+                    e.preventDefault(); e.stopPropagation();
+                    dz.classList.remove('border-yellow-500', 'bg-yellow-50', 'ring-2', 'ring-yellow-400');
+                })
             );
 
             dz.addEventListener('drop', e => {
@@ -192,10 +245,21 @@
                 showPreview(f);
             });
 
-            // Validación de formulario completo
             document.getElementById('productoForm').addEventListener('submit', function(e) {
-                if (!fileInput.files.length) {
+                const idProducto = document.querySelector('input[name="idProducto"]').value.trim();
+                const tieneImagenActual = document.querySelector('img[alt="Imagen actual"]') !== null;
+                const nuevaImagen = fileInput.files.length > 0;
+
+                // Solo obligatorio si: es nuevo (sin idProducto) y no subió imagen
+                if (!idProducto && !nuevaImagen) {
                     alert('Debes subir una imagen del producto.');
+                    e.preventDefault();
+                    return;
+                }
+
+                // Si edita y no hay imagen actual ni nueva
+                if (idProducto && !tieneImagenActual && !nuevaImagen) {
+                    alert('Debes subir una imagen del producto (no hay imagen actual).');
                     e.preventDefault();
                     return;
                 }
@@ -203,6 +267,7 @@
                 const categoria = document.getElementById('categoriaId').value;
                 const coleccion = document.getElementById('coleccionId').value;
                 const colegio = document.getElementById('colegioId').value;
+
                 if (!categoria || !coleccion || !colegio) {
                     alert('Debes seleccionar categoría, colección y colegio.');
                     e.preventDefault();
