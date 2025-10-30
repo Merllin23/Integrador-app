@@ -22,6 +22,7 @@ public class ProductoServiceImpl implements ProductoService {
     private final TallaRepositorio tallaRepositorio;
     private final ColegioRepositorio colegioRepositorio;
     private final CategoriaRepositorio categoriaRepositorio;
+    private final ProductoTallaRepositorio productoTallaRepositorio;
 
     private final String CARPETA_IMAGENES = "C:\\jkm\\productos\\";
 
@@ -182,5 +183,15 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<Categoria> listarCategorias() {
         return categoriaRepositorio.findAll();
+    }
+    
+    @Override
+    public List<ProductoTalla> obtenerInventarioCompleto() {
+        return productoTallaRepositorio.findAllWithDetails();
+    }
+    
+    @Override
+    public List<ProductoTalla> obtenerInventarioPorColegio(Integer colegioId) {
+        return productoTallaRepositorio.findByColegioId(colegioId);
     }
 }

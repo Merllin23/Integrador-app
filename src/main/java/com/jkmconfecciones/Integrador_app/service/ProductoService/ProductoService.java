@@ -16,4 +16,8 @@ public interface ProductoService {
     Producto actualizarProducto(Producto producto, List<ProductoTalla> listaTallas, org.springframework.web.multipart.MultipartFile imagen);
     List<Producto> listarProductosFiltrados(Integer colegioId, Integer categoriaId);
     List<Categoria> listarCategorias();
+    
+    // Métodos para inventario
+    List<ProductoTalla> obtenerInventarioCompleto();
+    List<ProductoTalla> obtenerInventarioPorColegio(Integer colegioId);
 }

@@ -72,6 +72,49 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
+    @GetMapping("/inventario")
+    public String adminStock(Model model,
+                            @RequestParam(value = "colegioId", required = false) Integer colegioId,
+                            @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
+        
+        int TAM_PAGINA = 10; // máximo registros de inventario por página
+        
+        model.addAttribute("currentPage", "stock");
+        model.addAttribute("pageTitle", "Stock de Productos - JKM Confecciones");
+
+        // Lista de colegios para el filtro
+        model.addAttribute("colegios", colegioService.listarColegios());
+        
+        // Si se seleccionó un colegio, filtrar por ese colegio
+        List<ProductoTalla> detallesStockCompleto;
+        if (colegioId != null && colegioId > 0) {
+            detallesStockCompleto = productoService.obtenerInventarioPorColegio(colegioId);
+        } else {
+            detallesStockCompleto = productoService.obtenerInventarioCompleto();
+        }
+        
+        // Paginación
+        int totalRegistros = detallesStockCompleto.size();
+        int totalPaginas = (int) Math.ceil((double) totalRegistros / TAM_PAGINA);
+        totalPaginas = Math.max(1, totalPaginas); // al menos 1 página
+        pagina = Math.max(1, Math.min(pagina, totalPaginas)); // asegurar que no salga de rango
+
+        int desde = (pagina - 1) * TAM_PAGINA;
+        int hasta = Math.min(desde + TAM_PAGINA, totalRegistros);
+        List<ProductoTalla> detallesStock = totalRegistros > 0 ? detallesStockCompleto.subList(desde, hasta) : detallesStockCompleto;
+        
+        model.addAttribute("detallesStock", detallesStock);
+        model.addAttribute("colegioIdSeleccionado", colegioId);
+        model.addAttribute("paginaActual", pagina);
+        model.addAttribute("totalPaginas", totalPaginas);
+        model.addAttribute("totalRegistros", totalRegistros);
+
+        model.addAttribute("mainContent", "admin/inventario :: mainContent");
+        model.addAttribute("extraCss", "admin/inventario :: extraCss");
+        model.addAttribute("extraJs", "admin/inventario :: extraJs");
+        return "fragments/admin-layout";
+    }
+
     @GetMapping("/notificaciones")
     public String paginaNotificaciones(Model model) {
         model.addAttribute("currentPage", "notificaciones");
