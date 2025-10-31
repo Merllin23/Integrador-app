@@ -116,7 +116,11 @@
                 </select>
             </div>
             <a th:href="@{/admin/productos/nuevo}" class="btn-agregar">Agregar Producto</a>
+            <a th:href="@{/admin/inventario}"
+               class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium whitespace-nowrap self-end sm:self-auto">
+                <i class="fas fa-eye mr-2"></i> Visualizar Stock</a>
         </div>
+
 
         <!-- GRID DE PRODUCTOS -->
         <div id="productosContainer" class="grid-productos">

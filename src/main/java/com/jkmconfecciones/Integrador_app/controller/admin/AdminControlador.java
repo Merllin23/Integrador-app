@@ -3,6 +3,7 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import org.springframework.http.*;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -71,6 +72,49 @@ public class AdminControlador {
         model.addAttribute("rol", "Administrador");
 
         model.addAttribute("mainContent", "admin/edicionProducto :: mainContent");
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/inventario")
+    public String adminStock(Model model,
+                             @RequestParam(value = "colegioId", required = false) Integer colegioId,
+                             @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
+
+        int TAM_PAGINA = 10; // máximo registros de inventario por página
+
+        model.addAttribute("currentPage", "stock");
+        model.addAttribute("pageTitle", "Stock de Productos - JKM Confecciones");
+
+        // Lista de colegios para el filtro
+        model.addAttribute("colegios", colegioService.listarColegios());
+
+        // Si se seleccionó un colegio, filtrar por ese colegio
+        List<ProductoTalla> detallesStockCompleto;
+        if (colegioId != null && colegioId > 0) {
+            detallesStockCompleto = productoService.obtenerInventarioPorColegio(colegioId);
+        } else {
+            detallesStockCompleto = productoService.obtenerInventarioCompleto();
+        }
+
+        // Paginación
+        int totalRegistros = detallesStockCompleto.size();
+        int totalPaginas = (int) Math.ceil((double) totalRegistros / TAM_PAGINA);
+        totalPaginas = Math.max(1, totalPaginas); // al menos 1 página
+        pagina = Math.max(1, Math.min(pagina, totalPaginas)); // asegurar que no salga de rango
+
+        int desde = (pagina - 1) * TAM_PAGINA;
+        int hasta = Math.min(desde + TAM_PAGINA, totalRegistros);
+        List<ProductoTalla> detallesStock = totalRegistros > 0 ? detallesStockCompleto.subList(desde, hasta) : detallesStockCompleto;
+
+        model.addAttribute("detallesStock", detallesStock);
+        model.addAttribute("colegioIdSeleccionado", colegioId);
+        model.addAttribute("paginaActual", pagina);
+        model.addAttribute("totalPaginas", totalPaginas);
+        model.addAttribute("totalRegistros", totalRegistros);
+
+        model.addAttribute("mainContent", "admin/inventario :: mainContent");
+        model.addAttribute("extraCss", "admin/inventario :: extraCss");
+        model.addAttribute("extraJs", "admin/inventario :: extraJs");
         return "fragments/admin-layout";
     }
 
@@ -411,5 +455,32 @@ public class AdminControlador {
         return dto;
     }
 
+    //Solo actualizar datos para inventario
+    @PostMapping("/productos/actualizar-stock")
+    public String actualizarStock(@RequestParam Integer productoId,
+                                  @RequestParam Integer cantidadStock,
+                                  RedirectAttributes redirectAttributes) {
+
+        try {
+            productoService.actualizarStock(productoId, cantidadStock);
+            redirectAttributes.addFlashAttribute("mensajeExito", "Stock actualizado correctamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensajeError", "Error al actualizar stock");
+        }
+        return "redirect:/admin/inventario"; // Regresa a inventario
+    }
+
+    @GetMapping("/inventario/exportar")
+    public ResponseEntity<byte[]> exportarInventario(@RequestParam(value = "colegioId", required = false) Integer colegioId) {
+        byte[] excelData = productoService.exportarInventarioExcel(colegioId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("inventario.xlsx")
+                .build());
+
+        return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
+    }
 
 }
