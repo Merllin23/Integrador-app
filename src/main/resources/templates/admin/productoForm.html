@@ -139,7 +139,7 @@
                 <label for="colegioId" class="text-sm font-medium text-gray-700 block mb-2">Colegio asociado</label>
                 <select id="colegioId" name="colegioId"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        required>
+                        >
                     <option value="" selected disabled>Seleccionar colegio</option>
                     <option th:each="col : ${colegios}" th:value="${col.id}" th:text="${col.nombre}"
                             th:selected="${colegiosIds != null and colegiosIds.contains(col.id)}">
@@ -268,8 +268,8 @@
                 const coleccion = document.getElementById('coleccionId').value;
                 const colegio = document.getElementById('colegioId').value;
 
-                if (!categoria || !coleccion || !colegio) {
-                    alert('Debes seleccionar categoría, colección y colegio.');
+                if (!categoria || !coleccion) {
+                    alert('Debes seleccionar categoría, colección.');
                     e.preventDefault();
                     return;
                 }
