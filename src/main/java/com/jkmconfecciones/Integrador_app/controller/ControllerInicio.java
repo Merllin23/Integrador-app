@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ControllerInicio {
 
 
-    @GetMapping("/landing_page")
+    @GetMapping("/")
     public String landing_page() {
         return "landing_page";
     }
