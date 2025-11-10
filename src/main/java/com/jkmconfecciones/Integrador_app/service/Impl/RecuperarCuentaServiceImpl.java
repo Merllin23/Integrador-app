@@ -22,10 +22,10 @@ public class RecuperarCuentaServiceImpl implements RecuperarCuentaService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
-    public void enviarCorreoRecuperacion(String correo) {
+    public boolean enviarCorreoRecuperacion(String correo) {
         Optional<Usuario> usuarioOpt = usuarioRepositorio.findByCorreo(correo);
         if (usuarioOpt.isEmpty()) {
-            return; // No decimos si existe o no
+            return false;
         }
 
         String token = tokenManager.generarToken(correo);
@@ -42,11 +42,14 @@ public class RecuperarCuentaServiceImpl implements RecuperarCuentaService {
                             + "<p>Haz clic en el siguiente enlace para restablecerla:</p>"
                             + "<a href='" + enlace + "'>Restablecer contraseña</a>"
                             + "<br><p>Este enlace expirará en 15 minutos.</p>",
-                    true);
+                    true
+            );
             mailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return true;
     }
 
     @Override
@@ -54,10 +57,38 @@ public class RecuperarCuentaServiceImpl implements RecuperarCuentaService {
         return tokenManager.obtenerCorreoPorToken(token) != null;
     }
 
+    // Devuelve null si la contraseña es válida, o un mensaje de error si no
+    private String validarContraseña(String contraseña) {
+        if (contraseña == null || contraseña.isEmpty()) {
+            return "La contraseña no puede estar vacía.";
+        }
+        if (contraseña.length() < 8) {
+            return "La contraseña debe tener al menos 8 caracteres.";
+        }
+        if (!contraseña.matches(".*[A-Z].*")) {
+            return "La contraseña debe contener al menos una letra mayúscula.";
+        }
+        if (!contraseña.matches(".*[a-z].*")) {
+            return "La contraseña debe contener al menos una letra minúscula.";
+        }
+        if (!contraseña.matches(".*\\d.*")) {
+            return "La contraseña debe contener al menos un número.";
+        }
+        if (!contraseña.matches(".*[^A-Za-z0-9].*")) {
+            return "La contraseña debe contener al menos un carácter especial.";
+        }
+        return null; // contraseña válida
+    }
+
     @Override
     public boolean actualizarContraseña(String token, String nuevaContraseña) {
         String correo = tokenManager.obtenerCorreoPorToken(token);
         if (correo == null) return false;
+
+        String error = validarContraseña(nuevaContraseña);
+        if (error != null) {
+            throw new IllegalArgumentException(error); // el controlador puede capturar este mensaje
+        }
 
         Optional<Usuario> usuarioOpt = usuarioRepositorio.findByCorreo(correo);
         if (usuarioOpt.isEmpty()) return false;

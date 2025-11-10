@@ -94,7 +94,9 @@
                     <!-- Menú Desplegable de Usuario (Oculto por defecto) -->
                     <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-20 hidden">
                         <a href="#" class="block px-4 py-2 text-sm text-carbon hover:bg-gray-100">Mi Perfil</a>
-                        <a href="#" class="block px-4 py-2 text-sm text-carbon hover:bg-gray-100">Cerrar Sesión</a>
+                        <form action="/logout" method="POST" class="block px-4 py-2 text-sm text-carbon hover:bg-gray-100">
+                            <button type="submit" class="w-full text-left">Cerrar Sesión</button>
+                        </form>
                     </div>
                 </div>
             </nav>

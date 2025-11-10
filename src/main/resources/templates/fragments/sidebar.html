@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Configuración de Tailwind -->
     <script>
         tailwind.config = {
@@ -24,113 +24,128 @@
             }
         }
     </script>
+
+    <!-- CSS adicional personalizado -->
+    <th:block th:replace="${extraCss}">
+        <!-- Placeholder para CSS adicional que las páginas puedan agregar -->
+    </th:block>
 </head>
 <body class="bg-gray-100 font-sans">
-    <div class="flex min-h-screen">
-        <!-- Sidebar Fragment -->
-        <div th:fragment="sidebar" class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto z-50">
-            <!-- Logo -->
-            <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
-                <img src="/JKM_Confecciones.png" alt="Logo JKM" class="w-8 h-8" />
-                <span class="font-semibold">JKM Confecciones</span>
-            </div>
-            
-            <!-- Menu Items -->
-            <nav class="mt-1">
-                <a th:href="@{/admin}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'admin'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-tachometer-alt w-5 mr-3"></i>
-                    <span>Panel</span>
-                </a>
-                <a th:href="@{/pedidos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'pedidos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-shopping-cart w-5 mr-3"></i>
-                    <span>Pedidos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-box w-5 mr-3"></i>
-                    <span>Productos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-users w-5 mr-3"></i>
-                    <span>Clientes</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-quote-left w-5 mr-3"></i>
-                    <span>Gestión de Cotizaciones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-tags w-5 mr-3"></i>
-                    <span>Categorías/Colecciones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-cut w-5 mr-3"></i>
-                    <span>Tallas/Variantes</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-percentage w-5 mr-3"></i>
-                    <span>Precios, Descuentos y Promociones</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-user-shield w-5 mr-3"></i>
-                    <span>Gestión de Roles y Permisos</span>
-                </a>
-                <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
-                    <i class="fas fa-clipboard-list w-5 mr-3"></i>
-                    <span>Control de Inventario</span>
-                </a>
-                <a th:href="@{/cargaMasivaDatos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'cargaMasivaDatos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-download w-5 mr-3"></i>
-                    <span>Carga Masiva de Datos</span>
-                </a>
-                <a th:href="@{/registroAuditoriaSeguridad}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'registroAuditoriaSeguridad'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-shield-alt w-5 mr-3"></i>
-                    <span>Registro de Auditoría de Seguridad</span>
-                </a>
-                <a th:href="@{/edicionProducto}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'edicionProducto'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-edit w-5 mr-3"></i>
-                    <span>Edición de Productos</span>
-                </a>
-                <a th:href="@{/notificaciones}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'notificaciones'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
-                    <i class="fas fa-bell w-5 mr-3"></i>
-                    <span>Notificaciones</span>
-                </a>
-            </nav>
-            
-            <!-- User Profile Section -->
-            <div class="absolute bottom-0 left-0 right-0 p-5 border-t border-jk-sidebar-hover bg-jk-sidebar">
-                <div class="flex items-center mb-4">
-                    <!-- Avatar -->
-                    <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3 overflow-hidden">
-                        <!-- Si hay una imagen de usuario disponible -->
-                        <div th:if="${userImage}" class="w-full h-full">
-                            <img th:src="${userImage}" alt="Avatar" class="w-full h-full object-cover rounded-full">
-                        </div>
-                        <!-- Si no hay imagen, mostrar iniciales -->
-                        <div th:unless="${userImage}" class="text-jk-blue font-semibold text-sm">
-                            <i class="fas fa-user text-lg"></i>
-                        </div>
-                    </div>
-                    <!-- User Info -->
-                    <div class="flex-1 min-w-0">
-                        <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
-                        <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
-                    </div>
-                </div>
-                
-                <!-- Logout Button -->
-                <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto z-50">
+        <!-- Logo -->
+        <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
+            <img src="/JKM_Confecciones.png" alt="Logo JKM" class="w-8 h-8" />
+            <span class="font-semibold">JKM Confecciones</span>
         </div>
 
-        <!-- WhatsApp Support Button Fragment -->
-        <div th:fragment="whatsapp-button">
-            <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2 z-40">
-                <i class="fab fa-whatsapp text-lg"></i>
-                <span class="font-medium">Soporte WhatsApp</span>
+        <!-- Menu Items -->
+        <nav class="mt-1">
+            <a th:href="@{/admin}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'admin'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-tachometer-alt w-5 mr-3"></i>
+                <span>Panel</span>
+            </a>
+            <a th:href="@{/pedidos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'pedidos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-shopping-cart w-5 mr-3"></i>
+                <span>Pedidos</span>
+            </a>
+            <a th:href="@{/admin/productos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'productos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">                    <i class="fas fa-box w-5 mr-3"></i>
+                <span>Productos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-users w-5 mr-3"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-quote-left w-5 mr-3"></i>
+                <span>Gestión de Cotizaciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-tags w-5 mr-3"></i>
+                <span>Categorías/Colecciones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-cut w-5 mr-3"></i>
+                <span>Tallas/Variantes</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-percentage w-5 mr-3"></i>
+                <span>Precios, Descuentos y Promociones</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-user-shield w-5 mr-3"></i>
+                <span>Gestión de Roles y Permisos</span>
+            </a>
+            <a href="#" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all">
+                <i class="fas fa-clipboard-list w-5 mr-3"></i>
+                <span>Control de Inventario</span>
+            </a>
+            <a th:href="@{/cargaMasivaDatos}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'cargaMasivaDatos'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-download w-5 mr-3"></i>
+                <span>Carga Masiva de Datos</span>
+            </a>
+            <a th:href="@{/registroAuditoriaSeguridad}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'registroAuditoriaSeguridad'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-shield-alt w-5 mr-3"></i>
+                <span>Registro de Auditoría de Seguridad</span>
+            </a>
+            <a th:href="@{/edicionProducto}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'edicionProducto'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-edit w-5 mr-3"></i>
+                <span>Edición de Productos</span>
+            </a>
+            <a th:href="@{/notificaciones}" class="flex items-center px-5 py-3 text-blue-200 hover:bg-jk-sidebar-hover hover:text-white hover:border-l-4 hover:border-jk-red transition-all" th:classappend="${currentPage == 'notificaciones'} ? 'bg-jk-sidebar-hover border-l-4 border-jk-red' : ''">
+                <i class="fas fa-bell w-5 mr-3"></i>
+                <span>Notificaciones</span>
+            </a>
+        </nav>
+
+        <!-- User Profile Section -->
+        <div class="absolute bottom-0 left-0 right-0 p-5 border-t border-jk-sidebar-hover bg-jk-sidebar">
+            <div class="flex items-center mb-4">
+                <!-- Avatar -->
+                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3 overflow-hidden">
+                    <!-- Si hay una imagen de usuario disponible -->
+                    <div th:if="${userImage}" class="w-full h-full">
+                        <img th:src="${userImage}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <!-- Si no hay imagen, mostrar iniciales -->
+                    <div th:unless="${userImage}" class="text-jk-blue font-semibold text-sm">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+                </div>
+                <!-- User Info -->
+                <div class="flex-1 min-w-0">
+                    <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
+                    <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
+                </div>
+            </div>
+
+            <!-- Logout Button -->
+            <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>
+                <span>Cerrar Sesión</span>
             </a>
         </div>
     </div>
+
+    <!-- Main Content Area -->
+    <div class="ml-64 flex-1 p-6">
+        <!-- Contenido dinámico que será reemplazado por cada página -->
+        <th:block th:replace="${mainContent}">
+            <!-- Este contenido será reemplazado por cada página individual -->
+        </th:block>
+    </div>
+
+    <!-- WhatsApp Support Button -->
+    <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2 z-40">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span class="font-medium">Soporte WhatsApp</span>
+    </a>
+</div>
+
+<!-- JavaScript adicional personalizado -->
+<th:block th:replace="${extraJs}">
+    <!-- Placeholder para JavaScript adicional que las páginas puedan agregar -->
+</th:block>
 </body>
 </html>

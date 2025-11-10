@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${pageTitle} ?: 'JKM Confecciones'">JKM Confecciones</title>
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome + Chart.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Configuración de Tailwind -->
+
+    <!-- Configuración de colores personalizados -->
     <script>
         tailwind.config = {
             theme: {
@@ -24,12 +28,11 @@
             }
         }
     </script>
-    
-    <!-- CSS adicional personalizado -->
-    <th:block th:replace="${extraCss}">
-        <!-- Placeholder para CSS adicional que las páginas puedan agregar -->
-    </th:block>
+
+    <!-- CSS adicional dinámico -->
+    <th:block th:if="${extraCss}" th:replace="~{__${extraCss}__}"></th:block>
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
@@ -120,33 +123,38 @@
                         <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
                     </div>
                 </div>
-                
-                <!-- Logout Button -->
-                <a href="/logout" class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
+                <div class="flex-1 min-w-0">
+                    <div class="text-white font-medium text-sm truncate" th:text="${nombre} ?: 'Usuario'">Usuario</div>
+                    <div class="text-blue-200 text-xs truncate" th:text="${rol} ?: 'Administrador'">Administrador</div>
+                </div>
             </div>
+
+            <a href="/logout"
+               class="flex items-center justify-center w-full px-4 py-2 bg-jk-red hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+            </a>
         </div>
+    </aside>
 
-        <!-- Main Content Area -->
-        <div class="ml-64 flex-1 p-6">
-            <!-- Contenido dinámico que será reemplazado por cada página -->
-            <th:block th:replace="${mainContent}">
-                <!-- Este contenido será reemplazado por cada página individual -->
-            </th:block>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="ml-64 flex-1 p-6">
+        <div th:if="${mainContent != null}" th:replace="~{__${mainContent}__}"></div>
+
+        <div th:if="${mainContent == null}" class="text-center text-gray-500">
+            <p>No hay contenido disponible.</p>
         </div>
+    </main>
 
-        <!-- WhatsApp Support Button -->
-        <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2 z-40">
-            <i class="fab fa-whatsapp text-lg"></i>
-            <span class="font-medium">Soporte WhatsApp</span>
-        </a>
-    </div>
+    <!-- BOTÓN WHATSAPP -->
+    <a href="#"
+       class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2 z-40">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span class="font-medium">Soporte WhatsApp</span>
+    </a>
+</div>
 
-    <!-- JavaScript adicional personalizado -->
-    <th:block th:replace="${extraJs}">
-        <!-- Placeholder para JavaScript adicional que las páginas puedan agregar -->
-    </th:block>
+<!-- JS adicional dinámico -->
+<th:block th:if="${extraJs}" th:replace="~{__${extraJs}__}"></th:block>
+
 </body>
 </html>

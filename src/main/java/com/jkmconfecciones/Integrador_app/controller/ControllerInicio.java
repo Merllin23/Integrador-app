@@ -13,7 +13,7 @@ public class ControllerInicio {
     // If needed in the future, inject services here
 
 
-    @GetMapping("/landing_page")
+    @GetMapping("/")
     public String landing_page() {
         return "landing_page";
     }
