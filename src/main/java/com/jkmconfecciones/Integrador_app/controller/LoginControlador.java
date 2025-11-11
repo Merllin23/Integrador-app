@@ -16,24 +16,11 @@ public class LoginControlador {
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
 
-        // Si ya está autenticado, redirige según rol
+        // Si ya está autenticado, redirige al landing
         if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
-            return "redirect:/redireccion";
+            return "redirect:/"; // Usuario ya logueado
         }
 
-        return "index"; // tu vista de login
-    }
-
-    @GetMapping("/redireccion")
-    public String redirigirSegunRol(Authentication auth) {
-        String rol = auth.getAuthorities().iterator().next().getAuthority();
-
-        if (rol.equals("ROLE_ADMINISTRADOR")) {
-            return "redirect:/admin/panel";
-        } else if (rol.equals("ROLE_USUARIO")) {
-            return "redirect:/usuario/usuario";
-        } else {
-            return "redirect:/login?error=true";
-        }
+        return "index"; // Vista del login
     }
 }

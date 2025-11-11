@@ -22,8 +22,7 @@ public class RedireccionSiAutenticadoFilter extends OncePerRequestFilter {
             "/registro",
             "/recuperar",
             "/recuperar-contrasena",
-            "/restablecer",
-            "/"
+            "/restablecer"
     );
 
     @Override
@@ -52,7 +51,7 @@ public class RedireccionSiAutenticadoFilter extends OncePerRequestFilter {
                         response.sendRedirect("/admin/panel");
                         return;
                     } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_USUARIO"))) {
-                        response.sendRedirect("/usuario/usuario");
+                        response.sendRedirect("/usuario/");
                         return;
                     }
                 }

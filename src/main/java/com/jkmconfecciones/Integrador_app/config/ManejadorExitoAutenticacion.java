@@ -16,7 +16,7 @@ import java.io.IOException;
 @Component
 public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ManejadorExitoAutenticacion.class); // 👈 Logger
+    private static final Logger log = LoggerFactory.getLogger(ManejadorExitoAutenticacion.class);
 
     @Autowired
     private UsuarioService usuarioService;
@@ -33,6 +33,15 @@ public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler
             log.info("Usuario '{}' inició sesión correctamente. Intentos reiniciados.", correo);
         });
 
-        response.sendRedirect("/redireccion");
+        // Redirigir según el rol directamente
+        String rol = authentication.getAuthorities().iterator().next().getAuthority();
+
+        if ("ROLE_ADMINISTRADOR".equals(rol)) {
+            response.sendRedirect("/admin/panel");
+        } else if ("ROLE_USUARIO".equals(rol)) {
+            response.sendRedirect("/");
+        } else {
+            response.sendRedirect("/login?error=true");
+        }
     }
 }
