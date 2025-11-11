@@ -19,4 +19,10 @@ public interface ProductoTallaRepositorio extends JpaRepository<ProductoTalla, L
                 "JOIN FETCH pt.producto p " +
                 "JOIN FETCH pt.talla t")
         List<ProductoTalla> findAllWithDetails();
+
+        @Query("SELECT pt FROM ProductoTalla pt " +
+                "JOIN FETCH pt.talla t " +
+                "WHERE pt.producto.id = :productoId")
+        List<ProductoTalla> findByProductoId(@Param("productoId") Long productoId);
+
 }

@@ -5,12 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo | JKM Confecciones</title>
-
-    <!-- Fuente Poppins -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
-
-    <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-[Poppins] bg-[#F7F8FA] text-gray-800">
@@ -22,14 +18,12 @@
             <img src="/images/JKM_Confecciones.png" alt="Logo JK Confecciones" class="h-10">
             <h1 class="font-semibold text-lg tracking-wide">JKM Confecciones</h1>
         </div>
-
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
             <a th:href="@{/}" class="hover:text-[#DDE3EA] transition">Inicio</a>
             <a th:href="@{/usuario/catalogo}" class="hover:text-[#DDE3EA] transition">Catálogo</a>
             <a th:href="@{/usuario/nosotros}" class="hover:text-[#DDE3EA] transition">Nosotros</a>
             <a th:href="@{/usuario/contacto}" class="hover:text-[#DDE3EA] transition">Contacto</a>
         </nav>
-
         <div class="flex items-center gap-4 relative">
             <!-- Buscador -->
             <div class="relative hidden sm:block">
@@ -44,50 +38,19 @@
             </div>
 
             <!-- Carrito -->
-            <a href="/carrito"
+            <a href="javascript:void(0);" onclick="toggleCarrito()"
                class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
                 </svg>
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
-            </a>
-
-            <!-- Usuario autenticado -->
-            <div class="relative" sec:authorize="isAuthenticated()">
-                <div class="w-9 h-9 rounded-full bg-white text-[#002C77] flex items-center justify-center font-semibold cursor-pointer hover:bg-[#DDE3EA] transition"
-                     th:text="${inicial}" onclick="toggleMenu('user-menu')">U</div>
-                <div id="user-menu"
-                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-20 hidden">
-                    <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
-                        👤 <span th:text="${nombreUsuario}">Usuario</span>
-                    </div>
-                    <a th:href="@{/usuario/usuario}" sec:authorize="hasRole('USUARIO')"
-                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
-                    <form action="/logout" method="post" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        <button type="submit" class="w-full text-left">Cerrar sesión</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Usuario no autenticado -->
-            <a href="/login" sec:authorize="!isAuthenticated()"
-               class="flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                          d="M10 2a5 5 0 00-5 5v1H4a2 2 0 00-2 2v7h16v-7a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zM8 8V7a2 2 0 114 0v1H8zm-4 3h12v5H4v-5z"
-                          clip-rule="evenodd"/>
-                </svg>
+                <span id="contadorCarritoHeader" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
             </a>
         </div>
-
-        <!-- Botón menú móvil -->
         <button id="menu-btn"
                 class="md:hidden border border-white px-3 py-1 rounded-lg hover:bg-white hover:text-[#002C77] transition">
             ☰
         </button>
     </div>
-
-    <!-- Menú móvil -->
     <nav id="menu" class="hidden md:hidden bg-[#002C77]/95 px-6 pb-4 space-y-2 text-sm">
         <a th:href="@{/}" class="block hover:text-[#DDE3EA] transition">Inicio</a>
         <a th:href="@{/usuario/catalogo}" class="block hover:text-[#DDE3EA] transition">Catálogo</a>
@@ -96,9 +59,7 @@
     </nav>
 </header>
 
-<!-- CONTENIDO PRINCIPAL DEL CATÁLOGO -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
     <!-- Buscador y filtros -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <form th:action="@{/usuario/catalogo}" method="get" class="flex gap-3 w-full md:w-auto">
@@ -125,9 +86,10 @@
     <!-- GRID DE PRODUCTOS -->
     <div id="gridProductos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         <div th:each="p : ${productos}"
+             th:data-id="${p.id}"
              th:data-nombre="${p.nombre}"
              th:data-colegio="${#lists.isEmpty(p.colegios) ? '' : p.colegios[0].nombre}"
-             class="bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center p-4">
+             class="producto bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center p-4">
 
             <img th:src="@{${p.imagenUrl}}" alt="Producto"
                  class="w-full h-56 object-contain mb-3 rounded-lg">
@@ -137,9 +99,12 @@
                th:text="${#lists.isEmpty(p.colegios) ? 'Sin colegio' : p.colegios[0].nombre}"></p>
 
             <button class="mt-auto bg-blue-700 text-white rounded-full px-4 py-2 text-sm hover:bg-blue-800 transition"
-                    th:onclick="'agregarACotizacion(' + ${p.id} + ')'">
+                    th:data-id="${p.id}"
+                    th:data-nombre="${p.nombre}"
+                    onclick="abrirModal(this)">
                 Añadir a cotización
             </button>
+
         </div>
     </div>
 
@@ -149,10 +114,8 @@
         <span id="pageInfo" class="text-sm font-medium"></span>
         <button id="nextPage" class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">Siguiente</button>
     </div>
-
 </main>
 
-<!-- FOOTER -->
 <footer class="bg-[#F7F8FA] border-t border-gray-300 py-6 text-center text-sm text-gray-700">
     <div class="flex flex-wrap justify-center gap-6 mb-3">
         <a th:href="@{/}" class="hover:text-[#002C77] transition">Inicio</a>
@@ -163,20 +126,157 @@
     <p class="text-gray-600">© 2025 JK Confecciones. Todos los derechos reservados.</p>
 </footer>
 
-<!-- Scripts -->
+<!-- Carrito lateral -->
+<div id="carritoLateral"
+     class="fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform z-50">
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="font-semibold text-lg">Carrito de Cotización</h2>
+        <button onclick="toggleCarrito()" class="text-gray-500 hover:text-gray-800">&times;</button>
+    </div>
+    <div id="carritoItems" class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100% - 150px);">
+        <p class="text-gray-500 text-sm">No hay productos en el carrito.</p>
+    </div>
+    <div class="p-4 border-t space-y-2">
+        <button onclick="enviarWhatsApp()" class="w-full bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition">
+            Enviar a WhatsApp
+        </button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modalProducto" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg w-80 p-6 relative">
+        <button onclick="cerrarModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+        <h3 class="text-lg font-semibold mb-4" id="modalNombreProducto">Producto</h3>
+        <div class="mb-4">
+            <label for="modalTalla" class="block text-sm font-medium mb-1">Selecciona talla:</label>
+            <select id="modalTalla" class="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Cargando tallas...</option>
+            </select>
+        </div>
+        <div class="mb-4">
+            <label for="modalCantidad" class="block text-sm font-medium mb-1">Cantidad:</label>
+            <input type="number" id="modalCantidad" min="1" value="1"
+                   class="w-full border border-gray-300 rounded py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button onclick="confirmarAgregarCarrito()"
+                class="w-full bg-blue-700 text-white py-2 rounded hover:bg-blue-800 transition">
+            Agregar al carrito
+        </button>
+    </div>
+</div>
+
 <script>
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+    let productoActual = null;
+
+    function toggleCarrito() {
+        document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+        renderCarrito();
+    }
+
+    function abrirModal(btn) {
+    const id = btn.dataset.id;
+    const nombre = btn.dataset.nombre;
+
+    document.getElementById('modalNombreProducto').textContent = nombre;
+    document.getElementById('modalCantidad').value = 1;
+
+    const selectTalla = document.getElementById('modalTalla');
+    selectTalla.innerHTML = '<option value="">Cargando tallas...</option>';
+
+    fetch(`/usuario/producto/${id}/tallas`)
+        .then(res => res.json())
+        .then(data => {
+            selectTalla.innerHTML = '';
+            if (data.tallas && data.tallas.length > 0) {
+                data.tallas.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t;
+                    opt.textContent = t;
+                    selectTalla.appendChild(opt);
+                });
+            } else {
+                selectTalla.innerHTML = '<option value="">No hay tallas disponibles</option>';
+            }
+        })
+        .catch(err => {
+            console.error('Error al cargar tallas', err);
+            selectTalla.innerHTML = '<option value="">Error al cargar tallas</option>';
+        });
+
+    document.getElementById('modalProducto').classList.remove('hidden');
+}
+
+
+    function cerrarModal() {
+        productoActual = null;
+        document.getElementById('modalProducto').classList.add('hidden');
+    }
+
+    function confirmarAgregarCarrito() {
+        if (!productoActual) return;
+        const talla = document.getElementById('modalTalla').value;
+        const cantidad = parseInt(document.getElementById('modalCantidad').value, 10);
+        if (!talla || isNaN(cantidad) || cantidad < 1) return alert("Talla o cantidad inválida");
+
+        const index = carrito.findIndex(p => p.id === productoActual.id && p.talla === talla);
+        if (index > -1) carrito[index].cantidad += cantidad;
+        else carrito.push({...productoActual, talla, cantidad});
+
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        cerrarModal();
+        renderCarrito();
+    }
+
+    function renderCarrito() {
+        const carritoItems = document.getElementById('carritoItems');
+        carritoItems.innerHTML = '';
+        if (carrito.length === 0) {
+            carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+        } else {
+            carrito.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-2 rounded';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-sm">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                        <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                    </div>
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                carritoItems.appendChild(div);
+            });
+        }
+        document.getElementById('contadorCarritoHeader').textContent = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+    }
+
+    function eliminarProducto(index) {
+        carrito.splice(index, 1);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+    }
+
+    function enviarWhatsApp() {
+        if (carrito.length === 0) return alert("El carrito está vacío");
+        const numero = "51912345678";
+        let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+        carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla}, Cantidad ${p.cantidad}\n`);
+        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+    }
+
+    renderCarrito();
+
+    // Menú móvil
     const menuBtn = document.getElementById("menu-btn");
     const menu = document.getElementById("menu");
     menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
 
-    function toggleMenu(id) {
-        document.getElementById(id).classList.toggle("hidden");
-    }
-
-    // Paginación y búsqueda
+    // Búsqueda y paginación
     const itemsPorPagina = 15;
     let paginaActual = 1;
-    const productos = Array.from(document.querySelectorAll('#gridProductos > div'));
+    const productos = Array.from(document.querySelectorAll('#gridProductos > .producto'));
     const busquedaInput = document.getElementById('busqueda');
     const pageInfo = document.getElementById('pageInfo');
     const prevBtn = document.getElementById('prevPage');
@@ -205,20 +305,10 @@
     }
 
     busquedaInput.addEventListener('input', filtrar);
-    prevBtn.addEventListener('click', () => {
-        const filtrados = filtrar();
-        if (paginaActual > 1) paginaActual--;
-        mostrarPagina(paginaActual, filtrados);
-    });
-    nextBtn.addEventListener('click', () => {
-        const filtrados = filtrar();
-        const total = Math.ceil(filtrados.length / itemsPorPagina);
-        if (paginaActual < total) paginaActual++;
-        mostrarPagina(paginaActual, filtrados);
-    });
+    prevBtn.addEventListener('click', () => { if(paginaActual>1) paginaActual--; mostrarPagina(paginaActual, filtrar()); });
+    nextBtn.addEventListener('click', () => { const total = Math.ceil(filtrar().length / itemsPorPagina); if(paginaActual<total) paginaActual++; mostrarPagina(paginaActual, filtrar()); });
 
     mostrarPagina(paginaActual, productos);
 </script>
-
 </body>
 </html>
