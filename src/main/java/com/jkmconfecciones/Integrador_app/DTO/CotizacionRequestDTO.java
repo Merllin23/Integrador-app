@@ -1,4 +1,4 @@
-package com.jkmconfecciones.Integrador_app.dto;
+package com.jkmconfecciones.Integrador_app.DTO;
 
 import lombok.Data;
 import java.util.List;

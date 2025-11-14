@@ -28,7 +28,7 @@ public class Cotizacion {
     private Double total;
     private String estado;
 
-    @OneToMany(mappedBy = "cotizacion")
+    @OneToMany(mappedBy = "cotizacion", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<DetalleCotizacion> detalles;
 }

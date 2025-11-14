@@ -1,6 +1,6 @@
 package com.jkmconfecciones.Integrador_app.service.Usuario.Impl;
 
-import com.jkmconfecciones.Integrador_app.dto.CotizacionRequestDTO;
+import com.jkmconfecciones.Integrador_app.DTO.CotizacionRequestDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.repositorios.*;
 import com.jkmconfecciones.Integrador_app.service.Usuario.CotizacionService;
