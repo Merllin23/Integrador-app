@@ -5,5 +5,5 @@ import com.jkmconfecciones.Integrador_app.entidades.Cotizacion;
 import com.jkmconfecciones.Integrador_app.entidades.Usuario;
 
 public interface CotizacionService {
-    Cotizacion crearCotizacion(Usuario usuario, CotizacionRequestDTO dto);
+    Cotizacion crearCotizacion(CotizacionRequestDTO dto, String correoUsuario);
 }

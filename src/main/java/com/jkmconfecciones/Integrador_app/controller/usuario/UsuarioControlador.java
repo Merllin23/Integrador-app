@@ -99,23 +99,55 @@ public class UsuarioControlador {
         return response;
     }
 
+    @GetMapping("/producto/{id}")
+    public String verDetalleProducto(@PathVariable Long id, Model model) {
+        var producto = usuarioCatalogoService.obtenerProductoPorId(id);
+        if (producto == null) {
+            return "redirect:/usuario/catalogo";
+        }
+
+        // Cargar tallas
+        var tallas = usuarioCatalogoService.listarTallasPorProducto(id);
+
+        // Calcular el stock total sumando las cantidades de cada talla
+        int stockTotal = producto.getTallas().stream()
+                .mapToInt(t -> t.getCantidadStock() != null ? t.getCantidadStock() : 0)
+                .sum();
+
+        // Obtener usuario autenticado (igual que en el catálogo)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            String correo = auth.getName();
+            Usuario usuario = usuarioRepositorio.findByCorreo(correo).orElse(null);
+            if (usuario != null) {
+                model.addAttribute("nombreUsuario", usuario.getNombre());
+                model.addAttribute("inicial", usuario.getNombre().substring(0, 1).toUpperCase());
+            }
+        }
+
+        model.addAttribute("producto", producto);
+        model.addAttribute("tallas", tallas);
+        model.addAttribute("stockTotal", stockTotal);
+
+        return "usuario/detalle";
+    }
 
 
-
-    /** Endpoint para crear cotización desde JSON usando DTO */
     @PostMapping("/cotizar")
     @ResponseBody
     public Map<String, Object> hacerCotizacionJson(@RequestBody CotizacionRequestDTO dto) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String correo = auth.getName();
-        Usuario usuario = usuarioRepositorio.findByCorreo(correo).orElseThrow();
 
-        Cotizacion cotizacion = cotizacionService.crearCotizacion(usuario, dto);
+        var cotizacion = cotizacionService.crearCotizacion(dto, correo);
 
         Map<String, Object> response = new HashMap<>();
         response.put("mensaje", "Cotización creada exitosamente");
         response.put("cotizacionId", cotizacion.getId());
         response.put("total", cotizacion.getTotal());
+
         return response;
     }
+
 }

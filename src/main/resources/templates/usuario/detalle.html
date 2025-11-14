@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="'Detalles - ' + ${producto.nombre}">JKM Confecciones - Detalles del Producto</title>
+
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-[Poppins] bg-[#F7F8FA] text-gray-800 flex flex-col min-h-screen">
+
+<!-- HEADER -->
+<header class="bg-[#002C77] text-white shadow-md relative">
+    <div class="container mx-auto flex flex-wrap items-center justify-between px-6 py-3 md:px-12">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <img src="/images/JKM_Confecciones.png" alt="Logo JK Confecciones" class="h-10">
+            <h1 class="font-semibold text-lg tracking-wide">JKM Confecciones</h1>
+        </div>
+
+        <!-- Menú principal -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <a th:href="@{/}" class="hover:text-[#DDE3EA] transition">Inicio</a>
+            <a th:href="@{/usuario/catalogo}" class="hover:text-[#DDE3EA] transition">Catálogo</a>
+            <a th:href="@{/usuario/nosotros}" class="hover:text-[#DDE3EA] transition">Nosotros</a>
+            <a th:href="@{/usuario/contacto}" class="hover:text-[#DDE3EA] transition">Contacto</a>
+        </nav>
+
+        <!-- Buscador + Carrito + Cuenta -->
+        <div class="flex items-center gap-4 relative">
+            <!-- Buscador -->
+            <div class="relative hidden sm:block">
+                <input type="text" id="busqueda" placeholder="Buscar"
+                       class="rounded-full pl-9 pr-3 py-1 text-sm text-gray-700 focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-4 h-4 text-gray-500 absolute left-3 top-2.5"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"/>
+                </svg>
+            </div>
+
+            <!-- Carrito -->
+            <a href="javascript:void(0);" onclick="toggleCarrito()"
+               class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+                </svg>
+                <span id="contadorCarritoHeader"
+                      class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+            </a>
+
+            <!-- Usuario logueado -->
+            <div class="relative" sec:authorize="isAuthenticated()">
+                <div class="w-9 h-9 rounded-full bg-white text-[#002C77] flex items-center justify-center font-semibold cursor-pointer hover:bg-[#DDE3EA] transition"
+                     th:text="${inicial}" onclick="toggleMenu('user-menu')">U</div>
+
+                <div id="user-menu"
+                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-20 hidden">
+                    <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
+                        👤 <span th:text="${nombreUsuario}">Usuario</span>
+                    </div>
+                    <a th:href="@{/usuario/usuario}"
+                       sec:authorize="hasRole('USUARIO')"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+                    <form action="/logout" method="post"
+                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <button type="submit" class="w-full text-left">Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Candado (no logueado) -->
+            <a href="/login" sec:authorize="!isAuthenticated()"
+               class="flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M10 2a5 5 0 00-5 5v1H4a2 2 0 00-2 2v7h16v-7a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zM8 8V7a2 2 0 114 0v1H8zm-4 3h12v5H4v-5z"
+                          clip-rule="evenodd" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- Botón menú móvil -->
+        <button id="menu-btn"
+                class="md:hidden border border-white px-3 py-1 rounded-lg hover:bg-white hover:text-[#002C77] transition">
+            ☰
+        </button>
+    </div>
+
+    <!-- Menú móvil -->
+    <nav id="menu" class="hidden md:hidden bg-[#002C77]/95 px-6 pb-4 space-y-2 text-sm">
+        <a th:href="@{/}" class="block hover:text-[#DDE3EA] transition">Inicio</a>
+        <a th:href="@{/usuario/catalogo}" class="block hover:text-[#DDE3EA] transition">Catálogo</a>
+        <a th:href="@{/usuario/nosotros}" class="block hover:text-[#DDE3EA] transition">Nosotros</a>
+        <a th:href="@{/usuario/contacto}" class="block hover:text-[#DDE3EA] transition">Contacto</a>
+    </nav>
+</header>
+
+<main class="flex-grow container mx-auto px-4 py-10 md:px-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white p-8 rounded-3xl shadow-lg">
+
+        <!-- Imagen del producto -->
+        <div class="flex justify-center items-center bg-gray-50 rounded-2xl p-4">
+            <img th:src="${producto.imagenUrl}" alt="Imagen del producto"
+                 class="rounded-xl w-full max-w-md object-cover shadow-md transition-transform hover:scale-[1.02]" />
+        </div>
+
+        <!-- Información del producto -->
+        <div class="flex flex-col justify-between space-y-6">
+            <div>
+                <h2 th:text="${producto.nombre}" class="text-4xl font-semibold text-[#002C77] mb-4"></h2>
+                <p th:text="${producto.descripcion}" class="text-gray-700 mb-5 text-justify leading-relaxed"></p>
+
+                <div class="flex flex-col sm:flex-row sm:gap-10 text-sm text-gray-500 mb-4">
+                    <p><span class="font-semibold">Categoría:</span> <span th:text="${producto.categoria.nombre}"></span></p>
+                    <p><span class="font-semibold">Colección:</span> <span th:text="${producto.coleccion.nombre}"></span></p>
+                </div>
+
+                <p class="text-sm text-gray-600 italic">Stock total disponible:
+                    <span class="font-semibold text-gray-800" th:text="${stockTotal}">0</span>
+                </p>
+            </div>
+
+            <!-- SECCIÓN DE TALLAS Y CANTIDADES -->
+            <div class="mt-6 border-t pt-6">
+                <h3 class="text-base font-semibold text-gray-800 mb-3">Selecciona tallas y cantidades</h3>
+
+                <div id="tallasContainer" class="flex flex-wrap gap-2 mb-4">
+                    <button type="button"
+                            th:each="pt : ${producto.tallas}"
+                            th:text="${pt.talla.nombreTalla}"
+                            th:attr="data-id=${pt.id}"
+                            class="talla-btn px-5 py-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-[#002C77] hover:text-white transition-all shadow-sm">
+                    </button>
+                </div>
+
+                <div id="cantidadesContainer"
+                     class="space-y-3 bg-gray-50 p-3 rounded-lg border border-gray-200"></div>
+
+                <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                    <button id="btnCotizar"
+                            class="bg-gray-400 text-white px-6 py-3 rounded-full font-semibold cursor-not-allowed transition-all w-full sm:w-auto shadow-md"
+                            disabled>
+                        Agregar al carrito
+                    </button>
+
+                    <a th:href="@{/usuario/catalogo}"
+                       class="text-[#002C77] hover:underline text-sm flex items-center justify-center">
+                        ← Volver al catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Carrito lateral -->
+<div id="carritoLateral"
+     class="fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform z-50">
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="font-semibold text-lg">Carrito de Cotización</h2>
+        <button onclick="toggleCarrito()" class="text-gray-500 hover:text-gray-800">&times;</button>
+    </div>
+    <div id="carritoItems" class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100% - 150px);">
+        <p class="text-gray-500 text-sm">No hay productos en el carrito.</p>
+    </div>
+    <div class="p-4 border-t space-y-2">
+        <button onclick="enviarWhatsApp()" class="w-full bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition">
+            Enviar a WhatsApp
+        </button>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-[#F7F8FA] border-t border-gray-300 py-6 text-center text-sm text-gray-700 mt-auto">
+    <div class="flex flex-wrap justify-center gap-6 mb-3">
+        <a th:href="@{/}" class="hover:text-[#002C77] transition">Inicio</a>
+        <a th:href="@{/usuario/catalogo}" class="hover:text-[#002C77] transition">Catálogo</a>
+        <a th:href="@{/usuario/nosotros}" class="hover:text-[#002C77] transition">Nosotros</a>
+        <a th:href="@{/usuario/contacto}" class="hover:text-[#002C77] transition">Contacto</a>
+    </div>
+    <p class="text-gray-600">© 2025 JK Confecciones. Todos los derechos reservados.</p>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        const tallasSeleccionadas = new Map();
+        const contenedorCantidades = document.getElementById("cantidadesContainer");
+        const btnAgregar = document.getElementById("btnCotizar");
+        const nombreProducto = document.querySelector('h2').textContent.trim();
+
+        function actualizarHTMLCantidades() {
+            contenedorCantidades.innerHTML = "";
+            tallasSeleccionadas.forEach((data, id) => {
+                const fila = document.createElement("div");
+                fila.className = "flex justify-between items-center bg-gray-100 p-3 rounded";
+                fila.innerHTML = `
+                    <span class="font-medium">${data.talla}</span>
+                    <div class="flex items-center gap-2">
+                        <button class="menos px-3 py-1 bg-red-400 text-white rounded">-</button>
+                        <span>${data.cantidad}</span>
+                        <button class="mas px-3 py-1 bg-green-500 text-white rounded">+</button>
+                    </div>
+                `;
+                fila.querySelector(".mas").addEventListener("click", () => {
+                    data.cantidad += 1;
+                    tallasSeleccionadas.set(id, data);
+                    actualizarHTMLCantidades();
+                });
+                fila.querySelector(".menos").addEventListener("click", () => {
+                    if (data.cantidad > 1) {
+                        data.cantidad -= 1;
+                        tallasSeleccionadas.set(id, data);
+                    } else {
+                        tallasSeleccionadas.delete(id);
+                    }
+                    actualizarHTMLCantidades();
+                    actualizarBoton();
+                });
+                contenedorCantidades.appendChild(fila);
+            });
+        }
+
+        function actualizarBoton() {
+            const activo = tallasSeleccionadas.size > 0;
+            btnAgregar.disabled = !activo;
+            btnAgregar.classList.toggle("cursor-not-allowed", !activo);
+            btnAgregar.classList.toggle("bg-gray-400", !activo);
+            btnAgregar.classList.toggle("bg-[#002C77]", activo);
+        }
+
+        document.querySelectorAll(".talla-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const talla = btn.textContent.trim();
+                const id = parseInt(btn.dataset.id);
+                if (tallasSeleccionadas.has(id)) {
+                    tallasSeleccionadas.delete(id);
+                    btn.classList.remove("bg-blue-600", "text-white");
+                } else {
+                    tallasSeleccionadas.set(id, { talla: talla, cantidad: 1 });
+                    btn.classList.add("bg-blue-600", "text-white");
+                }
+                actualizarHTMLCantidades();
+                actualizarBoton();
+            });
+        });
+
+        // Agregar al carrito
+        btnAgregar.addEventListener("click", () => {
+            tallasSeleccionadas.forEach(data => {
+                carrito.push({ nombre: nombreProducto, talla: data.talla, cantidad: data.cantidad });
+            });
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            alert("Producto(s) agregado(s) al carrito");
+            tallasSeleccionadas.clear();
+            actualizarHTMLCantidades();
+            actualizarBoton();
+        });
+
+        // Carrito lateral
+        function toggleCarrito() {
+            document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+            renderCarrito();
+        }
+
+        function renderCarrito() {
+            const carritoItems = document.getElementById('carritoItems');
+            carritoItems.innerHTML = '';
+            if (carrito.length === 0) {
+                carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+            } else {
+                carrito.forEach((p, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'flex justify-between items-center border p-2 rounded';
+                    div.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-sm">${p.nombre}</p>
+                            <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                            <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                        </div>
+                        <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                    `;
+                    carritoItems.appendChild(div);
+                });
+            }
+            document.getElementById('contadorCarritoHeader').textContent =
+                carrito.reduce((acc, p) => acc + p.cantidad, 0);
+        }
+
+        function eliminarProducto(index) {
+            carrito.splice(index, 1);
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+        }
+
+        window.toggleCarrito = toggleCarrito;
+        window.eliminarProducto = eliminarProducto;
+
+        function enviarWhatsApp() {
+            if (carrito.length === 0) return alert("El carrito está vacío");
+            const numero = "51912345678";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla}, Cantidad ${p.cantidad}\n`);
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+        }
+
+        window.enviarWhatsApp = enviarWhatsApp;
+
+        renderCarrito();
+
+        // Menú móvil
+        const menuBtn = document.getElementById("menu-btn");
+        const menu = document.getElementById("menu");
+        menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
+
+        // Menú usuario
+        function toggleMenu(id) {
+            document.getElementById(id).classList.toggle("hidden");
+        }
+        window.toggleMenu = toggleMenu;
+    });
+</script>
+</body>
+</html>

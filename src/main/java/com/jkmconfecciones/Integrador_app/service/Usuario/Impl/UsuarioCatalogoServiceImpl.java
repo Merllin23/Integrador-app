@@ -69,4 +69,9 @@ public class UsuarioCatalogoServiceImpl implements UsuarioCatalogoService {
                 .toList();
     }
 
+    @Override
+    public Producto obtenerProductoPorId(Long id) {
+        return productoRepositorio.findById(id).orElse(null);
+    }
+
 }

@@ -5,7 +5,8 @@ import lombok.*;
 
 @Entity
 @Table(name = "detallecotizacion")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetalleCotizacion {

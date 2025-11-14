@@ -9,7 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "producto")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Producto {
@@ -32,10 +33,12 @@ public class Producto {
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
+    @ToString.Exclude
     private Categoria categoria;
 
     @ManyToOne
     @JoinColumn(name = "coleccion_id")
+    @ToString.Exclude
     private Coleccion coleccion;
 
     @ManyToMany
@@ -44,6 +47,7 @@ public class Producto {
             joinColumns = @JoinColumn(name = "producto_id"),
             inverseJoinColumns = @JoinColumn(name = "colegio_id")
     )
+    @ToString.Exclude
     private Set<Colegio> colegios = new HashSet<>();
 
     @ManyToMany
@@ -52,11 +56,10 @@ public class Producto {
             joinColumns = @JoinColumn(name = "producto_id"),
             inverseJoinColumns = @JoinColumn(name = "promocion_id")
     )
+    @ToString.Exclude
     private Set<Promocion> promociones = new HashSet<>();
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<ProductoTalla> tallas = new ArrayList<>();
-
 }
-
-

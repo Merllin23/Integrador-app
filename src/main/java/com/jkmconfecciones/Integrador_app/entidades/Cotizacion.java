@@ -7,7 +7,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "cotizacion")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Cotizacion {
@@ -21,11 +22,13 @@ public class Cotizacion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @ToString.Exclude
     private Usuario usuario;
 
     private Double total;
     private String estado;
 
     @OneToMany(mappedBy = "cotizacion")
+    @ToString.Exclude
     private List<DetalleCotizacion> detalles;
 }

@@ -12,4 +12,6 @@ public interface UsuarioCatalogoService {
 
     List<String> listarTallasPorProducto(Long productoId);
 
+    public Producto obtenerProductoPorId(Long id);
+
 }
