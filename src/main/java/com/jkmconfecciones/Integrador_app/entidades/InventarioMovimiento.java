@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "inventario_movimiento")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class InventarioMovimiento {

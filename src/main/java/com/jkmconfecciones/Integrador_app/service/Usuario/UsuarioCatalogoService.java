@@ -9,4 +9,9 @@ public interface UsuarioCatalogoService {
     List<Producto> obtenerProductosFiltrados(Integer colegioId, Integer categoriaId, String query);
     List<Categoria> listarCategorias();
     List<Colegio> listarColegios();
+
+    List<String> listarTallasPorProducto(Long productoId);
+
+    public Producto obtenerProductoPorId(Long id);
+
 }

@@ -15,7 +15,7 @@
 
 <body class="font-[Poppins] bg-[#F7F8FA] text-gray-800 flex flex-col min-h-screen">
 
-<!-- HEADER (idéntico al landing) -->
+<!-- HEADER  -->
 <header class="bg-[#002C77] text-white shadow-md relative">
     <div class="container mx-auto flex flex-wrap items-center justify-between px-6 py-3 md:px-12">
         <!-- Logo -->
@@ -47,14 +47,13 @@
             </div>
 
             <!-- Carrito -->
-            <a href="/carrito"
+            <a href="javascript:void(0);" onclick="toggleCarrito()"
                class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
                 </svg>
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+                <span id="contadorCarritoHeader"
+                      class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
             </a>
 
             <!-- Avatar dinámico -->
@@ -198,13 +197,32 @@
     </div>
 </div>
 
+<!-- Carrito lateral -->
+<div id="carritoLateral"
+     class="fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform z-50">
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="font-semibold text-lg">Carrito de Cotización</h2>
+        <button onclick="toggleCarrito()" class="text-gray-500 hover:text-gray-800">&times;</button>
+    </div>
+    <div id="carritoItems" class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100% - 150px);">
+        <p class="text-gray-500 text-sm">No hay productos en el carrito.</p>
+    </div>
+    <div class="p-4 border-t space-y-2">
+        <button onclick="enviarWhatsApp()" class="w-full bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition">
+            Enviar a WhatsApp
+        </button>
+    </div>
+</div>
+
 <!-- Scripts -->
 <script>
+    // Menú móvil y menú usuario
     const menuBtn = document.getElementById("menu-btn");
     const menu = document.getElementById("menu");
     menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
     function toggleMenu(id) { document.getElementById(id).classList.toggle("hidden"); }
 
+    // Datos originales del perfil
     const originalData = {
         nombre: document.getElementById('nombre').value,
         telefono: document.getElementById('telefono').value,
@@ -234,6 +252,7 @@
         document.getElementById('nav-history').classList.toggle('bg-[#D4C4E7]', id === 'history');
     }
 
+    // Modal de confirmación
     const modal = document.getElementById('confirmModal');
     const confirmBtn = document.getElementById('confirmModalBtn');
     const cancelBtn = document.getElementById('cancelModalBtn');
@@ -255,6 +274,7 @@
         cancelBtn.onclick = () => modal.classList.add('hidden');
     });
 
+    // Mensaje de éxito
     window.addEventListener('DOMContentLoaded', () => {
         const mensaje = document.querySelector('.bg-green-100.text-green-800');
         if (mensaje) {
@@ -265,6 +285,74 @@
             }, 5000);
         }
     });
+
+    // -------------------- CARRO --------------------
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+    function toggleCarrito() {
+        document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+        renderCarrito();
+    }
+
+    function renderCarrito() {
+        const carritoItems = document.getElementById('carritoItems');
+        carritoItems.innerHTML = '';
+        if (carrito.length === 0) {
+            carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+        } else {
+            carrito.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-2 rounded';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-sm">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                        <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                    </div>
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                carritoItems.appendChild(div);
+            });
+        }
+        const contador = document.getElementById('contadorCarritoHeader');
+        if (contador) {
+            contador.textContent = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+        }
+    }
+
+    function eliminarProducto(index) {
+        carrito.splice(index, 1);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+    }
+
+    function enviarWhatsApp() {
+        if (carrito.length === 0) return alert("El carrito está vacío");
+
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+
+        fetch('/usuario/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Cotización creada:', data);
+
+            const numero = "51925723183";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla || '-'}, Cantidad ${p.cantidad}\n`);
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+        })
+        .catch(err => alert("Error al crear la cotización"));
+    }
+
+    renderCarrito();
 </script>
 
 </body>

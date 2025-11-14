@@ -5,12 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Catálogo | JKM Confecciones</title>
-
-    <!-- Fuente Poppins -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
-
-    <!-- TailwindCSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-[Poppins] bg-[#F7F8FA] text-gray-800">
@@ -18,11 +14,13 @@
 <!-- HEADER -->
 <header class="bg-[#002C77] text-white shadow-md relative">
     <div class="container mx-auto flex flex-wrap items-center justify-between px-6 py-3 md:px-12">
+        <!-- Logo -->
         <div class="flex items-center gap-3">
             <img src="/images/JKM_Confecciones.png" alt="Logo JK Confecciones" class="h-10">
             <h1 class="font-semibold text-lg tracking-wide">JKM Confecciones</h1>
         </div>
 
+        <!-- Menú principal -->
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
             <a th:href="@{/}" class="hover:text-[#DDE3EA] transition">Inicio</a>
             <a th:href="@{/usuario/catalogo}" class="hover:text-[#DDE3EA] transition">Catálogo</a>
@@ -30,6 +28,7 @@
             <a th:href="@{/usuario/contacto}" class="hover:text-[#DDE3EA] transition">Contacto</a>
         </nav>
 
+        <!-- Buscador + Carrito + Cuenta -->
         <div class="flex items-center gap-4 relative">
             <!-- Buscador -->
             <div class="relative hidden sm:block">
@@ -44,38 +43,43 @@
             </div>
 
             <!-- Carrito -->
-            <a href="/carrito"
+            <a href="javascript:void(0);" onclick="toggleCarrito()"
                class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
                 </svg>
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+                <span id="contadorCarritoHeader"
+                      class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
             </a>
 
-            <!-- Usuario autenticado -->
+            <!-- Usuario logueado -->
             <div class="relative" sec:authorize="isAuthenticated()">
                 <div class="w-9 h-9 rounded-full bg-white text-[#002C77] flex items-center justify-center font-semibold cursor-pointer hover:bg-[#DDE3EA] transition"
                      th:text="${inicial}" onclick="toggleMenu('user-menu')">U</div>
+
                 <div id="user-menu"
                      class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-20 hidden">
                     <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
                         👤 <span th:text="${nombreUsuario}">Usuario</span>
                     </div>
-                    <a th:href="@{/usuario/usuario}" sec:authorize="hasRole('USUARIO')"
+                    <a th:href="@{/usuario/usuario}"
+                       sec:authorize="hasRole('USUARIO')"
                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
-                    <form action="/logout" method="post" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <form action="/logout" method="post"
+                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                         <button type="submit" class="w-full text-left">Cerrar sesión</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Usuario no autenticado -->
+            <!-- Candado (no logueado) -->
             <a href="/login" sec:authorize="!isAuthenticated()"
                class="flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd"
                           d="M10 2a5 5 0 00-5 5v1H4a2 2 0 00-2 2v7h16v-7a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zM8 8V7a2 2 0 114 0v1H8zm-4 3h12v5H4v-5z"
-                          clip-rule="evenodd"/>
+                          clip-rule="evenodd" />
                 </svg>
             </a>
         </div>
@@ -96,9 +100,7 @@
     </nav>
 </header>
 
-<!-- CONTENIDO PRINCIPAL DEL CATÁLOGO -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-
     <!-- Buscador y filtros -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
         <form th:action="@{/usuario/catalogo}" method="get" class="flex gap-3 w-full md:w-auto">
@@ -125,9 +127,10 @@
     <!-- GRID DE PRODUCTOS -->
     <div id="gridProductos" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         <div th:each="p : ${productos}"
+             th:data-id="${p.id}"
              th:data-nombre="${p.nombre}"
              th:data-colegio="${#lists.isEmpty(p.colegios) ? '' : p.colegios[0].nombre}"
-             class="bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center p-4">
+             class="producto bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center p-4">
 
             <img th:src="@{${p.imagenUrl}}" alt="Producto"
                  class="w-full h-56 object-contain mb-3 rounded-lg">
@@ -136,10 +139,12 @@
             <p class="text-gray-500 text-xs mb-2"
                th:text="${#lists.isEmpty(p.colegios) ? 'Sin colegio' : p.colegios[0].nombre}"></p>
 
-            <button class="mt-auto bg-blue-700 text-white rounded-full px-4 py-2 text-sm hover:bg-blue-800 transition"
-                    th:onclick="'agregarACotizacion(' + ${p.id} + ')'">
-                Añadir a cotización
+            <button type="button"
+                    th:onclick="'window.location.href=\'/usuario/producto/' + ${p.id} + '\';'"
+                    class="bg-[#002C77] text-white px-6 py-2 rounded-full font-medium hover:bg-[#013A9C] transition">
+                Ver detalle
             </button>
+
         </div>
     </div>
 
@@ -149,10 +154,8 @@
         <span id="pageInfo" class="text-sm font-medium"></span>
         <button id="nextPage" class="px-3 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">Siguiente</button>
     </div>
-
 </main>
 
-<!-- FOOTER -->
 <footer class="bg-[#F7F8FA] border-t border-gray-300 py-6 text-center text-sm text-gray-700">
     <div class="flex flex-wrap justify-center gap-6 mb-3">
         <a th:href="@{/}" class="hover:text-[#002C77] transition">Inicio</a>
@@ -163,20 +166,103 @@
     <p class="text-gray-600">© 2025 JK Confecciones. Todos los derechos reservados.</p>
 </footer>
 
-<!-- Scripts -->
+<!-- Carrito lateral -->
+<div id="carritoLateral"
+     class="fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform z-50">
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="font-semibold text-lg">Carrito de Cotización</h2>
+        <button onclick="toggleCarrito()" class="text-gray-500 hover:text-gray-800">&times;</button>
+    </div>
+    <div id="carritoItems" class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100% - 150px);">
+        <p class="text-gray-500 text-sm">No hay productos en el carrito.</p>
+    </div>
+    <div class="p-4 border-t space-y-2">
+        <button onclick="enviarWhatsApp()" class="w-full bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition">
+            Enviar a WhatsApp
+        </button>
+    </div>
+</div>
+
 <script>
+    // Carrito (usado para mostrar el contador en el header)
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+    function toggleCarrito() {
+        document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+        renderCarrito();
+    }
+
+    function renderCarrito() {
+        const carritoItems = document.getElementById('carritoItems');
+        carritoItems.innerHTML = '';
+        if (carrito.length === 0) {
+            carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+        } else {
+            carrito.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-2 rounded';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-sm">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                        <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                    </div>
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                carritoItems.appendChild(div);
+            });
+        }
+        document.getElementById('contadorCarritoHeader').textContent =
+            carrito.reduce((acc, p) => acc + p.cantidad, 0);
+    }
+
+    function eliminarProducto(index) {
+        carrito.splice(index, 1);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+    }
+
+    function enviarWhatsApp() {
+        if (carrito.length === 0) return alert("El carrito está vacío");
+
+        // Enviar al backend
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+
+        fetch('/usuario/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Cotización creada:', data);
+
+            // Enviar a WhatsApp
+            const numero = "51925723183";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla || '-'}, Cantidad ${p.cantidad}\n`);
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            // Limpiar carrito
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+        })
+        .catch(err => alert("Error al crear la cotización"));
+    }
+
+
+    renderCarrito();
+
+    // Menú móvil
     const menuBtn = document.getElementById("menu-btn");
     const menu = document.getElementById("menu");
     menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
 
-    function toggleMenu(id) {
-        document.getElementById(id).classList.toggle("hidden");
-    }
-
-    // Paginación y búsqueda
+    // Búsqueda y paginación
     const itemsPorPagina = 15;
     let paginaActual = 1;
-    const productos = Array.from(document.querySelectorAll('#gridProductos > div'));
+    const productos = Array.from(document.querySelectorAll('#gridProductos > .producto'));
     const busquedaInput = document.getElementById('busqueda');
     const pageInfo = document.getElementById('pageInfo');
     const prevBtn = document.getElementById('prevPage');
@@ -205,19 +291,25 @@
     }
 
     busquedaInput.addEventListener('input', filtrar);
-    prevBtn.addEventListener('click', () => {
-        const filtrados = filtrar();
-        if (paginaActual > 1) paginaActual--;
-        mostrarPagina(paginaActual, filtrados);
-    });
+    prevBtn.addEventListener('click', () => { if (paginaActual > 1) paginaActual--; mostrarPagina(paginaActual, filtrar()); });
     nextBtn.addEventListener('click', () => {
-        const filtrados = filtrar();
-        const total = Math.ceil(filtrados.length / itemsPorPagina);
+        const total = Math.ceil(filtrar().length / itemsPorPagina);
         if (paginaActual < total) paginaActual++;
-        mostrarPagina(paginaActual, filtrados);
+        mostrarPagina(paginaActual, filtrar());
     });
 
     mostrarPagina(paginaActual, productos);
+
+    // Menú usuario
+    function toggleMenu(id) {
+        document.getElementById(id).classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function (e) {
+        const menu = document.getElementById('user-menu');
+        const avatar = e.target.closest('[onclick="toggleMenu(\'user-menu\')"]');
+        if (menu && !avatar && !menu.contains(e.target)) menu.classList.add('hidden');
+    });
 </script>
 
 </body>

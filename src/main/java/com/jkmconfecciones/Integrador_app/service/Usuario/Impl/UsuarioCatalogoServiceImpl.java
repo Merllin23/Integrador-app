@@ -6,6 +6,7 @@ import com.jkmconfecciones.Integrador_app.entidades.Colegio;
 import com.jkmconfecciones.Integrador_app.repositorios.ProductoRepositorio;
 import com.jkmconfecciones.Integrador_app.repositorios.CategoriaRepositorio;
 import com.jkmconfecciones.Integrador_app.repositorios.ColegioRepositorio;
+import com.jkmconfecciones.Integrador_app.repositorios.ProductoTallaRepositorio;
 import com.jkmconfecciones.Integrador_app.service.Usuario.UsuarioCatalogoService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UsuarioCatalogoServiceImpl implements UsuarioCatalogoService {
 
+    private final ProductoTallaRepositorio productoTallaRepositorio;
     private final ProductoRepositorio productoRepositorio;
     private final CategoriaRepositorio categoriaRepositorio;
     private final ColegioRepositorio colegioRepositorio;
@@ -58,4 +60,18 @@ public class UsuarioCatalogoServiceImpl implements UsuarioCatalogoService {
     public List<Colegio> listarColegios() {
         return colegioRepositorio.findAll();
     }
+
+    @Override
+    public List<String> listarTallasPorProducto(Long productoId) {
+        return productoTallaRepositorio.findByProductoId(productoId)
+                .stream()
+                .map(pt -> pt.getTalla().getNombreTalla())
+                .toList();
+    }
+
+    @Override
+    public Producto obtenerProductoPorId(Long id) {
+        return productoRepositorio.findById(id).orElse(null);
+    }
+
 }
