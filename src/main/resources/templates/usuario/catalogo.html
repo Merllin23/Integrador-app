@@ -224,20 +224,42 @@
 
     function enviarWhatsApp() {
         if (carrito.length === 0) return alert("El carrito está vacío");
-        const numero = "51912345678";
-        let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
-        carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla}, Cantidad ${p.cantidad}\n`);
-        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+        // Enviar al backend
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+
+        fetch('/usuario/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Cotización creada:', data);
+
+            // Enviar a WhatsApp
+            const numero = "51925723183";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla || '-'}, Cantidad ${p.cantidad}\n`);
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            // Limpiar carrito
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+        })
+        .catch(err => alert("Error al crear la cotización"));
     }
+
 
     renderCarrito();
 
-    // 📱 Menú móvil
+    // Menú móvil
     const menuBtn = document.getElementById("menu-btn");
     const menu = document.getElementById("menu");
     menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
 
-    // 🔎 Búsqueda y paginación
+    // Búsqueda y paginación
     const itemsPorPagina = 15;
     let paginaActual = 1;
     const productos = Array.from(document.querySelectorAll('#gridProductos > .producto'));
@@ -278,7 +300,7 @@
 
     mostrarPagina(paginaActual, productos);
 
-    // 👤 Menú usuario
+    // Menú usuario
     function toggleMenu(id) {
         document.getElementById(id).classList.toggle('hidden');
     }

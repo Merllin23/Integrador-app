@@ -197,6 +197,7 @@
         const btnAgregar = document.getElementById("btnCotizar");
         const nombreProducto = document.querySelector('h2').textContent.trim();
 
+        // --- funciones de tallas, carrito, envío WhatsApp ---
         function actualizarHTMLCantidades() {
             contenedorCantidades.innerHTML = "";
             tallasSeleccionadas.forEach((data, id) => {
@@ -245,7 +246,7 @@
                     tallasSeleccionadas.delete(id);
                     btn.classList.remove("bg-blue-600", "text-white");
                 } else {
-                    tallasSeleccionadas.set(id, { talla: talla, cantidad: 1 });
+                    tallasSeleccionadas.set(id, { talla: talla, cantidad: 1, id: id });
                     btn.classList.add("bg-blue-600", "text-white");
                 }
                 actualizarHTMLCantidades();
@@ -253,19 +254,17 @@
             });
         });
 
-        // Agregar al carrito
         btnAgregar.addEventListener("click", () => {
             tallasSeleccionadas.forEach(data => {
-                carrito.push({ nombre: nombreProducto, talla: data.talla, cantidad: data.cantidad });
+                carrito.push({ nombre: nombreProducto, talla: data.talla, cantidad: data.cantidad, id: data.id });
             });
             localStorage.setItem('carrito', JSON.stringify(carrito));
-            alert("Producto(s) agregado(s) al carrito");
             tallasSeleccionadas.clear();
             actualizarHTMLCantidades();
             actualizarBoton();
+            renderCarrito();
         });
 
-        // Carrito lateral
         function toggleCarrito() {
             document.getElementById('carritoLateral').classList.toggle('translate-x-full');
             renderCarrito();
@@ -306,10 +305,34 @@
 
         function enviarWhatsApp() {
             if (carrito.length === 0) return alert("El carrito está vacío");
-            const numero = "51912345678";
-            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
-            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla}, Cantidad ${p.cantidad}\n`);
-            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            const dto = {
+                productos: carrito.map(p => ({
+                    productoTallaId: p.id,
+                    cantidad: p.cantidad
+                }))
+            };
+
+            fetch('/usuario/cotizar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dto)
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Cotización creada:', data);
+                const numero = "51925723183";
+                let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+                carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla}, Cantidad ${p.cantidad}\n`);
+                window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+                carrito = [];
+                localStorage.setItem('carrito', JSON.stringify(carrito));
+                renderCarrito();
+            })
+            .catch(err => {
+                console.error('Error creando cotización:', err);
+                alert("Ocurrió un error al crear la cotización");
+            });
         }
 
         window.enviarWhatsApp = enviarWhatsApp;
@@ -326,7 +349,18 @@
             document.getElementById(id).classList.toggle("hidden");
         }
         window.toggleMenu = toggleMenu;
+
+        // Cerrar menú usuario al hacer clic fuera
+        document.addEventListener('click', function (e) {
+            const menu = document.getElementById('user-menu');
+            const avatar = e.target.closest('[onclick="toggleMenu(\'user-menu\')"]');
+            if (menu && !avatar && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
     });
 </script>
+
 </body>
 </html>
