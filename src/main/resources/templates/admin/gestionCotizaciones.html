@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cotizaciones</title>
+
+    <!-- Fragmento CSS adicional -->
+    <th:block th:fragment="extraCss">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial;
+            }
+
+            /* BADGES DE ESTADO */
+            .estado-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.375rem 0.875rem;
+                border-radius: 9999px;
+                font-size: 0.875rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+            }
+
+            .estado-pendiente {
+                background-color: #fef3c7;
+                color: #92400e;
+            }
+
+            .estado-en-proceso {
+                background-color: #dbeafe;
+                color: #1e40af;
+            }
+
+            .estado-completado {
+                background-color: #d1fae5;
+                color: #065f46;
+            }
+
+            .estado-cancelado {
+                background-color: #fee2e2;
+                color: #991b1b;
+            }
+
+            /* BOTONES DE ACCIÓN */
+            .btn-action {
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                font-size: 0.875rem;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .btn-editar {
+                background-color: #3b82f6;
+                color: white;
+            }
+
+            .btn-editar:hover {
+                background-color: #2563eb;
+            }
+
+            .btn-eliminar {
+                background-color: #ef4444;
+                color: white;
+            }
+
+            .btn-eliminar:hover {
+                background-color: #dc2626;
+            }
+
+            .btn-ver {
+                background-color: #10b981;
+                color: white;
+            }
+
+            .btn-ver:hover {
+                background-color: #059669;
+            }
+
+            /* PAGINACIÓN */
+            .pagination {
+                display: flex;
+                justify-content: center;
+                gap: 0.5rem;
+                margin-top: 2rem;
+                flex-wrap: wrap;
+            }
+
+            .pagination a {
+                padding: 0.5rem 0.9rem;
+                border-radius: 0.5rem;
+                border: 1px solid #d1d5db;
+                background: white;
+                text-decoration: none;
+                color: #111827;
+                transition: all 0.2s;
+                font-weight: 500;
+            }
+
+            .pagination a:hover:not(.disabled):not(.active) {
+                background: #f3f4f6;
+                border-color: #9ca3af;
+            }
+
+            .pagination a.active {
+                background: #2563eb;
+                color: white;
+                border-color: #2563eb;
+            }
+
+            .pagination a.disabled {
+                cursor: not-allowed;
+                opacity: 0.5;
+                pointer-events: none;
+            }
+
+            /* MODAL */
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                justify-content: center;
+                align-items: center;
+                z-index: 50;
+                padding: 1rem;
+            }
+
+            .modal.active {
+                display: flex;
+            }
+
+            .modal-content {
+                background: white;
+                border-radius: 1rem;
+                max-width: 500px;
+                width: 100%;
+                padding: 2rem;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                position: relative;
+            }
+
+            .modal-header {
+                font-size: 1.5rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                color: #111827;
+            }
+
+            .modal-body {
+                margin-bottom: 1.5rem;
+            }
+
+            .modal-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 0.75rem;
+            }
+
+            .btn-modal {
+                padding: 0.625rem 1.25rem;
+                border-radius: 0.5rem;
+                font-weight: 500;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-cancel {
+                background: #e5e7eb;
+                color: #111827;
+            }
+
+            .btn-cancel:hover {
+                background: #d1d5db;
+            }
+
+            .btn-confirm {
+                background: #3b82f6;
+                color: white;
+            }
+
+            .btn-confirm:hover {
+                background: #2563eb;
+            }
+
+            .btn-delete {
+                background: #ef4444;
+                color: white;
+            }
+
+            .btn-delete:hover {
+                background: #dc2626;
+            }
+
+            /* SELECT PERSONALIZADO */
+            .form-select {
+                width: 100%;
+                padding: 0.625rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
+                background: white;
+                font-size: 0.875rem;
+                outline: none;
+                transition: all 0.2s;
+            }
+
+            .form-select:focus {
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+            /* TABLA RESPONSIVE */
+            .table-wrapper {
+                overflow-x: auto;
+                border-radius: 0.75rem;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                background: white;
+            }
+
+            thead {
+                background: #f9fafb;
+                border-bottom: 2px solid #e5e7eb;
+            }
+
+            th {
+                padding: 1rem;
+                text-align: left;
+                font-weight: 600;
+                font-size: 0.875rem;
+                color: #374151;
+                text-transform: uppercase;
+                letter-spacing: 0.025em;
+            }
+
+            td {
+                padding: 1rem;
+                border-bottom: 1px solid #f3f4f6;
+                color: #111827;
+                font-size: 0.9rem;
+            }
+
+            tbody tr:hover {
+                background: #f9fafb;
+            }
+
+            tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            /* MENSAJE SIN DATOS */
+            .no-data {
+                text-align: center;
+                padding: 3rem 1rem;
+                color: #6b7280;
+            }
+
+            .no-data svg {
+                margin: 0 auto 1rem;
+                width: 4rem;
+                height: 4rem;
+                color: #d1d5db;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<!-- Fragmento principal de contenido -->
+<th:block th:fragment="mainContent">
+    <div class="max-w-7xl mx-auto">
+        <!-- Encabezado -->
+        <div class="mb-6">
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Gestión de Cotizaciones</h1>
+            <p class="text-sm text-gray-500 mt-1">Administra y gestiona todas las cotizaciones de los clientes</p>
+        </div>
+
+        <!-- Controles superiores -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+            <div class="relative w-full sm:max-w-md">
+                <select id="filterEstado" name="estado"
+                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none pr-10">
+                    <option value="TODOS" th:selected="${estadoSeleccionado == null || estadoSeleccionado == 'TODOS'}">Todos los Estados</option>
+                    <option value="PENDIENTE" th:selected="${estadoSeleccionado == 'PENDIENTE'}">Pendiente</option>
+                    <option value="EN PROCESO" th:selected="${estadoSeleccionado == 'EN PROCESO'}">En Proceso</option>
+                    <option value="COMPLETADO" th:selected="${estadoSeleccionado == 'COMPLETADO'}">Completado</option>
+                    <option value="CANCELADO" th:selected="${estadoSeleccionado == 'CANCELADO'}">Cancelado</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
+                    <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M10 12a1 1 0 01-.707-.293l-4-4a1 1 0 111.414-1.414L10 9.586l3.293-3.293a1 1 0 111.414 1.414l-4 4A1 1 0 0110 12z"
+                              clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="text-sm text-gray-600">
+                <span class="font-medium" th:text="${totalRegistros}">0</span> cotizaciones encontradas
+            </div>
+        </div>
+
+        <!-- Tabla de cotizaciones -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID Pedido</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Detalle</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Filas dinámicas -->
+                <tr th:each="cot : ${cotizaciones}">
+                    <td class="font-semibold" th:text="${'#' + cot.id}"></td>
+                    <td th:text="${cot.usuario.nombre + (cot.usuario.apellido != null ? ' ' + cot.usuario.apellido : '')}"></td>
+                    <td th:text="${#temporals.format(cot.fecha, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <button type="button" class="text-blue-600 hover:text-blue-800 font-medium underline"
+                                th:attr="data-id=${cot.id}"
+                                onclick="verDetalle(this.dataset.id)">
+                            Ver detalle
+                        </button>
+                    </td>
+                    <td class="font-semibold" th:text="${'S/ ' + #numbers.formatDecimal(cot.total, 1, 2)}"></td>
+                    <td>
+                        <span th:class="${cot.estado == 'PENDIENTE'} ? 'estado-badge estado-pendiente' :
+                                        (${cot.estado == 'EN PROCESO'} ? 'estado-badge estado-en-proceso' :
+                                        (${cot.estado == 'COMPLETADO'} ? 'estado-badge estado-completado' : 'estado-badge estado-cancelado'))"
+                              th:text="${cot.estado}"></span>
+                    </td>
+                    <td class="text-center">
+                        <div class="flex justify-center gap-2">
+                            <button type="button"
+                                    class="btn-action btn-editar"
+                                    th:attr="data-id=${cot.id}, data-estado=${cot.estado}"
+                                    onclick="abrirModalEditarEstado(this.dataset.id, this.dataset.estado)">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button type="button"
+                                    class="btn-action btn-eliminar"
+                                    th:attr="data-id=${cot.id}"
+                                    onclick="abrirModalEliminar(this.dataset.id)">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Mensaje cuando no hay cotizaciones -->
+                <tr th:if="${cotizaciones == null or #lists.isEmpty(cotizaciones)}">
+                    <td colspan="7">
+                        <div class="no-data">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="font-medium text-lg">No hay cotizaciones para mostrar</p>
+                            <p class="text-sm mt-1">Intenta ajustar los filtros o verifica que existan cotizaciones registradas</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="pagination" th:if="${totalPaginas > 1}">
+            <a th:classappend="${paginaActual == 1} ? ' disabled'" 
+               th:href="@{/admin/cotizaciones(page=${paginaActual - 1}, estado=${estadoSeleccionado})}">
+                Anterior
+            </a>
+            <span th:each="i : ${#numbers.sequence(1, totalPaginas)}">
+                <a th:classappend="${i == paginaActual} ? ' active'" 
+                   th:href="@{/admin/cotizaciones(page=${i}, estado=${estadoSeleccionado})}" 
+                   th:text="${i}">1</a>
+            </span>
+            <a th:classappend="${paginaActual == totalPaginas} ? ' disabled'" 
+               th:href="@{/admin/cotizaciones(page=${paginaActual + 1}, estado=${estadoSeleccionado})}">
+                Siguiente
+            </a>
+        </div>
+
+        <!-- Información de paginación -->
+        <div class="text-center text-sm text-gray-500 mt-4" th:if="${totalPaginas == 1 && totalRegistros > 0}">
+            Mostrando <span class="font-semibold" th:text="${totalRegistros}">0</span> cotización(es) en total
+            <span th:if="${totalRegistros >= 10}">(La paginación aparecerá cuando haya más de 10 cotizaciones)</span>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Estado -->
+    <div id="modalEditarEstado" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Editar Estado de Cotización</div>
+            <div class="modal-body">
+                <label for="selectEstado" class="block text-sm font-medium text-gray-700 mb-2">
+                    Selecciona el nuevo estado:
+                </label>
+                <select id="selectEstado" class="form-select">
+                    <option value="PENDIENTE">Pendiente</option>
+                    <option value="EN PROCESO">En Proceso</option>
+                    <option value="COMPLETADO">Completado</option>
+                    <option value="CANCELADO">Cancelado</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="cerrarModal('modalEditarEstado')">
+                    Cancelar
+                </button>
+                <button type="button" class="btn-modal btn-confirm" onclick="confirmarEdicionEstado()">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Eliminar Cotización -->
+    <div id="modalEliminar" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Eliminar Cotización</div>
+            <div class="modal-body">
+                <p class="text-gray-700">¿Estás seguro de que deseas eliminar esta cotización?</p>
+                <p class="text-sm text-gray-500 mt-2">Esta acción no se puede deshacer.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="cerrarModal('modalEliminar')">
+                    Cancelar
+                </button>
+                <button type="button" class="btn-modal btn-delete" onclick="confirmarEliminar()">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Ver Detalle -->
+    <div id="modalDetalle" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">Detalle de la Cotización</div>
+            <div class="modal-body" id="detalleBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-cancel" onclick="cerrarModal('modalDetalle')">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:fragment="extraJs">
+    <script>
+        let cotizacionIdActual = null;
+
+        // Filtro por estado
+        document.getElementById('filterEstado').addEventListener('change', function() {
+            const estado = this.value;
+            window.location.href = `/admin/cotizaciones?estado=${estado}`;
+        });
+
+        // Abrir modal para editar estado
+        function abrirModalEditarEstado(id, estadoActual) {
+            cotizacionIdActual = id;
+            document.getElementById('selectEstado').value = estadoActual;
+            document.getElementById('modalEditarEstado').classList.add('active');
+        }
+
+        // Confirmar edición de estado
+        async function confirmarEdicionEstado() {
+            const nuevoEstado = document.getElementById('selectEstado').value;
+            
+            try {
+                const response = await fetch(`/admin/cotizaciones/${cotizacionIdActual}/actualizar-estado`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ estado: nuevoEstado })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Estado actualizado correctamente');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al actualizar el estado');
+            }
+        }
+
+        // Abrir modal para eliminar
+        function abrirModalEliminar(id) {
+            cotizacionIdActual = id;
+            document.getElementById('modalEliminar').classList.add('active');
+        }
+
+        // Confirmar eliminación
+        async function confirmarEliminar() {
+            try {
+                const response = await fetch(`/admin/cotizaciones/${cotizacionIdActual}/eliminar`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Cotización eliminada correctamente');
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al eliminar la cotización');
+            }
+        }
+
+        // Ver detalle de cotización
+        async function verDetalle(id) {
+            try {
+                const response = await fetch(`/admin/cotizaciones/${id}/detalle`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const cot = result.cotizacion;
+                    let detallesHTML = '';
+
+                    if (cot.detalles && cot.detalles.length > 0) {
+                        detallesHTML = `
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Talla</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">P. Unitario</th>
+                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        ${cot.detalles.map(det => `
+                                            <tr>
+                                                <td class="px-4 py-2">${det.productoTalla.producto.nombre}</td>
+                                                <td class="px-4 py-2">${det.productoTalla.talla.nombreTalla}</td>
+                                                <td class="px-4 py-2">${det.cantidad}</td>
+                                                <td class="px-4 py-2">S/ ${det.precioUnitario.toFixed(2)}</td>
+                                                <td class="px-4 py-2 font-semibold">S/ ${det.subtotal.toFixed(2)}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                    <tfoot class="bg-gray-50">
+                                        <tr>
+                                            <td colspan="4" class="px-4 py-2 text-right font-semibold">Total:</td>
+                                            <td class="px-4 py-2 font-bold text-lg">S/ ${cot.total.toFixed(2)}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        `;
+                    } else {
+                        detallesHTML = '<p class="text-gray-500">No hay detalles disponibles</p>';
+                    }
+
+                    document.getElementById('detalleBody').innerHTML = `
+                        <div class="space-y-3 mb-4">
+                            <p><strong>ID Cotización:</strong> #${cot.id}</p>
+                            <p><strong>Cliente:</strong> ${cot.usuario.nombre}${cot.usuario.apellido ? ' ' + cot.usuario.apellido : ''}</p>
+                            <p><strong>Correo:</strong> ${cot.usuario.correo}</p>
+                            <p><strong>Estado:</strong> <span class="estado-badge estado-${cot.estado.toLowerCase().replace(' ', '-')}">${cot.estado}</span></p>
+                        </div>
+                        <h3 class="font-semibold text-lg mb-2">Productos:</h3>
+                        ${detallesHTML}
+                    `;
+
+                    document.getElementById('modalDetalle').classList.add('active');
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar el detalle');
+            }
+        }
+
+        // Cerrar modal
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            cotizacionIdActual = null;
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    cerrarModal(this.id);
+                }
+            });
+        });
+    </script>
+</th:block>
+</body>
+</html>

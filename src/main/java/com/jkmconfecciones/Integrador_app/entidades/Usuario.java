@@ -20,6 +20,9 @@ public class Usuario {
     @Column(nullable = false)
     private String nombre;
 
+    @Column
+    private String apellido;
+
     @Column(unique = true, nullable = false)
     private String correo;
 
