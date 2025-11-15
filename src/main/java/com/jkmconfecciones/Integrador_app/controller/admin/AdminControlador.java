@@ -3,7 +3,7 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
-import com.jkmconfecciones.Integrador_app.repositorios.CotizacionRepositorio;
+import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
 import org.springframework.http.*;
 
@@ -30,7 +30,7 @@ public class AdminControlador {
     private final ColegioService colegioService;
     private final ProductoService productoService;
     private final TallaService tallaService;
-    private final CotizacionRepositorio cotizacionRepositorio;
+    private final AdminCotizacionService adminCotizacionService;
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -493,37 +493,30 @@ public class AdminControlador {
                                       @RequestParam(value = "estado", required = false) String estadoFiltro,
                                       @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
 
-        int TAM_PAGINA = 10; // máximo cotizaciones por página
-        
+        int TAM_PAGINA = 10;
+
         model.addAttribute("currentPage", "cotizaciones");
         model.addAttribute("pageTitle", "Gestión de Cotizaciones - JKM Confecciones");
         model.addAttribute("nombre", "Administrador");
         model.addAttribute("rol", "Administrador");
 
-        // Obtener todas las cotizaciones ordenadas por fecha descendente
-        List<Cotizacion> cotizacionesCompletas;
-        
-        if (estadoFiltro != null && !estadoFiltro.isEmpty() && !estadoFiltro.equals("TODOS")) {
-            cotizacionesCompletas = cotizacionRepositorio.findByEstadoOrderByFechaDesc(estadoFiltro);
-        } else {
-            cotizacionesCompletas = cotizacionRepositorio.findAllByOrderByFechaDesc();
-        }
+        List<Cotizacion> cotizacionesCompletas =
+                adminCotizacionService.listarPorEstado(estadoFiltro);
 
-        // Paginación
+        // Paginación (igual que tu versión)
         int totalRegistros = cotizacionesCompletas.size();
         int totalPaginas = (int) Math.ceil((double) totalRegistros / TAM_PAGINA);
-        totalPaginas = Math.max(1, totalPaginas); // al menos 1 página
-        pagina = Math.max(1, Math.min(pagina, totalPaginas)); // asegurar que no salga de rango
+        totalPaginas = Math.max(1, totalPaginas);
+        pagina = Math.max(1, Math.min(pagina, totalPaginas));
 
         int desde = (pagina - 1) * TAM_PAGINA;
         int hasta = Math.min(desde + TAM_PAGINA, totalRegistros);
-        List<Cotizacion> cotizaciones = totalRegistros > 0 ? cotizacionesCompletas.subList(desde, hasta) : cotizacionesCompletas;
+        List<Cotizacion> cotizaciones = cotizacionesCompletas.subList(desde, hasta);
 
         model.addAttribute("cotizaciones", cotizaciones);
         model.addAttribute("estadoSeleccionado", estadoFiltro);
         model.addAttribute("paginaActual", pagina);
         model.addAttribute("totalPaginas", totalPaginas);
-        model.addAttribute("totalRegistros", totalRegistros);
 
         model.addAttribute("mainContent", "admin/gestionCotizaciones :: mainContent");
         model.addAttribute("extraCss", "admin/gestionCotizaciones :: extraCss");
@@ -534,128 +527,65 @@ public class AdminControlador {
 
     @PostMapping("/cotizaciones/{id}/actualizar-estado")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(@PathVariable Integer id, 
-                                                                  @RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> request) {
+
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
             String nuevoEstado = request.get("estado");
-            
-            if (nuevoEstado == null || nuevoEstado.isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Estado no proporcionado");
-                return ResponseEntity.badRequest().body(response);
-            }
-
-            Cotizacion cotizacion = cotizacionRepositorio.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
-
-            cotizacion.setEstado(nuevoEstado);
-            cotizacionRepositorio.save(cotizacion);
+            adminCotizacionService.actualizarEstado(id, nuevoEstado);
 
             response.put("success", true);
             response.put("message", "Estado actualizado correctamente");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error al actualizar estado de cotización: ", e);
             response.put("success", false);
-            response.put("message", "Error al actualizar el estado: " + e.getMessage());
+            response.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
     }
 
     @DeleteMapping("/cotizaciones/{id}/eliminar")
     @ResponseBody
-    @Transactional
     public ResponseEntity<Map<String, Object>> eliminarCotizacion(@PathVariable Integer id) {
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
-            Cotizacion cotizacion = cotizacionRepositorio.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
-
-            cotizacionRepositorio.delete(cotizacion);
-            cotizacionRepositorio.flush(); // Asegura que se ejecute la eliminación
-
+            adminCotizacionService.eliminar(id);
             response.put("success", true);
             response.put("message", "Cotización eliminada correctamente");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error al eliminar cotización: ", e);
             response.put("success", false);
-            response.put("message", "Error al eliminar la cotización: " + e.getMessage());
+            response.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
     }
 
+
     @GetMapping("/cotizaciones/{id}/detalle")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> obtenerDetalleCotizacion(@PathVariable Integer id) {
+
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
-            Cotizacion cotizacion = cotizacionRepositorio.findByIdWithDetails(id)
-                    .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
-
-            // Conversion a DTO para evitar problemas de carga
-            CotizacionDetalleDTO dto = new CotizacionDetalleDTO();
-            dto.setId(cotizacion.getId());
-            dto.setFecha(cotizacion.getFecha());
-            dto.setTotal(cotizacion.getTotal());
-            dto.setEstado(cotizacion.getEstado());
-
-            // Usuario
-            CotizacionDetalleDTO.UsuarioSimpleDTO usuarioDTO = new CotizacionDetalleDTO.UsuarioSimpleDTO();
-            usuarioDTO.setId(cotizacion.getUsuario().getId());
-            usuarioDTO.setNombre(cotizacion.getUsuario().getNombre());
-            usuarioDTO.setApellido(cotizacion.getUsuario().getApellido());
-            usuarioDTO.setCorreo(cotizacion.getUsuario().getCorreo());
-            dto.setUsuario(usuarioDTO);
-
-            // Detalles
-            List<CotizacionDetalleDTO.DetalleItemDTO> detallesDTO = new ArrayList<>();
-            if (cotizacion.getDetalles() != null) {
-                for (DetalleCotizacion detalle : cotizacion.getDetalles()) {
-                    CotizacionDetalleDTO.DetalleItemDTO detalleDTO = new CotizacionDetalleDTO.DetalleItemDTO();
-                    detalleDTO.setId(detalle.getId());
-                    detalleDTO.setCantidad(detalle.getCantidad());
-                    detalleDTO.setPrecioUnitario(detalle.getPrecioUnitario());
-                    detalleDTO.setSubtotal(detalle.getSubtotal());
-
-                    // ProductoTalla
-                    CotizacionDetalleDTO.ProductoTallaSimpleDTO ptDTO = new CotizacionDetalleDTO.ProductoTallaSimpleDTO();
-                    ptDTO.setId(detalle.getProductoTalla().getId());
-
-                    // Producto
-                    CotizacionDetalleDTO.ProductoSimpleDTO productoDTO = new CotizacionDetalleDTO.ProductoSimpleDTO();
-                    productoDTO.setId(detalle.getProductoTalla().getProducto().getId());
-                    productoDTO.setNombre(detalle.getProductoTalla().getProducto().getNombre());
-                    ptDTO.setProducto(productoDTO);
-
-                    // Talla
-                    CotizacionDetalleDTO.TallaSimpleDTO tallaDTO = new CotizacionDetalleDTO.TallaSimpleDTO();
-                    tallaDTO.setId(detalle.getProductoTalla().getTalla().getId());
-                    tallaDTO.setNombreTalla(detalle.getProductoTalla().getTalla().getNombreTalla());
-                    ptDTO.setTalla(tallaDTO);
-
-                    detalleDTO.setProductoTalla(ptDTO);
-                    detallesDTO.add(detalleDTO);
-                }
-            }
-            dto.setDetalles(detallesDTO);
+            CotizacionDetalleDTO dto = adminCotizacionService.obtenerDetalle(id);
 
             response.put("success", true);
             response.put("cotizacion", dto);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Error al obtener detalle de cotización: ", e);
             response.put("success", false);
-            response.put("message", "Error al obtener el detalle: " + e.getMessage());
+            response.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
     }
+
 
 }

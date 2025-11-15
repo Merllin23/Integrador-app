@@ -277,6 +277,27 @@
                 height: 4rem;
                 color: #d1d5db;
             }
+
+            .mensaje-success {
+            background-color: #16a34a; /* Verde */
+        }
+
+        .mensaje-error {
+            background-color: #dc2626; /* Rojo */
+        }
+
+            #mensajeNotificacion {
+            @apply opacity-0 -translate-y-3;
+        }
+
+        .show {
+            @apply opacity-100 translate-y-0;
+        }
+
+        .hide {
+            @apply opacity-0 -translate-y-3;
+        }
+
         </style>
     </th:block>
 </head>
@@ -293,6 +314,7 @@
 
         <!-- Controles superiores -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+
             <div class="relative w-full sm:max-w-md">
                 <select id="filterEstado" name="estado"
                         class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none pr-10">
@@ -311,10 +333,23 @@
                 </div>
             </div>
 
+
+
             <div class="text-sm text-gray-600">
                 <span class="font-medium" th:text="${totalRegistros}">0</span> cotizaciones encontradas
             </div>
         </div>
+
+        <!-- MENSAJE DE ÉXITO / ERROR -->
+        <div id="mensajeNotificacion"
+             class="hidden w-full mx-auto mb-4 p-4 rounded-lg shadow-md flex items-center gap-3
+            opacity-0 -translate-y-3 transition-all duration-300 font-medium text-white">
+            <span id="toastIcon" class="text-xl"></span>
+            <span id="toastText"></span>
+        </div>
+
+
+
 
         <!-- Tabla de cotizaciones -->
         <div class="table-wrapper">
@@ -387,16 +422,16 @@
 
         <!-- Paginación -->
         <div class="pagination" th:if="${totalPaginas > 1}">
-            <a th:classappend="${paginaActual == 1} ? ' disabled'" 
+            <a th:classappend="${paginaActual == 1} ? ' disabled'"
                th:href="@{/admin/cotizaciones(page=${paginaActual - 1}, estado=${estadoSeleccionado})}">
                 Anterior
             </a>
             <span th:each="i : ${#numbers.sequence(1, totalPaginas)}">
-                <a th:classappend="${i == paginaActual} ? ' active'" 
-                   th:href="@{/admin/cotizaciones(page=${i}, estado=${estadoSeleccionado})}" 
+                <a th:classappend="${i == paginaActual} ? ' active'"
+                   th:href="@{/admin/cotizaciones(page=${i}, estado=${estadoSeleccionado})}"
                    th:text="${i}">1</a>
             </span>
-            <a th:classappend="${paginaActual == totalPaginas} ? ' disabled'" 
+            <a th:classappend="${paginaActual == totalPaginas} ? ' disabled'"
                th:href="@{/admin/cotizaciones(page=${paginaActual + 1}, estado=${estadoSeleccionado})}">
                 Siguiente
             </a>
@@ -474,23 +509,55 @@
     <script>
         let cotizacionIdActual = null;
 
-        // Filtro por estado
-        document.getElementById('filterEstado').addEventListener('change', function() {
+        function mostrarMensaje(texto, tipo = 'success') {
+            const msg = document.getElementById('mensajeNotificacion');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastText');
+
+            // Texto
+            text.textContent = texto;
+
+            // reset
+            msg.classList.remove('hidden', 'mensaje-success', 'mensaje-error', 'opacity-0', '-translate-y-3');
+
+            // color segun tipo
+            if (tipo === 'success') {
+                msg.classList.add('mensaje-success');
+                icon.textContent = "✔️";
+            } else {
+                msg.classList.add('mensaje-error');
+                icon.textContent = "❌";
+            }
+
+            // mostrar animado
+            msg.classList.add('opacity-100', 'translate-y-0');
+
+            // ocultar
+            setTimeout(() => {
+                msg.classList.remove('opacity-100', 'translate-y-0');
+                msg.classList.add('opacity-0', '-translate-y-3');
+
+                setTimeout(() => {
+                    msg.classList.add('hidden');
+                }, 300);
+
+            }, 2500);
+        }
+
+        document.getElementById('filterEstado').addEventListener('change', function () {
             const estado = this.value;
             window.location.href = `/admin/cotizaciones?estado=${estado}`;
         });
 
-        // Abrir modal para editar estado
         function abrirModalEditarEstado(id, estadoActual) {
             cotizacionIdActual = id;
             document.getElementById('selectEstado').value = estadoActual;
             document.getElementById('modalEditarEstado').classList.add('active');
         }
 
-        // Confirmar edición de estado
         async function confirmarEdicionEstado() {
             const nuevoEstado = document.getElementById('selectEstado').value;
-            
+
             try {
                 const response = await fetch(`/admin/cotizaciones/${cotizacionIdActual}/actualizar-estado`, {
                     method: 'POST',
@@ -502,25 +569,34 @@
 
                 const result = await response.json();
 
-                if (result.success) {
-                    alert('Estado actualizado correctamente');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + result.message);
-                }
+                cerrarModal('modalEditarEstado');
+
+                // pequeño delay para evitar solapamiento
+                setTimeout(() => {
+                    if (result.success) {
+                        mostrarMensaje("Estado actualizado correctamente", "success");
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        mostrarMensaje(result.message || "Error al actualizar", "error");
+                    }
+                }, 200);
+
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al actualizar el estado');
+
+                cerrarModal('modalEditarEstado');
+
+                setTimeout(() => {
+                    mostrarMensaje("Error de conexión", "error");
+                }, 200);
             }
         }
 
-        // Abrir modal para eliminar
         function abrirModalEliminar(id) {
             cotizacionIdActual = id;
             document.getElementById('modalEliminar').classList.add('active');
         }
 
-        // Confirmar eliminación
         async function confirmarEliminar() {
             try {
                 const response = await fetch(`/admin/cotizaciones/${cotizacionIdActual}/eliminar`, {
@@ -529,19 +605,28 @@
 
                 const result = await response.json();
 
-                if (result.success) {
-                    alert('Cotización eliminada correctamente');
-                    window.location.reload();
-                } else {
-                    alert('Error: ' + result.message);
-                }
+                cerrarModal('modalEliminar');
+
+                setTimeout(() => {
+                    if (result.success) {
+                        mostrarMensaje("Cotización eliminada correctamente", "success");
+                        setTimeout(() => window.location.reload(), 1200);
+                    } else {
+                        mostrarMensaje(result.message || "Error al eliminar", "error");
+                    }
+                }, 200);
+
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al eliminar la cotización');
+
+                cerrarModal('modalEliminar');
+
+                setTimeout(() => {
+                    mostrarMensaje("Error de conexión", "error");
+                }, 200);
             }
         }
 
-        // Ver detalle de cotización
         async function verDetalle(id) {
             try {
                 const response = await fetch(`/admin/cotizaciones/${id}/detalle`);
@@ -549,6 +634,7 @@
 
                 if (result.success) {
                     const cot = result.cotizacion;
+
                     let detallesHTML = '';
 
                     if (cot.detalles && cot.detalles.length > 0) {
@@ -557,14 +643,14 @@
                                 <table class="min-w-full">
                                     <thead class="bg-gray-50">
                                         <tr>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Talla</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cantidad</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">P. Unitario</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                            <th class="px-4 py-2">Producto</th>
+                                            <th class="px-4 py-2">Talla</th>
+                                            <th class="px-4 py-2">Cantidad</th>
+                                            <th class="px-4 py-2">P. Unitario</th>
+                                            <th class="px-4 py-2">Subtotal</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-200">
+                                    <tbody>
                                         ${cot.detalles.map(det => `
                                             <tr>
                                                 <td class="px-4 py-2">${det.productoTalla.producto.nombre}</td>
@@ -593,7 +679,9 @@
                             <p><strong>ID Cotización:</strong> #${cot.id}</p>
                             <p><strong>Cliente:</strong> ${cot.usuario.nombre}${cot.usuario.apellido ? ' ' + cot.usuario.apellido : ''}</p>
                             <p><strong>Correo:</strong> ${cot.usuario.correo}</p>
-                            <p><strong>Estado:</strong> <span class="estado-badge estado-${cot.estado.toLowerCase().replace(' ', '-')}">${cot.estado}</span></p>
+                            <p><strong>Estado:</strong>
+                                <span class="estado-badge estado-${cot.estado.toLowerCase().replace(' ', '-')}">${cot.estado}</span>
+                            </p>
                         </div>
                         <h3 class="font-semibold text-lg mb-2">Productos:</h3>
                         ${detallesHTML}
@@ -601,28 +689,27 @@
 
                     document.getElementById('modalDetalle').classList.add('active');
                 } else {
-                    alert('Error: ' + result.message);
+                    mostrarMensaje(result.message || "No se pudo cargar el detalle", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al cargar el detalle');
+                mostrarMensaje("Error de conexión", "error");
             }
         }
 
-        // Cerrar modal
         function cerrarModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
             cotizacionIdActual = null;
         }
 
-        // Cerrar modal al hacer clic fuera de él
         document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === this) {
                     cerrarModal(this.id);
                 }
             });
         });
+
     </script>
 </th:block>
 </body>
