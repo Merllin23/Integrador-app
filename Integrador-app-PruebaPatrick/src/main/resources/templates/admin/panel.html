@@ -1,0 +1,69 @@
+<div th:fragment="mainContent">
+
+    <!-- Encabezado del panel -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <h1 class="text-3xl font-semibold text-jk-blue">Panel de Control</h1>
+        <div th:if="${nombre}" class="mt-2 text-gray-700">
+            Hola, <span th:text="${nombre}"></span> — Rol: <span th:text="${rol}"></span>
+        </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <canvas id="trendChart" height="200"></canvas>
+    </div>
+
+</div>
+
+<!-- Estilos adicionales opcionales -->
+<th:block th:fragment="extraCss">
+    <style>
+        /* Puedes agregar estilos específicos de esta página aquí */
+    </style>
+</th:block>
+
+<!-- Scripts adicionales -->
+<th:block th:fragment="extraJs">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('trendChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                        datasets: [{
+                            label: 'Cotizaciones',
+                            data: [45, 52, 38, 65, 48, 72, 58],
+                            borderColor: '#1e3a5f',
+                            backgroundColor: 'rgba(30, 58, 95, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#1e3a5f',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f0f0f0' },
+                                ticks: { color: '#666' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: '#666' }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</th:block>

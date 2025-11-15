@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JKM Confecciones - Mi Perfil</title>
+
+    <!-- Fuente Poppins -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-[Poppins] bg-[#F7F8FA] text-gray-800 flex flex-col min-h-screen">
+
+<!-- HEADER  -->
+<header class="bg-[#002C77] text-white shadow-md relative">
+    <div class="container mx-auto flex flex-wrap items-center justify-between px-6 py-3 md:px-12">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+            <img src="/images/JKM_Confecciones.png" alt="Logo JK Confecciones" class="h-10" />
+            <h1 class="font-semibold text-lg tracking-wide">JKM Confecciones</h1>
+        </div>
+
+        <!-- Menú -->
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+            <a th:href="@{/}" class="hover:text-[#DDE3EA] transition">Inicio</a>
+            <a th:href="@{/usuario/catalogo}" class="hover:text-[#DDE3EA] transition">Catálogo</a>
+            <a th:href="@{/usuario/nosotros}" class="hover:text-[#DDE3EA] transition">Nosotros</a>
+            <a th:href="@{/usuario/contacto}" class="hover:text-[#DDE3EA] transition">Contacto</a>
+        </nav>
+
+        <!-- Buscador + carrito + perfil -->
+        <div class="flex items-center gap-4 relative">
+            <!-- Buscador -->
+            <div class="relative hidden sm:block">
+                <input type="text" placeholder="Buscar"
+                       class="rounded-full pl-9 pr-3 py-1 text-sm text-gray-700 focus:outline-none" />
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="w-4 h-4 text-gray-500 absolute left-3 top-2.5"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z" />
+                </svg>
+            </div>
+
+            <!-- Carrito -->
+            <a href="javascript:void(0);" onclick="toggleCarrito()"
+               class="relative flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.35 2.7a1 1 0 00.9 1.45H19M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+                </svg>
+                <span id="contadorCarritoHeader"
+                      class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+            </a>
+
+            <!-- Avatar dinámico -->
+            <div class="relative" sec:authorize="isAuthenticated()">
+                <div class="w-9 h-9 rounded-full bg-white text-[#002C77] flex items-center justify-center font-semibold cursor-pointer hover:bg-[#DDE3EA] transition"
+                     th:text="${inicial}" onclick="toggleMenu('user-menu')">U</div>
+
+                <div id="user-menu"
+                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-20 hidden">
+                    <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-200">
+                        👤 <span th:text="${nombreUsuario}">Usuario</span>
+                    </div>
+                    <a th:href="@{/usuario/usuario}"
+                       sec:authorize="hasRole('USUARIO')"
+                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+                    <form action="/logout" method="post"
+                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <button type="submit" class="w-full text-left">Cerrar sesión</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Candado (si no está logueado) -->
+            <a href="/login" sec:authorize="!isAuthenticated()"
+               class="flex items-center justify-center w-9 h-9 rounded-full bg-white text-[#002C77] hover:bg-[#DDE3EA] transition">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                          d="M10 2a5 5 0 00-5 5v1H4a2 2 0 00-2 2v7h16v-7a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zM8 8V7a2 2 0 114 0v1H8zm-4 3h12v5H4v-5z"
+                          clip-rule="evenodd" />
+                </svg>
+            </a>
+        </div>
+
+        <!-- Botón menú móvil -->
+        <button id="menu-btn"
+                class="md:hidden border border-white px-3 py-1 rounded-lg hover:bg-white hover:text-[#002C77] transition">
+            ☰
+        </button>
+    </div>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="flex-grow container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-extrabold text-[#002C77] mb-8">Panel de Usuario</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- NAV lateral -->
+        <aside class="bg-white rounded-xl p-4 shadow h-fit">
+            <h3 class="font-semibold mb-4 text-gray-800">Menú</h3>
+            <ul class="space-y-2">
+                <li>
+                    <button id="nav-profile"
+                            class="w-full text-left p-2 rounded-lg bg-[#D4C4E7] text-[#002C77]"
+                            onclick="showSection('profile')">Perfil
+                    </button>
+                </li>
+                <li>
+                    <button id="nav-history"
+                            class="w-full text-left p-2 rounded-lg hover:bg-gray-200"
+                            onclick="showSection('history')">Historial de Cotizaciones
+                    </button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- PERFIL -->
+        <section class="lg:col-span-3 space-y-8">
+            <div id="profile-section">
+                <h2 class="text-2xl font-bold text-[#002C77] mb-4">Datos del Perfil</h2>
+                <div class="bg-white rounded-xl p-6 shadow">
+                    <div th:if="${mensaje}" class="bg-green-100 text-green-800 p-3 rounded mb-4" th:text="${mensaje}"></div>
+                    <form th:action="@{/usuario/actualizar}" method="post">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Nombre completo</label>
+                                <input type="text" id="nombre" name="nombre" th:value="${usuario.nombre}" disabled
+                                       class="w-full border border-gray-300 rounded-lg p-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Correo electrónico</label>
+                                <input type="email" id="correo" name="correo" th:value="${usuario.correo}" disabled
+                                       class="w-full border border-gray-300 rounded-lg p-2">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" th:value="${usuario.telefono}" disabled
+                                   class="w-full border border-gray-300 rounded-lg p-2">
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                            <input type="text" id="direccion" name="direccion" th:value="${usuario.direccion}" disabled
+                                   class="w-full border border-gray-300 rounded-lg p-2">
+                        </div>
+
+                        <div class="pt-6">
+                            <button type="button" id="edit-btn" onclick="toggleEdit()"
+                                    class="bg-[#C50614] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#9A1E2E] transition">
+                                Activar edición
+                            </button>
+                            <button type="submit" id="save-btn"
+                                    class="bg-[#002C77] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#C50614] transition hidden">
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- HISTORIAL -->
+            <div id="history-section" class="hidden">
+                <h2 class="text-2xl font-bold text-[#002C77] mb-4">Historial de Cotizaciones</h2>
+                <div class="bg-white rounded-xl p-6 shadow">
+                    <div id="historialVacio" class="text-center text-gray-500 py-8">
+                        <p class="text-lg">📋 No hay cotizaciones aún</p>
+                    </div>
+                    <table id="historialTabla" class="w-full hidden border-collapse">
+                        <thead class="bg-[#F0F0F0] border-b-2 border-[#002C77]">
+                            <tr>
+                                <th class="text-center p-3 font-semibold">Imagen</th>
+                                <th class="text-left p-3 font-semibold">#Cotización</th>
+                                <th class="text-center p-3 font-semibold">Cantidad de Items</th>
+                                <th class="text-left p-3 font-semibold">Fecha</th>
+                                <th class="text-center p-3 font-semibold">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historialBodyTabla" class="divide-y">
+                            <!-- Filas dinámicas aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- FOOTER (idéntico al landing) -->
+<footer class="bg-[#F7F8FA] border-t border-gray-300 py-6 text-center text-sm text-gray-700 mt-auto">
+    <div class="flex flex-wrap justify-center gap-6 mb-3">
+        <a href="/" class="hover:text-[#002C77] transition">Inicio</a>
+        <a href="/catalogoColegios" class="hover:text-[#002C77] transition">Catálogo</a>
+        <a href="/nosotros" class="hover:text-[#002C77] transition">Nosotros</a>
+        <a href="/contacto" class="hover:text-[#002C77] transition">Contacto</a>
+    </div>
+    <p class="text-gray-600">© 2025 JK Confecciones. Todos los derechos reservados.</p>
+</footer>
+
+<!-- Modal -->
+<div id="confirmModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg p-6 w-80 text-center">
+        <h2 class="text-lg font-semibold text-gray-800 mb-3">Guardar cambios</h2>
+        <p class="text-gray-600 mb-5">¿Deseas guardar los cambios en tu perfil?</p>
+        <div class="flex justify-center gap-3">
+            <button id="cancelModalBtn" class="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition">Cancelar</button>
+            <button id="confirmModalBtn" class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Carrito lateral -->
+<div id="carritoLateral"
+     class="fixed right-0 top-0 h-full w-80 bg-white shadow-xl transform translate-x-full transition-transform z-50">
+    <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="font-semibold text-lg">Carrito de Cotización</h2>
+        <button onclick="toggleCarrito()" class="text-gray-500 hover:text-gray-800">&times;</button>
+    </div>
+    <div id="carritoItems" class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100% - 150px);">
+        <p class="text-gray-500 text-sm">No hay productos en el carrito.</p>
+    </div>
+    <div class="p-4 border-t space-y-2">
+        <button onclick="enviarWhatsApp()" class="w-full bg-green-600 text-white py-2 rounded-full hover:bg-green-700 transition">
+            Enviar a WhatsApp
+        </button>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Menú móvil y menú usuario
+    const menuBtn = document.getElementById("menu-btn");
+    const menu = document.getElementById("menu");
+    menuBtn.addEventListener("click", () => menu.classList.toggle("hidden"));
+    function toggleMenu(id) { document.getElementById(id).classList.toggle("hidden"); }
+
+    // Datos originales del perfil
+    const originalData = {
+        nombre: document.getElementById('nombre').value,
+        telefono: document.getElementById('telefono').value,
+        direccion: document.getElementById('direccion').value
+    };
+
+    function toggleEdit(forceOff = false) {
+        const inputs = document.querySelectorAll('#profile-section input:not([id="correo"])');
+        const editBtn = document.getElementById('edit-btn');
+        const saveBtn = document.getElementById('save-btn');
+        let editing = forceOff ? false : (editBtn.textContent === 'Activar edición');
+        inputs.forEach(input => input.disabled = !editing);
+        editBtn.textContent = editing ? 'Cancelar edición' : 'Activar edición';
+        editBtn.classList.toggle('bg-gray-400', editing);
+        saveBtn.classList.toggle('hidden', !editing);
+        if (!editing) {
+            document.getElementById('nombre').value = originalData.nombre;
+            document.getElementById('telefono').value = originalData.telefono;
+            document.getElementById('direccion').value = originalData.direccion;
+        }
+    }
+
+    function showSection(id) {
+        document.getElementById('profile-section').classList.toggle('hidden', id !== 'profile');
+        document.getElementById('history-section').classList.toggle('hidden', id !== 'history');
+        document.getElementById('nav-profile').classList.toggle('bg-[#D4C4E7]', id === 'profile');
+        document.getElementById('nav-history').classList.toggle('bg-[#D4C4E7]', id === 'history');
+        
+        // Si es la sección del historial, cargar las cotizaciones
+        if (id === 'history') {
+            cargarHistorialCotizaciones();
+        }
+    }
+
+    // Modal de confirmación
+    const modal = document.getElementById('confirmModal');
+    const confirmBtn = document.getElementById('confirmModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const form = document.querySelector('form[action="/usuario/actualizar"]');
+
+    form.addEventListener('submit', function (event) {
+        const nombre = document.getElementById('nombre').value.trim();
+        const telefono = document.getElementById('telefono').value.trim();
+        const direccion = document.getElementById('direccion').value.trim();
+        const cambio = (nombre !== originalData.nombre || telefono !== originalData.telefono || direccion !== originalData.direccion);
+        if (!cambio) {
+            event.preventDefault();
+            toggleEdit(true);
+            return;
+        }
+        event.preventDefault();
+        modal.classList.remove('hidden');
+        confirmBtn.onclick = () => { modal.classList.add('hidden'); form.submit(); };
+        cancelBtn.onclick = () => modal.classList.add('hidden');
+    });
+
+    // Mensaje de éxito
+    window.addEventListener('DOMContentLoaded', () => {
+        const mensaje = document.querySelector('.bg-green-100.text-green-800');
+        if (mensaje) {
+            setTimeout(() => {
+                mensaje.style.transition = 'opacity 0.5s ease';
+                mensaje.style.opacity = '0';
+                setTimeout(() => mensaje.remove(), 500);
+            }, 5000);
+        }
+    });
+
+    // -------------------- CARRO --------------------
+    let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+    function cargarHistorialCotizaciones() {
+        fetch('/usuario/historial-cotizaciones')
+            .then(res => res.json())
+            .then(data => {
+                const historialVacio = document.getElementById('historialVacio');
+                const historialTabla = document.getElementById('historialTabla');
+                const historialBodyTabla = document.getElementById('historialBodyTabla');
+
+                if (data.length === 0) {
+                    historialVacio.classList.remove('hidden');
+                    historialTabla.classList.add('hidden');
+                    return;
+                }
+
+                historialVacio.classList.add('hidden');
+                historialTabla.classList.remove('hidden');
+                historialBodyTabla.innerHTML = '';
+
+                data.forEach(cot => {
+                    const fila = document.createElement('tr');
+                    fila.className = 'hover:bg-gray-50 transition';
+                    
+                    // Formatear fecha
+                    const fecha = new Date(cot.fecha);
+                    const fechaFormato = fecha.toLocaleDateString('es-PE', { 
+                        year: 'numeric', 
+                        month: '2-digit', 
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    // Definir color del estado
+                    let estadoClase = 'bg-gray-200 text-gray-800';
+                    if (cot.estado === 'PENDIENTE') estadoClase = 'bg-yellow-200 text-yellow-800';
+                    if (cot.estado === 'ENVIADA') estadoClase = 'bg-blue-200 text-blue-800';
+                    if (cot.estado === 'ACEPTADA') estadoClase = 'bg-green-200 text-green-800';
+                    if (cot.estado === 'CANCELADA') estadoClase = 'bg-red-200 text-red-800';
+
+                    fila.innerHTML = `
+                        <td class="p-3 text-center">
+                            <img src="${cot.imagen}" alt="Producto" class="h-12 w-12 object-cover rounded">
+                        </td>
+                        <td class="p-3 font-semibold text-sm">#${cot.id}</td>
+                        <td class="p-3 text-center text-sm font-semibold">${cot.totalItems} unidades</td>
+                        <td class="p-3 text-sm">${fechaFormato}</td>
+                        <td class="p-3 text-center">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${estadoClase}">
+                                ${cot.estado}
+                            </span>
+                        </td>
+                    `;
+                    historialBodyTabla.appendChild(fila);
+                });
+            })
+            .catch(err => {
+                console.error('Error al cargar historial:', err);
+                document.getElementById('historialVacio').classList.remove('hidden');
+                document.getElementById('historialTabla').classList.add('hidden');
+            });
+    }
+
+    function toggleCarrito() {
+        document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+        renderCarrito();
+    }
+
+    function actualizarResumenCarrito() {
+        const carritoVacio = document.getElementById('carritoVacio');
+        const carritoTabla = document.getElementById('carritoTabla');
+        const resumenTotales = document.getElementById('resumenTotales');
+        const carritoBodyTabla = document.getElementById('carritoBodyTabla');
+
+        if (carrito.length === 0) {
+            carritoVacio.classList.remove('hidden');
+            carritoTabla.classList.add('hidden');
+            resumenTotales.classList.add('hidden');
+            return;
+        }
+
+        carritoVacio.classList.add('hidden');
+        carritoTabla.classList.remove('hidden');
+        resumenTotales.classList.remove('hidden');
+
+        carritoBodyTabla.innerHTML = '';
+
+        let totalProductos = 0;
+        let totalCantidad = 0;
+        let subtotal = 0;
+
+        carrito.forEach((p, i) => {
+            // Usar un precio estimado (precio base del producto)
+            const precio = p.precio || 50; // Default a 50 si no tiene precio
+            const productoSubtotal = precio * p.cantidad;
+            subtotal += productoSubtotal;
+            totalProductos += 1;
+            totalCantidad += p.cantidad;
+
+            const fila = document.createElement('tr');
+            fila.className = 'hover:bg-gray-50 transition';
+            fila.innerHTML = `
+                <td class="p-3 font-semibold text-sm">${p.nombre}</td>
+                <td class="p-3 text-center text-sm">${p.talla || '-'}</td>
+                <td class="p-3 text-center text-sm">${p.cantidad}</td>
+                <td class="p-3 text-right text-sm">S/ ${precio.toFixed(2)}</td>
+                <td class="p-3 text-right text-sm font-semibold">S/ ${productoSubtotal.toFixed(2)}</td>
+                <td class="p-3 text-center">
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 font-bold text-lg">✕</button>
+                </td>
+            `;
+            carritoBodyTabla.appendChild(fila);
+        });
+
+        // Calcular impuesto (18% IGV)
+        const impuesto = subtotal * 0.18;
+        const total = subtotal + impuesto;
+
+        
+        // Actualizar totales
+        document.getElementById('totalProductos').textContent = totalProductos;
+        document.getElementById('totalCantidad').textContent = totalCantidad;
+        document.getElementById('totalPagar').textContent = `S/ ${total.toFixed(2)}`;
+        document.getElementById('subtotalPago').textContent = `S/ ${subtotal.toFixed(2)}`;
+        document.getElementById('impuestoPago').textContent = `S/ ${impuesto.toFixed(2)}`;
+        document.getElementById('totalFinalPago').textContent = `S/ ${total.toFixed(2)}`;
+    }
+
+    function toggleCarrito() {
+        document.getElementById('carritoLateral').classList.toggle('translate-x-full');
+        renderCarrito();
+    }
+
+    function renderCarrito() {
+        const carritoItems = document.getElementById('carritoItems');
+        carritoItems.innerHTML = '';
+        if (carrito.length === 0) {
+            carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+        } else {
+            carrito.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-2 rounded';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-sm">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                        <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                    </div>
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                carritoItems.appendChild(div);
+            });
+        }
+        const contador = document.getElementById('contadorCarritoHeader');
+        if (contador) {
+            contador.textContent = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+        }
+    }
+
+    function eliminarProducto(index) {
+        carrito.splice(index, 1);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+    }
+
+    function enviarWhatsApp() {
+        if (carrito.length === 0) return alert("El carrito está vacío");
+
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+    }
+
+    function limpiarCarrito() {
+        if (carrito.length === 0) {
+            alert('El carrito ya está vacío');
+            return;
+        }
+
+        const confirmacion = confirm('¿Estás seguro de que deseas limpiar el carrito?');
+        if (confirmacion) {
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+            actualizarResumenCarrito();
+        }
+    }
+
+    function procederACotizar() {
+        if (carrito.length === 0) {
+            alert('El carrito está vacío');
+            return;
+        }
+
+        // Mostrar confirmación
+        const confirmacion = confirm(`¿Enviar cotización con ${carrito.length} productos?`);
+        if (!confirmacion) return;
+
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+
+        fetch('/usuario/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Cotización creada:', data);
+
+            const numero = "51925723183";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla || '-'}, Cantidad ${p.cantidad}\n`);
+            
+            alert('Cotización enviada al backend. Se abrirá WhatsApp...');
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+            actualizarResumenCarrito();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error al crear la cotización");
+        });
+    }
+
+    function renderCarrito() {
+        const carritoItems = document.getElementById('carritoItems');
+        carritoItems.innerHTML = '';
+        if (carrito.length === 0) {
+            carritoItems.innerHTML = '<p class="text-gray-500 text-sm">No hay productos en el carrito.</p>';
+        } else {
+            carrito.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center border p-2 rounded';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-sm">${p.nombre}</p>
+                        <p class="text-xs text-gray-500">Talla: ${p.talla}</p>
+                        <p class="text-xs text-gray-500">Cantidad: ${p.cantidad}</p>
+                    </div>
+                    <button onclick="eliminarProducto(${i})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                `;
+                carritoItems.appendChild(div);
+            });
+        }
+        const contador = document.getElementById('contadorCarritoHeader');
+        if (contador) {
+            contador.textContent = carrito.reduce((acc, p) => acc + p.cantidad, 0);
+        }
+    }
+
+    function eliminarProducto(index) {
+        carrito.splice(index, 1);
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+        renderCarrito();
+        actualizarResumenCarrito();
+    }
+
+    function enviarWhatsApp() {
+        if (carrito.length === 0) return alert("El carrito está vacío");
+
+        const dto = { productos: carrito.map(p => ({ productoTallaId: p.id, cantidad: p.cantidad })) };
+
+        fetch('/usuario/cotizar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dto)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Cotización creada:', data);
+
+            const numero = "51925723183";
+            let mensaje = "Hola, quiero realizar la siguiente cotización:\n";
+            carrito.forEach(p => mensaje += `- ${p.nombre}, Talla ${p.talla || '-'}, Cantidad ${p.cantidad}\n`);
+            window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, "_blank");
+
+            carrito = [];
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            renderCarrito();
+        })
+        .catch(err => alert("Error al crear la cotización"));
+    }
+
+    renderCarrito();
+</script>
+
+</body>
+</html>
