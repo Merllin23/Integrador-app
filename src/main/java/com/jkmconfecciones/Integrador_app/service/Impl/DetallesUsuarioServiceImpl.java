@@ -24,33 +24,34 @@ public class DetallesUsuarioServiceImpl implements UserDetailsService {
         Usuario usuario = usuarioRepositorio.findByCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        // Verificar si está bloqueado temporalmente
-        boolean estaBloqueado = false;
-        if ("bloqueado".equalsIgnoreCase(usuario.getEstado()) && usuario.getFechaBloqueo() != null) {
+        // Verificar si está bloqueado (manual o temporal)
+        boolean estaBloqueado = "bloqueado".equalsIgnoreCase(usuario.getEstado());
+
+        if (estaBloqueado && usuario.getFechaBloqueo() != null) {
             long minutosBloqueo = Duration.between(usuario.getFechaBloqueo(), LocalDateTime.now()).toMinutes();
-            if (minutosBloqueo < 5) {
-                estaBloqueado = true; // sigue bloqueado
-            } else {
+            if (minutosBloqueo >= 5) {
                 // Desbloquear automáticamente después de 5 minutos
                 usuario.setEstado("activo");
                 usuario.setIntentosFallidos(0);
                 usuario.setFechaBloqueo(null);
                 usuarioRepositorio.save(usuario);
+                estaBloqueado = false;
             }
         }
 
         // rol
         String rol = "ROLE_" + usuario.getRol().getNombreRol().toUpperCase();
 
-        // Crear usuario para que reconozca el Spring Security  según el estado
+        // Crear usuario para que reconozca el Spring Security según el estado
         return new User(
                 usuario.getCorreo(),
                 usuario.getContraseña(),
                 true,
                 true,
                 true,
-                !estaBloqueado,
+                !estaBloqueado, // true = habilitado, false = bloqueado
                 Collections.singletonList(new SimpleGrantedAuthority(rol))
         );
     }
+
 }

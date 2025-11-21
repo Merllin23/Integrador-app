@@ -1,205 +1,154 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control Cliente - JKM Confecciones</title>
 
-    <!-- Tailwind & FontAwesome -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                'jk-blue': '#1e3a5f',
-                'jk-red': '#dc3545',
-                'jk-green': '#22c55e',
-                'jk-sidebar': '#1e3a5f',
-                'jk-sidebar-hover': '#2a4d6b'
-              }
-            }
-          }
-        }
-    </script>
-</head>
-
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h1 class="text-3xl font-semibold text-jk-blue">Panel de Control</h1>
-        </div>
-
-        <main class="bg-white rounded-lg shadow-sm p-6">
-
-            <!-- Métricas Clave -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-jk-blue mb-4">Métricas Clave</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <p class="text-gray-500 text-sm mb-2">Total de Solicitudes de Cotización</p>
-                        <p class="text-4xl font-bold text-jk-blue">1,234</p>
-                        <p class="text-jk-green text-sm mt-2">+12%</p>
-                    </div>
-                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
-                        <p class="text-gray-500 dark:text-gray-400 text-sm mb-2">Tiempo Promedio de Respuesta</p>
-                        <p class="text-4xl font-bold text-text-light dark:text-text-dark">24h</p>
-                        <p class="text-red-500 text-sm mt-2">-5%</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Análisis de Productos y Demanda -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Análisis de Productos y Demanda</h3>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Top 5 Productos Más Solicitados -->
-                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
-                        <h4 class="font-semibold text-text-light dark:text-text-dark mb-4">Top 5 Productos Más Solicitados</h4>
-                        <div class="flex justify-around items-end h-40 mb-4">
-                            <div class="text-center">
-                                <div class="bg-red-400 h-24 w-8 rounded-t-md mb-2"></div>
-                                <p class="text-xs text-red-500 font-medium">Camisas</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-blue-400 h-32 w-8 rounded-t-md mb-2"></div>
-                                <p class="text-xs text-blue-500 font-medium">Pantalones</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-yellow-400 h-20 w-8 rounded-t-md mb-2"></div>
-                                <p class="text-xs text-yellow-600 font-medium">Faldas</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-green-400 h-28 w-8 rounded-t-md mb-2"></div>
-                                <p class="text-xs text-green-500 font-medium">Chaquetas</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="bg-purple-400 h-36 w-8 rounded-t-md mb-2"></div>
-                                <p class="text-xs text-purple-500 font-medium">Corbatas</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tendencia Semanal de Cotizaciones -->
-                    <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-md">
-                        <h4 class="font-semibold text-text-light dark:text-text-dark mb-4">Tendencia Semanal de Cotizaciones</h4>
-                        <div class="relative h-40 mb-4">
-                            <svg class="absolute w-full h-full" preserveAspectRatio="none" viewBox="0 0 300 100">
-                                <path d="M0,80 Q50,20 100,60 Q150,10 200,40 Q250,70 300,30" fill="none" stroke="#4A90E2" stroke-width="3"></path>
-                                <circle cx="0" cy="80" r="4" fill="#4A90E2"></circle>
-                                <circle cx="50" cy="35" r="4" fill="#4A90E2"></circle>
-                                <circle cx="100" cy="60" r="4" fill="#4A90E2"></circle>
-                                <circle cx="150" cy="25" r="4" fill="#4A90E2"></circle>
-                                <circle cx="200" cy="40" r="4" fill="#4A90E2"></circle>
-                                <circle cx="250" cy="70" r="4" fill="#4A90E2"></circle>
-                                <circle cx="300" cy="30" r="4" fill="#4A90E2"></circle>
-                            </svg>
-                        </div>
-                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span class="text-red-500">Lun</span>
-                            <span class="text-blue-500">Mar</span>
-                            <span class="text-green-500">Mié</span>
-                            <span class="text-yellow-600">Jue</span>
-                            <span class="text-purple-500">Vie</span>
-                            <span class="text-pink-500">Sáb</span>
-                            <span class="text-indigo-500">Dom</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Análisis de Demanda Geográfica -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Análisis de Demanda Geográfica</h3>
-                <div class="bg-card-light dark:bg-card-dark p-4 rounded-lg shadow-md">
-                    <div class="bg-green-100 dark:bg-green-900 h-64 rounded-lg flex items-center justify-center relative overflow-hidden">
-                        <!-- Simulación de mapa -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-300 dark:from-green-800 dark:to-green-900"></div>
-                        <div class="relative z-10 text-center">
-                            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg mb-4 inline-block">
-                                <span class="material-icons text-green-600 dark:text-green-400 text-3xl">place</span>
-                                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">América do Sul Brasil</p>
-                            </div>
-                            <div class="flex gap-4 justify-center">
-                                <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center">
-                                    <span class="material-icons text-sm">trending_up</span>
-                                </div>
-                                <div class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
-                                    <span class="material-icons text-sm">location_on</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Rendimiento de Ventas por Asesor -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Rendimiento de Ventas por Asesor</h3>
-                <div class="bg-card-light dark:bg-card-dark rounded-lg shadow-md overflow-hidden">
-                    <table class="min-w-full divide-y divide-border-light dark:divide-border-dark">
-                        <thead class="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Asesor</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cotizaciones Gestionadas</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Aceptadas</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pendientes</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rechazadas</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valor Total de Ventas</th>
-                        </tr>
-                        </thead>
-                        <tbody class="bg-card-light dark:bg-card-dark divide-y divide-border-light dark:divide-border-dark">
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Carlos</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">350</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">300</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">100</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">50</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$50,000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Sofía</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">300</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">180</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">80</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">40</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$45,000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Mateo</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">280</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">150</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">90</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">40</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$40,000</td>
-                        </tr>
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-text-light dark:text-text-dark">Isabella</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">250</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">120</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">80</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-text-light dark:text-text-dark">50</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-medium">$35,000</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- WhatsApp Support -->
-    <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
+<!-- Fragmento para estilos extra -->
+<div th:fragment="extraCss">
 </div>
 
-</body>
-</html>
+<!-- Fragmento principal de contenido -->
+<div th:fragment="mainContent">
+
+    <!-- Título -->
+    <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
+        <h1 class="text-3xl font-semibold text-jk-blue">Gestión de Clientes</h1>
+        <p class="text-gray-500">Administración de usuarios registrados en la plataforma.</p>
+    </div>
+
+    <!-- Bloque principal -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+
+        <h2 class="text-xl font-semibold text-jk-blue mb-4">
+            Lista de Clientes Registrados
+        </h2>
+
+        <!-- Buscador -->
+        <div class="mb-4">
+            <form th:action="@{/admin/clientes}" method="get" class="flex items-center gap-2">
+                <input type="text" name="keyword" placeholder="Buscar cliente..."
+                       class="border px-3 py-2 rounded-lg w-1/3"
+                       th:value="${keyword}">
+                <button type="submit" class="bg-jk-blue text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    Buscar
+                </button>
+            </form>
+        </div>
+
+        <!-- Tabla de clientes -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200"
+             th:if="${clientes != null and !clientes.isEmpty()}">
+
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Correo</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Días inactivo</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Estado</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody class="bg-white divide-y divide-gray-200">
+                <tr th:each="cliente : ${clientes}" class="hover:bg-gray-50 transition-all">
+                    <td class="px-6 py-4 text-sm text-gray-700" th:text="${cliente.id}">1</td>
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${cliente.nombre}">Nombre</td>
+                    <td class="px-6 py-4 text-sm text-gray-700" th:text="${cliente.correo}">correo@ejemplo.com</td>
+                    <td class="px-6 py-4 text-sm text-gray-700" th:text="${cliente.telefono}">999999999</td>
+                    <td class="px-6 py-4 text-sm text-gray-700" th:text="${cliente.diasInactivo}">0</td>
+                    <td class="px-6 py-4 text-center">
+                        <span th:if="${cliente.estado == 'activo'}"
+                              class="px-3 py-1 bg-green-100 text-jk-green text-sm rounded-full font-semibold">Activo</span>
+                        <span th:if="${cliente.estado != 'activo'}"
+                              class="px-3 py-1 bg-red-100 text-jk-red text-sm rounded-full font-semibold">Bloqueado</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <a th:href="@{'/admin/cotizaciones?clienteId=' + ${cliente.id}}"
+                           class="text-blue-600 hover:text-blue-800 mr-3"
+                           title="Ver historial">
+                            <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+                        </a>
+                        <!-- Botón modal -->
+                        <button type="button"
+                                class="text-jk-red hover:text-red-700 bg-transparent border-0"
+                                title="Activar / Desactivar"
+                                th:data-cliente-id="${cliente.id}"
+                                th:data-cliente-nombre="${cliente.nombre}"
+                                onclick="openModalFromButton(this)">
+                            <i class="fa-solid fa-user-slash text-lg"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            <div class="mt-4 flex justify-center">
+                <ul class="inline-flex items-center -space-x-px">
+                    <!-- Botón Anterior -->
+                    <li th:classappend="${currentPage == 0} ? 'opacity-50 pointer-events-none'">
+                        <a th:href="@{/admin/clientes(page=${currentPage - 1 < 0 ? 0 : currentPage - 1}, size=${size})}"
+                           class="px-3 py-1 border rounded-l-lg bg-white hover:bg-gray-200 text-gray-700">Anterior</a>
+                    </li>
+                    <!-- Números de página -->
+                    <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'bg-jk-blue text-white font-semibold border border-jk-blue rounded'">
+                        <a th:href="@{/admin/clientes(page=${i}, size=${size})}"
+                           class="px-3 py-1 border bg-white hover:bg-gray-200 text-gray-700"
+                           th:text="${i + 1}">1</a>
+                    </li>
+                    <!-- Botón Siguiente -->
+                    <li th:classappend="${currentPage == totalPages - 1} ? 'opacity-50 pointer-events-none'">
+                        <a th:href="@{/admin/clientes(page=${currentPage + 1 >= totalPages ? totalPages - 1 : currentPage + 1}, size=${size})}"
+                           class="px-3 py-1 border rounded-r-lg bg-white hover:bg-gray-200 text-gray-700">Siguiente</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Si no hay clientes -->
+        <div th:if="${clientes == null or clientes.isEmpty()}" class="text-center py-6 text-gray-500">
+            No hay clientes registrados aún.
+        </div>
+
+        <!-- Modal  -->
+        <div id="confirmToggleModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white rounded-lg p-6 w-96 relative">
+                <h2 class="text-xl font-semibold mb-4">Confirmar acción</h2>
+                <p class="mb-6">¿Estás seguro de que quieres cambiar el estado del usuario <span id="modalClienteNombre"></span>?</p>
+                <div class="flex justify-end gap-2">
+                    <button onclick="closeModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+                    <a id="modalConfirmBtn" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700" href="#">Sí, cambiar estado</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- JS adicional -->
+<div th:fragment="extraJs">
+    <script>
+        function openModalFromButton(button) {
+           const clienteId = button.getAttribute('data-cliente-id');
+           const clienteNombre = button.getAttribute('data-cliente-nombre');
+
+           const modal = document.getElementById('confirmToggleModal');
+           modal.classList.remove('hidden');
+
+           document.getElementById('modalClienteNombre').textContent = clienteNombre;
+           document.getElementById('modalConfirmBtn').setAttribute('href', '/admin/clientes/' + clienteId + '/toggle');
+       }
+
+       function closeModal() {
+           document.getElementById('confirmToggleModal').classList.add('hidden');
+       }
+
+       // Cerrar modal al hacer click fuera del contenido
+       document.getElementById('confirmToggleModal').addEventListener('click', function(event) {
+           if(event.target === this) closeModal();
+       });
+
+    </script>
+
+</div>

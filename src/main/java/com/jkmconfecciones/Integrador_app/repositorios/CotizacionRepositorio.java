@@ -22,4 +22,6 @@ public interface CotizacionRepositorio extends JpaRepository<Cotizacion, Integer
 
     List<Cotizacion> findByUsuarioOrderByFechaDesc(Usuario usuario);
 
+    @Query("SELECT c FROM Cotizacion c WHERE c.usuario.id = :usuarioId ORDER BY c.fecha DESC")
+    List<Cotizacion> findByUsuarioId(@Param("usuarioId") Long usuarioId);
 }

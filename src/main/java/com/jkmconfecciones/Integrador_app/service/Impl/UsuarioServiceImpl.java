@@ -36,4 +36,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         }
         usuarioRepositorio.save(usuario);
     }
+
+    @Override
+    public void guardar(Usuario usuario) {
+        usuarioRepositorio.save(usuario);
+    }
 }

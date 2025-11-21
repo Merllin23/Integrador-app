@@ -7,4 +7,6 @@ public interface UsuarioService {
     Optional<Usuario> buscarPorCorreo(String correo);
     void reiniciarIntentos(Usuario usuario);
     void aumentarIntentoFallido(Usuario usuario);
+
+    void guardar(Usuario usuario);
 }

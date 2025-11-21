@@ -3,8 +3,12 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
+import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService;
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +36,8 @@ public class AdminControlador {
     private final ProductoService productoService;
     private final TallaService tallaService;
     private final AdminCotizacionService adminCotizacionService;
+    private final ClienteService clienteService;
+
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -133,16 +140,6 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
-    @GetMapping("/panelControlCliente")
-    public String paginaPanelControlCliente(Model model) {
-        model.addAttribute("currentPage", "panelControlCliente");
-        model.addAttribute("pageTitle", "Panel de Control de Clientes - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/panelControlCliente :: mainContent");
-        return "fragments/admin-layout";
-    }
 
     @GetMapping("/registroAuditoriaSeguridad")
     public String paginaRegistroAuditoria(Model model) {
@@ -489,9 +486,11 @@ public class AdminControlador {
 
 
     @GetMapping("/cotizaciones")
-    public String gestionCotizaciones(Model model,
-                                      @RequestParam(value = "estado", required = false) String estadoFiltro,
-                                      @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
+    public String gestionCotizaciones(
+            Model model,
+            @RequestParam(value = "estado", required = false) String estadoFiltro,
+            @RequestParam(value = "clienteId", required = false) Long clienteId, // nuevo parámetro
+            @RequestParam(value = "page", defaultValue = "1") Integer pagina) {
 
         int TAM_PAGINA = 10;
 
@@ -500,10 +499,18 @@ public class AdminControlador {
         model.addAttribute("nombre", "Administrador");
         model.addAttribute("rol", "Administrador");
 
-        List<Cotizacion> cotizacionesCompletas =
-                adminCotizacionService.listarPorEstado(estadoFiltro);
+        List<Cotizacion> cotizacionesCompletas;
 
-        // Paginación (igual que tu versión)
+        if (clienteId != null) {
+            cotizacionesCompletas = adminCotizacionService.listarPorCliente(clienteId);
+            // opcional: obtener nombre del cliente para mostrarlo
+            Usuario cliente = clienteService.obtenerPorId(clienteId);
+            model.addAttribute("pageTitle", "Cotizaciones de " + cliente.getNombre());
+        } else {
+            cotizacionesCompletas = adminCotizacionService.listarPorEstado(estadoFiltro);
+        }
+
+        // Paginación
         int totalRegistros = cotizacionesCompletas.size();
         int totalPaginas = (int) Math.ceil((double) totalRegistros / TAM_PAGINA);
         totalPaginas = Math.max(1, totalPaginas);
@@ -585,6 +592,65 @@ public class AdminControlador {
             response.put("message", e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
+    }
+
+    @GetMapping("/clientes")
+    public String listarClientes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword,
+            Model model) {
+
+        Page<Usuario> clientesPage = clienteService.listarClientes(page, size, keyword);
+
+        List<Map<String, Object>> clientesView = clientesPage.getContent().stream().map(c -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", c.getId());
+            map.put("nombre", c.getNombre());
+            map.put("correo", c.getCorreo());
+            map.put("telefono", c.getTelefono());
+            map.put("estado", c.getEstado());
+
+            // Calculamos días inactivos desde el último login
+            LocalDateTime ultimaActividad = c.getFechaUltimoLogin() != null ? c.getFechaUltimoLogin() : c.getFechaRegistro();
+            long diasInactivo = java.time.Duration.between(ultimaActividad, LocalDateTime.now()).toDays();
+            map.put("diasInactivo", diasInactivo);
+
+            return map;
+        }).toList();
+
+        model.addAttribute("clientes", clientesView);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", clientesPage.getTotalPages());
+        model.addAttribute("size", size);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("pageTitle", "Gestión de Clientes - JKM Confecciones");
+
+        model.addAttribute("mainContent", "admin/panelControlCliente :: mainContent");
+        model.addAttribute("extraCss", "admin/panelControlCliente :: extraCss");
+        model.addAttribute("extraJs", "admin/panelControlCliente :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/clientes/{id}/toggle")
+    public String toggleEstadoCliente(@PathVariable Long id) {
+        Usuario usuario = clienteService.obtenerPorId(id);
+
+        // Solo activar si no está inactivo > 1 año
+        if ("bloqueado".equalsIgnoreCase(usuario.getEstado())) {
+            if (usuario.getFechaUltimoLogin() != null &&
+                    usuario.getFechaUltimoLogin().isBefore(LocalDateTime.now().minusYears(1))) {
+
+                return "redirect:/admin/clientes?error=CuentaInactiva";
+            }
+            usuario.setEstado("activo");
+        } else {
+            usuario.setEstado("bloqueado");
+        }
+
+        clienteService.guardar(usuario);
+        return "redirect:/admin/clientes";
     }
 
 
