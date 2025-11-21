@@ -379,7 +379,7 @@
                                 <tr>
                                     <th class="p-3">ID</th>
                                     <th class="p-3">Fecha</th>
-                                    <th class="p-3">Total</th>
+                                    <th class="p-3">Total de productos</th>
                                     <th class="p-3 text-center">Estado</th>
                                 </tr>
                             </thead>
@@ -397,7 +397,7 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="p-3 font-semibold text-gray-700">${c.id}</td>
                             <td class="p-3">${c.fecha.replace("T", " ").slice(0, 16)}</td>
-                            <td class="p-3 font-medium">S/ ${c.total.toFixed(2)}</td>
+                            <td class="p-3 font-medium">${c.totalProductos}</td>
                             <td class="p-3 text-center">
                                 <span class="px-3 py-1 rounded-full text-xs font-semibold ${estadoClass}">
                                     ${c.estado}
