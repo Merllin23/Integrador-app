@@ -19,4 +19,7 @@ public interface CotizacionRepositorio extends JpaRepository<Cotizacion, Integer
     
     @Query("SELECT c FROM Cotizacion c JOIN FETCH c.usuario LEFT JOIN FETCH c.detalles d LEFT JOIN FETCH d.productoTalla pt LEFT JOIN FETCH pt.producto LEFT JOIN FETCH pt.talla WHERE c.id = :id")
     Optional<Cotizacion> findByIdWithDetails(@Param("id") Integer id);
+
+    List<Cotizacion> findByUsuarioOrderByFechaDesc(Usuario usuario);
+
 }
