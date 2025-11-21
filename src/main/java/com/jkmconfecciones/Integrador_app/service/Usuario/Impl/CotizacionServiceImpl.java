@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.service.Usuario.Impl;
 
+import com.jkmconfecciones.Integrador_app.DTO.CotizacionHistorialDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionRequestDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.repositorios.*;
@@ -81,4 +82,23 @@ public class CotizacionServiceImpl implements CotizacionService {
 
         return cotizacion;
     }
+
+    @Override
+    public List<CotizacionHistorialDTO> listarHistorialDTO(String correo) {
+
+        Usuario usuario = usuarioRepositorio.findByCorreo(correo)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        List<Cotizacion> cotizaciones = cotizacionRepositorio.findByUsuarioOrderByFechaDesc(usuario);
+
+        return cotizaciones.stream()
+                .map(c -> new CotizacionHistorialDTO(
+                        c.getId(),
+                        c.getFecha(),
+                        c.getTotal(),
+                        c.getEstado()
+                ))
+                .toList();
+    }
+
 }

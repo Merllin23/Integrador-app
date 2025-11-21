@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller.usuario;
 
+import com.jkmconfecciones.Integrador_app.DTO.CotizacionHistorialDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionRequestDTO;
 import com.jkmconfecciones.Integrador_app.entidades.Cotizacion;
 import com.jkmconfecciones.Integrador_app.entidades.Usuario;
@@ -7,6 +8,7 @@ import com.jkmconfecciones.Integrador_app.repositorios.UsuarioRepositorio;
 import com.jkmconfecciones.Integrador_app.service.Usuario.CotizacionService;
 import com.jkmconfecciones.Integrador_app.service.Usuario.PerfilUsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Usuario.UsuarioCatalogoService;
+import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -32,6 +35,9 @@ public class UsuarioControlador {
 
     @Autowired
     private CotizacionService cotizacionService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping("/usuario")
     public String paginaUsuario(Model model) {
@@ -149,5 +155,15 @@ public class UsuarioControlador {
 
         return response;
     }
+
+    @GetMapping("/historial")
+    @ResponseBody
+    public List<CotizacionHistorialDTO> obtenerHistorial(Authentication auth) {
+
+        String correo = auth.getName();
+
+        return cotizacionService.listarHistorialDTO(correo);
+    }
+
 
 }
