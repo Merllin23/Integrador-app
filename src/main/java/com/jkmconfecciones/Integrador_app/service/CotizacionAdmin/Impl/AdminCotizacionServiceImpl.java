@@ -20,6 +20,7 @@ public class AdminCotizacionServiceImpl implements AdminCotizacionService {
 
     private final CotizacionRepositorio cotizacionRepositorio;
 
+
     private String obtenerUsuarioActual() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
@@ -114,5 +115,10 @@ public class AdminCotizacionServiceImpl implements AdminCotizacionService {
 
         dto.setDetalles(detallesDTO);
         return dto;
+    }
+
+    @Override
+    public List<Cotizacion> listarPorCliente(Long clienteId) {
+        return cotizacionRepositorio.findByUsuarioId(clienteId);
     }
 }

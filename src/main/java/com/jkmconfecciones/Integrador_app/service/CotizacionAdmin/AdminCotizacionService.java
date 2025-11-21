@@ -16,4 +16,7 @@ public interface AdminCotizacionService {
 
     CotizacionDetalleDTO obtenerDetalle(Integer id);
 
+    List<Cotizacion> listarPorCliente(Long clienteId);
+
+
 }

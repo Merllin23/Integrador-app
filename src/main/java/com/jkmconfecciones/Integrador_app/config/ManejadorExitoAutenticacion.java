@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 @Component
 public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler {
@@ -29,8 +30,14 @@ public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler
         String correo = authentication.getName();
 
         usuarioService.buscarPorCorreo(correo).ifPresent(usuario -> {
+            // Reinicia los intentos fallidos
             usuarioService.reiniciarIntentos(usuario);
-            log.info("Usuario '{}' inició sesión correctamente. Intentos reiniciados.", correo);
+
+            // Guardamos la fecha del último login
+            usuario.setFechaUltimoLogin(LocalDateTime.now());
+            usuarioService.guardar(usuario);
+
+            log.info("Usuario '{}' inició sesión correctamente. Intentos reiniciados y fecha de último login actualizada.", correo);
         });
 
         // Redirigir según el rol directamente

@@ -50,4 +50,7 @@ public class Usuario {
 
     @Column(name = "fecha_bloqueo")
     private LocalDateTime fechaBloqueo;
+
+    @Column(name = "fecha_ultimo_login")
+    private LocalDateTime fechaUltimoLogin;
 }
