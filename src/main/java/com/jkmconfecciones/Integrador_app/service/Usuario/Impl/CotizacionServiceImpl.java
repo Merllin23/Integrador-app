@@ -92,12 +92,19 @@ public class CotizacionServiceImpl implements CotizacionService {
         List<Cotizacion> cotizaciones = cotizacionRepositorio.findByUsuarioOrderByFechaDesc(usuario);
 
         return cotizaciones.stream()
-                .map(c -> new CotizacionHistorialDTO(
-                        c.getId(),
-                        c.getFecha(),
-                        c.getTotal(),
-                        c.getEstado()
-                ))
+                .map(c -> {
+                    // Calcular total de productos sumando las cantidades de los detalles
+                    int totalProductos = c.getDetalles().stream()
+                            .mapToInt(DetalleCotizacion::getCantidad)
+                            .sum();
+
+                    return new CotizacionHistorialDTO(
+                            c.getId(),
+                            c.getFecha(),
+                            totalProductos,
+                            c.getEstado()
+                    );
+                })
                 .toList();
     }
 

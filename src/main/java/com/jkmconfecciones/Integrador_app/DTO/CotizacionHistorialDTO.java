@@ -12,6 +12,6 @@ public class CotizacionHistorialDTO {
 
     private Integer id;
     private LocalDateTime fecha;
-    private Double total;
+    private Integer totalProductos;
     private String estado;
 }

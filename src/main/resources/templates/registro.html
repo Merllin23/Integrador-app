@@ -69,8 +69,17 @@
                     Únete a JK Confecciones para agilizar tus compras y cotizaciones.
                 </p>
 
-                <!-- Mensajes dinámicos -->
-                <div id="alert-container" class="alert-container"></div>
+                <!-- Mensajes dinámicos de backend -->
+                <div id="alert-container" class="alert-container">
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                        <strong>Error:</strong> <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div th:if="${exito}" class="alert alert-success alert-dismissible fade show text-center" role="alert">
+                        <strong>Éxito:</strong> <span th:text="${exito}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
 
                 <!-- Formulario de registro -->
                 <form th:action="@{/registro}" th:object="${usuario}" method="post" class="needs-validation form-container mx-auto" id="registroForm" novalidate>
@@ -86,15 +95,17 @@
 
                     <div class="mb-3">
                         <input th:field="*{contraseña}" type="password" placeholder="Contraseña" class="form-control" required>
-                        <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres</div>
+                        <div class="invalid-feedback">La contraseña debe tener al menos 8 caracteres, mayúscula, minúscula, número y carácter especial</div>
                     </div>
 
                     <div class="mb-3">
-                        <input th:field="*{telefono}" type="text" placeholder="Teléfono" class="form-control">
+                        <input th:field="*{telefono}" type="text" placeholder="Teléfono" class="form-control" maxlength="9" pattern="\d{9}" title="Ingresa 9 dígitos" required>
+                        <div class="invalid-feedback">El teléfono debe tener 9 dígitos numéricos</div>
                     </div>
 
                     <div class="mb-3">
-                        <input th:field="*{direccion}" type="text" placeholder="Dirección" class="form-control">
+                        <input th:field="*{direccion}" type="text" placeholder="Dirección" class="form-control" required>
+                        <div class="invalid-feedback">La dirección es obligatoria</div>
                     </div>
 
                     <!-- reCAPTCHA -->
@@ -158,6 +169,7 @@
             if (!/\d/.test(contraseña)) return 'La contraseña debe tener al menos un número';
             if (!/[^A-Za-z0-9]/.test(contraseña)) return 'La contraseña debe tener al menos un carácter especial';
             if (!telefono) return 'El teléfono es obligatorio';
+            if (!/^\d{9}$/.test(telefono)) return 'El teléfono debe tener 9 dígitos numéricos';
             if (!direccion) return 'La dirección es obligatoria';
             if (!captchaResponse) return 'Completa el reCAPTCHA';
             return null;
