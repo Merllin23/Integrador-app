@@ -10,6 +10,7 @@ import com.jkmconfecciones.Integrador_app.repositorios.CotizacionRepositorio;
 import com.jkmconfecciones.Integrador_app.service.Usuario.CotizacionService;
 import com.jkmconfecciones.Integrador_app.service.Usuario.PerfilUsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Usuario.UsuarioCatalogoService;
+import com.jkmconfecciones.Integrador_app.service.PromocionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +40,9 @@ public class UsuarioControlador {
 
     @Autowired
     private CotizacionRepositorio cotizacionRepositorio;
+
+    @Autowired(required = false)
+    private PromocionService promocionService;
 
     @GetMapping("/usuario")
     public String paginaUsuario(Model model) {
@@ -199,4 +203,77 @@ public class UsuarioControlador {
         return resultado;
     }
 
+    // ==================== DESCUENTOS DISPONIBLES ====================
+    @GetMapping("/api/descuentos-disponibles")
+    @ResponseBody
+    public Map<String, Object> obtenerDescuentosDisponibles() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Si PromocionService no está disponible, devolver lista vacía
+            if (promocionService == null) {
+                response.put("descuentos", List.of());
+                response.put("success", true);
+                return response;
+            }
+
+            // Obtener todas las promociones activas
+            List<Map<String, Object>> descuentos = promocionService
+                    .listarPromocionesActivas()
+                    .stream()
+                    .flatMap(promo -> {
+                        // Para cada promoción, listar sus productos con el descuento disponible
+                        if (promo.getProductos() != null && !promo.getProductos().isEmpty()) {
+                            return promo.getProductos().stream().map(producto -> {
+                                Map<String, Object> map = new HashMap<>();
+                                map.put("productoId", producto.getId());
+                                map.put("productoNombre", producto.getNombre());
+                                map.put("descuentoPorcentaje", promo.getDescuentoPorcentaje());
+                                map.put("promocionNombre", promo.getNombre());
+                                map.put("diaSemana", promo.getDiaSemana());
+                                map.put("descripcion", promo.getDescripcion());
+                                map.put("colegioId", promo.getColegio() != null ? promo.getColegio().getId() : null);
+                                map.put("colegioNombre", promo.getColegio() != null ? promo.getColegio().getNombre() : "");
+                                return map;
+                            });
+                        }
+                        return java.util.stream.Stream.empty();
+                    })
+                    .distinct()
+                    .toList();
+
+            response.put("descuentos", descuentos);
+            response.put("success", true);
+
+        } catch (Exception e) {
+            response.put("error", e.getMessage());
+            response.put("descuentos", List.of());
+            response.put("success", false);
+        }
+
+        return response;
+    }
+
+    // ==================== COTIZACIONES CON DETALLES ====================
+    @GetMapping("/api/cotizaciones")
+    @ResponseBody
+    public Map<String, Object> obtenerCotizacionesConDetalles() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String correo = auth.getName();
+            
+            var cotizaciones = cotizacionService.obtenerCotizacionesConDetalles(correo);
+            
+            response.put("cotizaciones", cotizaciones);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("error", e.getMessage());
+            response.put("success", false);
+        }
+        return response;
+    }
+
 }
+
+

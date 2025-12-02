@@ -3,6 +3,8 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.PromocionService;
+import com.jkmconfecciones.Integrador_app.repositorios.ProductoTallaRepositorio;
 import org.springframework.http.*;
 
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,8 @@ public class AdminControlador {
     private final ColegioService colegioService;
     private final ProductoService productoService;
     private final TallaService tallaService;
+    private final ProductoTallaRepositorio productoTallaRepositorio;
+    private final PromocionService promocionService;
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -483,6 +487,176 @@ public class AdminControlador {
         return new ResponseEntity<>(excelData, headers, HttpStatus.OK);
     }
 
+    // ==================== MÉTODOS DE TALLAS ====================
 
+    @GetMapping("/tallas")
+    public String mostrarTallas(Model model) {
+        List<ProductoTalla> productosTallas = productoTallaRepositorio.findAllWithDetails();
+        model.addAttribute("productosTallas", productosTallas);
+        model.addAttribute("currentPage", "tallas");
+        model.addAttribute("pageTitle", "Gestión de Tallas - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/tallas :: mainContent");
+        model.addAttribute("extraCss", "admin/tallas :: extraCss");
+        model.addAttribute("extraJs", "admin/tallas :: extraJs");
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/tallas/api/list")
+    @ResponseBody
+    public List<Map<String, Object>> listarTallas() {
+        List<ProductoTalla> productosTallas = productoTallaRepositorio.findAllWithDetails();
+        return productosTallas.stream().map(pt -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", pt.getId());
+            map.put("productoId", pt.getProducto().getId());
+            map.put("productoNombre", pt.getProducto().getNombre());
+            map.put("productoPrecioBase", pt.getProducto().getPrecioBase());
+            map.put("productoimagenUrl", pt.getProducto().getImagenUrl());
+            map.put("tallaId", pt.getTalla().getId());
+            map.put("tallaNombre", pt.getTalla().getNombreTalla());
+            map.put("cantidadStock", pt.getCantidadStock());
+            map.put("precioUnitarioFinal", pt.getPrecioUnitarioFinal());
+            map.put("activo", pt.getActivo() != null ? pt.getActivo() : true);
+            return map;
+        }).toList();
+    }
+
+    @PutMapping("/tallas/api/{id}/toggle-estado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleEstado(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
+        ProductoTalla productoTalla = productoTallaRepositorio.findById((long)id)
+                .orElseThrow(() -> new RuntimeException("ProductoTalla no encontrado"));
+        
+        Boolean nuevoEstado = request.get("activo");
+        productoTalla.setActivo(nuevoEstado);
+        productoTallaRepositorio.save(productoTalla);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", productoTalla.getId());
+        response.put("activo", productoTalla.getActivo());
+        response.put("mensaje", "Estado actualizado correctamente");
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/tallas/api/{id}")
+    @ResponseBody
+    public Map<String, Object> obtenerDetalle(@PathVariable Long id) {
+        ProductoTalla pt = productoTallaRepositorio.findById((long)id)
+                .orElseThrow(() -> new RuntimeException("ProductoTalla no encontrado"));
+        
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", pt.getId());
+        map.put("productoNombre", pt.getProducto().getNombre());
+        map.put("tallaNombre", pt.getTalla().getNombreTalla());
+        map.put("cantidadStock", pt.getCantidadStock());
+        map.put("precioUnitarioFinal", pt.getPrecioUnitarioFinal());
+        map.put("activo", pt.getActivo() != null ? pt.getActivo() : true);
+        
+        return map;
+    }
+
+    // ==================== MÉTODOS DE PRECIOS Y PROMOCIONES ====================
+
+    @GetMapping("/precios")
+    public String mostrarPrecios(Model model) {
+        List<Promocion> promociones = promocionService.listarTodas();
+        model.addAttribute("promociones", promociones);
+        model.addAttribute("colegios", colegioService.listarColegios());
+        model.addAttribute("currentPage", "precios");
+        model.addAttribute("pageTitle", "Gestión de Precios y Promociones - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/precios :: mainContent");
+        model.addAttribute("extraCss", "admin/precios :: extraCss");
+        model.addAttribute("extraJs", "admin/precios :: extraJs");
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/precios/api/list")
+    @ResponseBody
+    public List<Map<String, Object>> listarPromociones() {
+        List<Promocion> promociones = promocionService.listarTodas();
+        return promociones.stream().map(p -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", p.getId());
+            map.put("nombre", p.getNombre());
+            map.put("descripcion", p.getDescripcion());
+            map.put("tipoDescuento", p.getTipoDescuento() != null ? p.getTipoDescuento().toString() : "");
+            map.put("valor", p.getValor());
+            map.put("fechaInicio", p.getFechaInicio().toString());
+            map.put("fechaFin", p.getFechaFin().toString());
+            map.put("esValida", p.getEsValida() != null ? p.getEsValida() : true);
+            return map;
+        }).toList();
+    }
+
+    @PutMapping("/precios/api/{id}/toggle-estado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> togglePromocion(@PathVariable Integer id) {
+        try {
+            promocionService.toggleActivo(id);
+            Optional<Promocion> promo = promocionService.obtenerPorId(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", id);
+            response.put("esValida", promo.map(p -> p.getEsValida()).orElse(false));
+            response.put("mensaje", "Estado de promoción actualizado");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @DeleteMapping("/precios/api/{id}/eliminar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> eliminarPromocion(@PathVariable Integer id) {
+        try {
+            promocionService.eliminar(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", id);
+            response.put("mensaje", "Promoción eliminada");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
+
+    @PostMapping("/precios/api/crear")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> crearPromocion(@RequestBody Map<String, Object> datos) {
+        try {
+            Promocion promocion = new Promocion();
+            promocion.setNombre((String) datos.get("nombre"));
+            promocion.setDescripcion((String) datos.get("descripcion"));
+            
+            // Parsear tipo de descuento
+            String tipoDescuentoStr = (String) datos.get("tipoDescuento");
+            promocion.setTipoDescuento(Promocion.TipoDescuento.valueOf(tipoDescuentoStr));
+            
+            // Obtener el valor
+            Double valor = ((Number) datos.get("valor")).doubleValue();
+            promocion.setValor(valor);
+            
+            // Parsear fechas
+            String fechaInicio = (String) datos.get("fechaInicio");
+            String fechaFin = (String) datos.get("fechaFin");
+            promocion.setFechaInicio(java.time.LocalDate.parse(fechaInicio));
+            promocion.setFechaFin(java.time.LocalDate.parse(fechaFin));
+            promocion.setEsValida(true);
+
+            Promocion creada = promocionService.crear(promocion);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", creada.getId());
+            response.put("mensaje", "Promoción creada exitosamente");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+        }
+    }
 
 }

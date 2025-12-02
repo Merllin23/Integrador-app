@@ -30,4 +30,18 @@ public class DetalleCotizacion {
     private Double precioUnitario;
 
     private Double subtotal;
+
+    // Campos para descuentos (transitorios, no en BD)
+    @Transient
+    private Double descuentoMonto = 0.0;
+
+    @Transient
+    private Double descuentoPorcentaje = 0.0;
+
+    @Transient
+    private String tipoDescuento;
+
+    @Transient
+    private String promocionNombre;
 }
+

@@ -31,6 +31,9 @@ public class ProductoTalla {
     @Column(name = "precio_unitario_final")
     private Double precioUnitarioFinal;
 
+    @Column(name = "activo", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
+    private Boolean activo = true;
+
     @OneToMany(mappedBy = "productoTalla")
     private List<DetalleCotizacion> detalleCotizaciones;
 

@@ -26,6 +26,7 @@ public class Cotizacion {
     private Usuario usuario;
 
     private Double total;
+    private Double descuentoTotal = 0.0;
     private String estado;
 
     @OneToMany(mappedBy = "cotizacion")

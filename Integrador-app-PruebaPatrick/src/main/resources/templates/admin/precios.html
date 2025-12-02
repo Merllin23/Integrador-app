@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Precios y Promociones - JKM Confecciones</title>
+
+    <th:block th:fragment="extraCss">
+        <style>
+            /* RESET */
+            * { box-sizing: border-box; margin:0; padding:0; }
+            body { font-family: 'Poppins', sans-serif; background:#f9fafb; color:#111827; }
+
+            /* CONTENEDOR PRINCIPAL */
+            .container { max-width:1200px; margin:0 auto; padding:2rem; }
+
+            /* CABECERA */
+            h1 { font-size:2.25rem; font-weight:700; margin-bottom:0.25rem; }
+            p.subtitle { color:#6b7280; font-size:0.95rem; margin-bottom:1.5rem; }
+
+            /* TABLA DE DESCUENTOS */
+            .table-container { background:white; border-radius:0.75rem; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow:hidden; }
+            .tabla-container { background:white; border-radius:1rem; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+            .tabla-wrapper { overflow-x:auto; }
+            table { width:100%; border-collapse:collapse; }
+            thead { background:#f3f4f6; }
+            th { padding:1rem; text-align:left; font-weight:600; color:#111827; border-bottom:2px solid #e5e7eb; }
+            td { padding:1rem; border-bottom:1px solid #e5e7eb; }
+            tbody tr:hover { background:#fafafa; }
+
+            /* CONTENIDO DE TABLA */
+            .col-nombre { font-weight:600; color:#002C77; }
+            .col-tipo { color:#666; font-size:0.9rem; }
+            .col-valor { font-weight:700; color:#dc2626; font-size:1.1rem; }
+            .col-fecha { color:#9ca3af; font-size:0.9rem; }
+            .col-estado { text-align:center; }
+            .img-thumbnail { width:50px; height:50px; object-fit:cover; border-radius:0.5rem; background:#f3f4f6; }
+            .badge-tipo { display:inline-block; background:#e0f2fe; color:#0369a1; padding:0.25rem 0.75rem; border-radius:0.375rem; font-size:0.85rem; font-weight:500; }
+
+            /* BOTONES */
+            .btn { padding:0.4rem 0.8rem; border-radius:0.5rem; font-weight:500; border:none; cursor:pointer; transition:all 0.2s; font-size:0.85rem; }
+            .btn-toggle { background:#22c55e; color:white; padding:0.3rem 0.6rem; }
+            .btn-toggle:hover { background:#16a34a; }
+            .btn-toggle.inactive { background:#ef4444; }
+            .btn-toggle.inactive:hover { background:#dc2626; }
+            .btn-agregar { background:#2563eb; color:white; padding:0.6rem 1.2rem; font-size:0.95rem; }
+            .btn-agregar:hover { background:#1d4ed8; }
+
+            /* MODAL */
+            .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:50; }
+            .modal.active { display:flex; }
+            .modal-content { background:white; border-radius:1rem; padding:2rem; max-width:500px; width:90%; box-shadow:0 10px 25px rgba(0,0,0,0.15); }
+            .modal-content h2 { font-size:1.25rem; font-weight:600; margin-bottom:1rem; }
+            .form-group { margin-bottom:1rem; }
+            .form-group label { display:block; font-weight:600; margin-bottom:0.5rem; color:#111827; }
+            .form-group input, .form-group select { width:100%; padding:0.5rem; border:1px solid #d1d5db; border-radius:0.5rem; }
+            .form-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem; }
+            .btn-cancel { background:#e5e7eb; color:#111827; padding:0.5rem 1rem; }
+            .btn-cancel:hover { background:#d1d5db; }
+            .btn-submit { background:#2563eb; color:white; padding:0.5rem 1rem; }
+            .btn-submit:hover { background:#1d4ed8; }
+
+            /* ESTADÍSTICAS */
+            .stats-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:2rem; }
+            .stat-card { background:white; padding:1rem; border-radius:0.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.05); text-align:center; }
+            .stat-number { font-size:2rem; font-weight:700; color:#002C77; }
+            .stat-label { color:#6b7280; font-size:0.9rem; }
+
+            /* SIN DATOS */
+            .empty-state { text-align:center; padding:3rem 1rem; color:#9ca3af; }
+            .empty-state i { font-size:3rem; margin-bottom:1rem; opacity:0.5; }
+
+            /* RESPONSIVE */
+            @media(max-width:768px) {
+                .table-header, .table-row { grid-template-columns:1fr; }
+                .form-actions { flex-direction:column; }
+                .btn { width:100%; }
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+<th:block th:fragment="mainContent">
+    <div class="container">
+        <h1 class="text-3xl font-semibold text-jk-blue">Gestión de Precios y Promociones</h1>
+        <p class="subtitle">Administra los descuentos y promociones disponibles</p>
+
+        <!-- ESTADÍSTICAS -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number" id="totalPromociones">0</div>
+                <div class="stat-label">Total de Promociones</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="promoActivas">0</div>
+                <div class="stat-label">Promociones Activas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="promoPorcentaje">0</div>
+                <div class="stat-label">Por Porcentaje</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="promoFijo">0</div>
+                <div class="stat-label">Por Monto Fijo</div>
+            </div>
+        </div>
+
+        <!-- BOTÓN AGREGAR NUEVA PROMOCIÓN -->
+        <div style="margin-bottom:2rem;">
+            <button class="btn btn-agregar" onclick="abrirModalNuevaPromocion()">
+                <i class="fas fa-plus mr-2"></i> Nueva Promoción
+            </button>
+        </div>
+
+        <!-- TABLA DE DESCUENTOS -->
+        <div class="tabla-container">
+            <div class="tabla-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Vigencia</th>
+                            <th style="text-align:center;">Estado</th>
+                            <th style="text-align:center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaPromociones">
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:2rem; color:#999;">
+                                <i class="fas fa-spinner fa-spin mr-2"></i> Cargando promociones...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="noDataPromos" class="text-center py-8 text-gray-500 hidden">
+                <i class="fas fa-inbox mr-2"></i> No hay promociones creadas
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<!-- Modal Nueva Promoción -->
+<div id="modalPromocion" class="modal">
+    <div class="modal-content">
+        <h2>Nueva Promoción</h2>
+        <form onsubmit="crearPromocion(event)">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="nomPromocion" placeholder="Ej: Descuento Especial" required>
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <input type="text" id="descInput" placeholder="Descripción de la promoción">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Descuento</label>
+                <select id="tipoSelect" required onchange="actualizarPlaceholder()">
+                    <option value="">Selecciona un tipo</option>
+                    <option value="porcentaje">Porcentaje (%)</option>
+                    <option value="fijo">Monto Fijo (S/.)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Valor</label>
+                <input type="number" id="valorInput" placeholder="Ej: 10" min="0" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha de Inicio</label>
+                <input type="date" id="fechaInicioInput" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha de Fin</label>
+                <input type="date" id="fechaFinInput" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn btn-submit">Crear Promoción</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript Fragment -->
+<th:block th:fragment="extraJs">
+    <script>
+        let promociones = [];
+
+        document.addEventListener('DOMContentLoaded', cargarDatos);
+
+        async function cargarDatos() {
+            try {
+                // Cargar todas las promociones
+                const resPromociones = await fetch('/admin/precios/api/list');
+                promociones = await resPromociones.json();
+
+                mostrarDescuentos();
+                actualizarEstadisticas();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+
+        function mostrarDescuentos() {
+            const tbody = document.getElementById('tablaPromociones');
+            const noData = document.getElementById('noDataPromos');
+
+            if (!promociones || promociones.length === 0) {
+                tbody.innerHTML = '';
+                if (noData) noData.classList.remove('hidden');
+                return;
+            }
+
+            if (noData) noData.classList.add('hidden');
+
+            // Ordenar por nombre
+            const promosOrdenadas = [...promociones].sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+            tbody.innerHTML = promosOrdenadas.map(promo => {
+                const inicio = new Date(promo.fechaInicio).toLocaleDateString('es-PE');
+                const fin = new Date(promo.fechaFin).toLocaleDateString('es-PE');
+                const tipo = promo.tipoDescuento === 'porcentaje' ? '%' : 'S/.';
+                const esActiva = promo.esValida;
+
+                return `
+                    <tr>
+                        <td>${promo.nombre}</td>
+                        <td><span class="badge-tipo">${promo.tipoDescuento}</span></td>
+                        <td>S/ ${promo.valor}${promo.tipoDescuento === 'porcentaje' ? ' %' : ''}</td>
+                        <td>${inicio} a ${fin}</td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-toggle ${!esActiva ? 'inactive' : ''}" onclick="togglePromocion(${promo.id}, ${!esActiva})">
+                                ${esActiva ? 'Activo' : 'Inactivo'}
+                            </button>
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-delete" style="background:#ef4444; color:white; padding:6px 8px; border-radius:6px;" onclick="eliminarPromocion(${promo.id})">Eliminar</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function abrirModalNuevaPromocion() {
+            // Establecer fechas por defecto (hoy y 30 días después)
+            const hoy = new Date();
+            const fin = new Date(hoy);
+            fin.setDate(fin.getDate() + 30);
+
+            document.getElementById('fechaInicioInput').valueAsDate = hoy;
+            document.getElementById('fechaFinInput').valueAsDate = fin;
+
+            document.getElementById('modalPromocion').classList.add('active');
+
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalPromocion').classList.remove('active');
+            document.querySelector('#modalPromocion form').reset();
+        }
+
+        function actualizarPlaceholder() {
+            const tipo = document.getElementById('tipoSelect').value;
+            const input = document.getElementById('valorInput');
+            if (tipo === 'porcentaje') {
+                input.placeholder = 'Ej: 10';
+            } else if (tipo === 'fijo') {
+                input.placeholder = 'Ej: 50.00';
+            }
+        }
+
+        async function crearPromocion(event) {
+            event.preventDefault();
+
+            const datos = {
+                nombre: document.getElementById('nomPromocion').value,
+                descripcion: document.getElementById('descInput').value,
+                tipoDescuento: document.getElementById('tipoSelect').value,
+                valor: parseFloat(document.getElementById('valorInput').value),
+                fechaInicio: document.getElementById('fechaInicioInput').value,
+                fechaFin: document.getElementById('fechaFinInput').value
+            };
+
+            try {
+                const response = await fetch('/admin/precios/api/crear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                if (response.ok) {
+                    cerrarModal();
+                    cargarDatos();
+                    mostrarNotificacion('Promoción creada exitosamente', 'success');
+                } else {
+                    const error = await response.json();
+                    mostrarNotificacion('Error: ' + (error.error || 'No se pudo crear'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarNotificacion('Error: ' + error.message, 'error');
+            }
+        }
+
+        async function togglePromocion(id, nuevoEstado) {
+            try {
+                const response = await fetch(`/admin/precios/api/${id}/toggle-estado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    cargarDatos();
+                    mostrarNotificacion('Promoción actualizada', 'success');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarNotificacion('Error al actualizar: ' + error.message, 'error');
+            }
+        }
+
+        async function eliminarPromocion(id) {
+            const ok = confirm('¿Estás seguro que deseas eliminar esta promoción? Esta acción no se puede deshacer.');
+            if (!ok) return;
+
+            try {
+                const response = await fetch(`/admin/precios/api/${id}/eliminar`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    cargarDatos();
+                    mostrarNotificacion('Promoción eliminada', 'success');
+                } else {
+                    const error = await response.json();
+                    mostrarNotificacion('Error: ' + (error.error || 'No se pudo eliminar'), 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarNotificacion('Error: ' + error.message, 'error');
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const totalPromociones = promociones.length;
+            const promoActivas = promociones.filter(p => p.esValida).length;
+            const promoPorcentaje = promociones.filter(p => p.tipoDescuento === 'porcentaje').length;
+            const promoFijo = promociones.filter(p => p.tipoDescuento === 'fijo').length;
+
+            document.getElementById('totalPromociones').textContent = totalPromociones;
+            document.getElementById('promoActivas').textContent = promoActivas;
+                    document.getElementById('promoPorcentaje').textContent = promoPorcentaje;
+                    document.getElementById('promoFijo').textContent = promoFijo;
+        }
+
+        function mostrarNotificacion(mensaje, tipo) {
+            const notif = document.createElement('div');
+            notif.style.cssText = `
+                position:fixed; top:20px; right:20px; padding:1rem 1.5rem;
+                border-radius:0.5rem; color:white; font-weight:500; z-index:100;
+                background:${tipo === 'success' ? '#22c55e' : '#ef4444'};
+            `;
+            notif.textContent = mensaje;
+            document.body.appendChild(notif);
+
+            setTimeout(() => notif.remove(), 3000);
+        }
+    </script>
+</th:block>
+
+</body>
+</html>
