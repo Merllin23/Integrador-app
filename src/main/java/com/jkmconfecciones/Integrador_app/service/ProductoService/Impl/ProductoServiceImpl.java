@@ -5,9 +5,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.repositorios.*;
+import com.jkmconfecciones.Integrador_app.service.CloudinaryService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.ProductoService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -33,9 +31,9 @@ public class ProductoServiceImpl implements ProductoService {
     private final ColegioRepositorio colegioRepositorio;
     private final CategoriaRepositorio categoriaRepositorio;
     private final ProductoTallaRepositorio productoTallaRepositorio;
+    private final CloudinaryService cloudinaryService;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductoServiceImpl.class);
-    private static final String CARPETA_IMAGENES = "C:\\jkm\\productos\\";
 
     private String obtenerUsuarioLogueado() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -57,12 +55,12 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (imagen != null && !imagen.isEmpty()) {
             try {
-                String rutaImagen = guardarImagen(imagen);
-                producto.setImagenUrl(rutaImagen);
-                logger.info("Imagen guardada correctamente en {}", rutaImagen);
-            } catch (RuntimeException e) {
-                logger.error("Error al guardar la imagen del producto {}", producto.getNombre(), e);
-                throw e;
+                String urlImagen = cloudinaryService.subirImagen(imagen, "productos");
+                producto.setImagenUrl(urlImagen);
+                logger.info("Imagen guardada correctamente en Cloudinary: {}", urlImagen);
+            } catch (Exception e) {
+                logger.error("Error al guardar la imagen del producto {} en Cloudinary", producto.getNombre(), e);
+                throw new RuntimeException("Error al guardar la imagen", e);
             }
         } else {
             logger.warn("El producto '{}' no tiene imagen asociada", producto.getNombre());
@@ -106,13 +104,11 @@ public class ProductoServiceImpl implements ProductoService {
                 });
 
         if (!Strings.isNullOrEmpty(producto.getImagenUrl())) {
-            File imagenFile = new File(CARPETA_IMAGENES + producto.getImagenUrl().substring("/productos/".length()));
-            boolean eliminado = FileUtils.deleteQuietly(imagenFile);
-
-            if (eliminado) {
-                logger.info("Imagen '{}' eliminada correctamente", imagenFile.getAbsolutePath());
-            } else {
-                logger.warn("No se encontró o no se pudo eliminar la imagen '{}'", imagenFile.getAbsolutePath());
+            try {
+                cloudinaryService.eliminarImagen(producto.getImagenUrl());
+                logger.info("Imagen eliminada correctamente de Cloudinary: {}", producto.getImagenUrl());
+            } catch (Exception e) {
+                logger.warn("No se pudo eliminar la imagen de Cloudinary: {}", producto.getImagenUrl(), e);
             }
         } else {
             logger.warn("El producto '{}' no tenía imagen asociada", producto.getNombre());
@@ -151,10 +147,21 @@ public class ProductoServiceImpl implements ProductoService {
 
         if (imagen != null && !imagen.isEmpty()) {
             if (!Strings.isNullOrEmpty(existente.getImagenUrl())) {
-                File antigua = new File(CARPETA_IMAGENES + existente.getImagenUrl().substring("/productos/".length()));
-                FileUtils.deleteQuietly(antigua);
+                try {
+                    cloudinaryService.eliminarImagen(existente.getImagenUrl());
+                    logger.info("Imagen anterior eliminada de Cloudinary");
+                } catch (Exception e) {
+                    logger.warn("No se pudo eliminar la imagen anterior de Cloudinary", e);
+                }
             }
-            existente.setImagenUrl(guardarImagen(imagen));
+            try {
+                String nuevaUrl = cloudinaryService.subirImagen(imagen, "productos");
+                existente.setImagenUrl(nuevaUrl);
+                logger.info("Nueva imagen guardada en Cloudinary: {}", nuevaUrl);
+            } catch (Exception e) {
+                logger.error("Error al subir nueva imagen a Cloudinary", e);
+                throw new RuntimeException("Error al actualizar la imagen", e);
+            }
         }
 
         if (producto.getColegios() != null && !producto.getColegios().isEmpty()) {
@@ -287,15 +294,4 @@ public class ProductoServiceImpl implements ProductoService {
         return p;
     }
 
-    private String guardarImagen(MultipartFile imagen) {
-        try {
-            Files.createDirectories(Paths.get(CARPETA_IMAGENES));
-            String nombreArchivo = System.currentTimeMillis() + "_" + imagen.getOriginalFilename();
-            File destino = new File(CARPETA_IMAGENES + nombreArchivo);
-            FileUtils.copyInputStreamToFile(imagen.getInputStream(), destino);
-            return "/productos/" + nombreArchivo;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al guardar la imagen del producto", e);
-        }
-    }
 }

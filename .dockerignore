@@ -1,0 +1,51 @@
+# Ignorar archivos innecesarios en el build de Docker
+
+# Target directory (compilados locales)
+target/
+!target/*.jar
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Logs
+*.log
+logs/
+
+# Temporal
+*.tmp
+*.temp
+*.swp
+*~
+
+# Tests
+src/test/
+
+# Documentación
+README.md
+DEPLOY.md
+docs/
+
+# Variables de entorno locales
+.env
+.env.local
+application.properties
+!src/main/resources/application.properties.example

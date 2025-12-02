@@ -1,0 +1,14 @@
+# Railway.toml - Configuración para despliegue en Railway
+
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "java -jar app.jar"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3
+
+# Healthcheck para verificar que la app está funcionando
+healthcheckPath = "/actuator/health"
+healthcheckTimeout = 100

@@ -110,16 +110,21 @@
 			<version>3.14.0</version>
 		</dependency>
 
-		<!-- Apache Commons IO (manejo de archivos y flujos) -->
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.15.1</version>
-		</dependency>
+	<!-- Apache Commons IO (manejo de archivos y flujos) -->
+	<dependency>
+		<groupId>commons-io</groupId>
+		<artifactId>commons-io</artifactId>
+		<version>2.15.1</version>
+	</dependency>
 
-	</dependencies>
+	<!-- Cloudinary SDK (para almacenamiento de imágenes en la nube) -->
+	<dependency>
+		<groupId>com.cloudinary</groupId>
+		<artifactId>cloudinary-http44</artifactId>
+		<version>1.38.0</version>
+	</dependency>
 
-	<build>
+</dependencies>	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
