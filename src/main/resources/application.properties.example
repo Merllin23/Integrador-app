@@ -1,9 +1,9 @@
 spring.application.name=Integrador-app
 
-# Conexion
-spring.datasource.url=jdbc:mysql://localhost:3306/bd_confecciones?useSSL=false&serverTimezone=UTC
-spring.datasource.username=${DB_USER}
-spring.datasource.password=${DB_PASSWORD}
+# Conexion - Usa variables de entorno (Railway)
+spring.datasource.url=${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/bd_confecciones?useSSL=false&serverTimezone=UTC}
+spring.datasource.username=${DB_USER:root}
+spring.datasource.password=${DB_PASSWORD:password}
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 # Hibernate
@@ -20,14 +20,22 @@ spring.thymeleaf.prefix=classpath:/templates/
 spring.thymeleaf.suffix=.html
 
 # reCAPTCHA Configuration
-recaptcha.secret.key=${RECAPTCHA_SECRET}
+recaptcha.secret.key=${RECAPTCHA_SECRET:default_secret}
 recaptcha.verify.url=https://www.google.com/recaptcha/api/siteverify
+
+# Cloudinary
+cloudinary.cloud-name=${CLOUDINARY_CLOUD_NAME}
+cloudinary.api-key=${CLOUDINARY_API_KEY}
+cloudinary.api-secret=${CLOUDINARY_API_SECRET}
+
+# Puerto (Railway asigna dinámicamente)
+server.port=${PORT:8080}
 
 # Correo
 spring.mail.host=smtp.gmail.com
 spring.mail.port=587
-spring.mail.username=${MAIL_USER}
-spring.mail.password=${MAIL_PASSWORD}
+spring.mail.username=${MAIL_USER:temporal@gmail.com}
+spring.mail.password=${MAIL_PASSWORD:temporal}
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 spring.mail.properties.mail.smtp.starttls.required=true
