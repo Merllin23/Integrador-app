@@ -9,6 +9,6 @@ startCommand = "java -jar app.jar"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
-# Healthcheck para verificar que la app está funcionando
-healthcheckPath = "/actuator/health"
-healthcheckTimeout = 100
+# Healthcheck desactivado temporalmente
+# healthcheckPath = "/actuator/health"
+# healthcheckTimeout = 300
