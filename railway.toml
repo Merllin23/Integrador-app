@@ -9,6 +9,7 @@ startCommand = "java -jar app.jar"
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 3
 
-# Healthcheck desactivado temporalmente
-# healthcheckPath = "/actuator/health"
-# healthcheckTimeout = 300
+# Healthcheck configurado con tiempos tolerantes para Spring Boot
+healthcheckPath = "/actuator/health"
+healthcheckTimeout = 300
+initialDelaySeconds = 60
