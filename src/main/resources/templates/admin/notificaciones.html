@@ -35,8 +35,16 @@
     <!-- Contenido principal -->
     <div class="ml-64 flex-1 p-6">
         <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
-            <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
+                    <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
+                </div>
+                <button onclick="marcarTodasComoLeidas()" class="bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-check-double mr-2"></i>
+                    Marcar todas como leídas
+                </button>
+            </div>
         </div>
 
         <main class="bg-white rounded-lg shadow-sm p-6">
@@ -45,161 +53,340 @@
             <div class="border-b border-gray-200 mb-8">
                 <nav class="flex space-x-8" aria-label="Tabs">
                     <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red" onclick="switchTab('todos')">
-                        Todos
+                        Todos (<span id="count-todos">0</span>)
                     </button>
                     <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('no-leidas')">
-                        No leídas
+                        No leídas (<span id="count-no-leidas">0</span>)
                     </button>
                     <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('archivadas')">
-                        Archivadas
+                        Archivadas (<span id="count-archivadas">0</span>)
                     </button>
                 </nav>
             </div>
 
-            <!-- Notifications Sections -->
-            <div class="space-y-8">
-                <!-- Nuevas Cotizaciones -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Nuevas Cotizaciones</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-blue-600 text-xl">description</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Uniformes Escolares S.A.</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12345</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Nuevo
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-blue-600 text-xl">description</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Equipamiento Escolar Ltda.</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12346</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Nuevo
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Stock Crítico -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Stock Crítico</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-orange-600 text-xl">warning</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Camisas Escolares Azules</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 67890</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                            Crítico
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-orange-600 text-xl">warning</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Pantalones Escolares Grises</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 12348</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                            Crítico
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Cambios de Precio -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Cambios de Precio</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-purple-600 text-xl">sell</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Cambio de precio para Chaquetas de Uniforme Escolar</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 98765</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                            Actualizado
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+            <!-- Contenedor de notificaciones -->
+            <div id="notificaciones-container" class="space-y-3">
+                <!-- Las notificaciones se cargarán dinámicamente -->
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
+                </div>
             </div>
 
-            <!-- Margen inferior para mejor espaciado -->
-            <div class="pb-16"></div>
-        </div>
-    </main>
+            <!-- Mensaje cuando no hay notificaciones -->
+            <div id="no-notificaciones" class="text-center py-12 hidden">
+                <i class="fas fa-bell-slash text-6xl text-gray-300"></i>
+                <p class="text-gray-500 mt-4 text-lg">No hay notificaciones</p>
+            </div>
+
+            <!-- Resumen y Paginación -->
+            <div id="paginacion-container" class="mt-6 hidden">
+                <!-- Resumen -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-sm text-blue-800">
+                            Mostrando <strong id="inicio-notif">0</strong> a <strong id="fin-notif">0</strong> de <strong id="total-notif">0</strong> notificaciones
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Botones de paginación -->
+                <div class="flex justify-center gap-2" id="botones-paginacion-notif">
+                    <!-- Botones se generarán dinámicamente -->
+                </div>
+            </div>
+
+        </main>
+    </div>
 </div>
 
 <script>
+    let notificacionesActuales = [];
+    let tabActual = 'todos';
+    let paginaActualNotif = 0;
+    const notificacionesPorPagina = 10;
+
+    // Cargar notificaciones al iniciar
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarNotificaciones('todos');
+    });
+
+    // Cambiar de tab
     function switchTab(tabName) {
-        // Remove active class from all tabs
+        tabActual = tabName;
+        paginaActualNotif = 0; // Resetear a primera página
+        
+        // Actualizar estilos de tabs
         document.querySelectorAll('.tab-button').forEach(button => {
-            button.classList.remove('active', 'border-red-500', 'text-red-600');
+            button.classList.remove('active', 'border-jk-red', 'text-jk-red');
             button.classList.add('border-transparent', 'text-gray-500');
         });
 
-        // Add active class to clicked tab
-        event.target.classList.add('active', 'border-red-500', 'text-red-600');
+        event.target.classList.add('active', 'border-jk-red', 'text-jk-red');
         event.target.classList.remove('border-transparent', 'text-gray-500');
 
-        // Here you would typically show/hide content based on the selected tab
-        console.log('Switched to tab:', tabName);
+        cargarNotificaciones(tabName);
+    }
+
+    // Cargar notificaciones desde el backend
+    async function cargarNotificaciones(tipo) {
+        const container = document.getElementById('notificaciones-container');
+        const noNotificaciones = document.getElementById('no-notificaciones');
+        
+        // Mostrar loading
+        container.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
+            </div>
+        `;
+        container.classList.remove('hidden');
+        noNotificaciones.classList.add('hidden');
+
+        try {
+            let url = '/admin/notificaciones/all';
+            if (tipo === 'no-leidas') {
+                url = '/admin/notificaciones/no-leidas';
+            } else if (tipo === 'archivadas') {
+                url = '/admin/notificaciones/archivadas';
+            }
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.success) {
+                notificacionesActuales = data.notificaciones || [];
+                actualizarContadores(data);
+                mostrarNotificacionesPaginadas();
+                actualizarPaginacionNotificaciones();
+            } else {
+                mostrarError('Error al cargar notificaciones');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error de conexión');
+        }
+    }
+
+    // Mostrar notificaciones paginadas
+    function mostrarNotificacionesPaginadas() {
+        const container = document.getElementById('notificaciones-container');
+        const noNotificaciones = document.getElementById('no-notificaciones');
+        const paginacionContainer = document.getElementById('paginacion-container');
+
+        if (!notificacionesActuales || notificacionesActuales.length === 0) {
+            container.classList.add('hidden');
+            noNotificaciones.classList.remove('hidden');
+            paginacionContainer.classList.add('hidden');
+            return;
+        }
+
+        const inicio = paginaActualNotif * notificacionesPorPagina;
+        const fin = inicio + notificacionesPorPagina;
+        const notificacionesPagina = notificacionesActuales.slice(inicio, fin);
+
+        container.classList.remove('hidden');
+        noNotificaciones.classList.add('hidden');
+        
+        container.innerHTML = notificacionesPagina.map(notif => crearNotificacionHTML(notif)).join('');
+
+        // Actualizar resumen
+        document.getElementById('inicio-notif').textContent = inicio + 1;
+        document.getElementById('fin-notif').textContent = Math.min(fin, notificacionesActuales.length);
+        document.getElementById('total-notif').textContent = notificacionesActuales.length;
+        paginacionContainer.classList.remove('hidden');
+    }
+
+    // Actualizar botones de paginación
+    function actualizarPaginacionNotificaciones() {
+        const container = document.getElementById('botones-paginacion-notif');
+        const totalPaginas = Math.ceil(notificacionesActuales.length / notificacionesPorPagina);
+        
+        if (totalPaginas <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+        
+        let html = '';
+        
+        // Botón anterior
+        if (paginaActualNotif > 0) {
+            html += `<button onclick="irAPagina(${paginaActualNotif - 1})" 
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>`;
+        }
+        
+        // Botones de páginas
+        for (let i = 0; i < totalPaginas; i++) {
+            const activeClass = i === paginaActualNotif ? 'bg-jk-blue text-white' : 'border border-gray-300 hover:bg-gray-100';
+            html += `<button onclick="irAPagina(${i})" 
+                            class="${activeClass} px-3 py-1 rounded-lg transition-colors">
+                        ${i + 1}
+                    </button>`;
+        }
+        
+        // Botón siguiente
+        if (paginaActualNotif < totalPaginas - 1) {
+            html += `<button onclick="irAPagina(${paginaActualNotif + 1})" 
+                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>`;
+        }
+        
+        container.innerHTML = html;
+    }
+
+    // Ir a página específica
+    function irAPagina(pagina) {
+        paginaActualNotif = pagina;
+        mostrarNotificacionesPaginadas();
+        actualizarPaginacionNotificaciones();
+    }
+
+    // Actualizar contadores en los tabs
+    function actualizarContadores(data) {
+        if (data.noLeidas !== undefined) {
+            document.getElementById('count-no-leidas').textContent = data.noLeidas;
+        }
+        if (data.total !== undefined && tabActual === 'todos') {
+            document.getElementById('count-todos').textContent = data.total;
+        }
+    }
+
+    // Mostrar notificaciones en el DOM (función de compatibilidad)
+    function mostrarNotificaciones(notificaciones) {
+        // Esta función ahora solo actualiza los datos
+        notificacionesActuales = notificaciones || [];
+        mostrarNotificacionesPaginadas();
+    }
+
+    // Crear HTML para una notificación
+    function crearNotificacionHTML(notif) {
+        const iconos = {
+            'COTIZACION': { icon: 'fa-file-invoice', color: 'blue' },
+            'PEDIDO': { icon: 'fa-shopping-cart', color: 'green' },
+            'SISTEMA': { icon: 'fa-cog', color: 'gray' },
+            'ALERTA': { icon: 'fa-exclamation-triangle', color: 'orange' }
+        };
+
+        const config = iconos[notif.tipo] || { icon: 'fa-bell', color: 'gray' };
+        const fecha = new Date(notif.fechaCreacion).toLocaleString('es-ES');
+        const leidaClass = notif.leida ? 'bg-gray-50' : 'bg-white border-l-4 border-jk-blue';
+
+        return `
+            <div class="${leidaClass} border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-${config.color}-100 rounded-lg flex items-center justify-center">
+                            <i class="fas ${config.icon} text-${config.color}-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-base font-semibold text-gray-900">${notif.titulo}</h4>
+                            ${!notif.leida ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Nueva</span>' : ''}
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${notif.mensaje || ''}</p>
+                        <p class="text-xs text-gray-400">
+                            <i class="far fa-clock mr-1"></i>${fecha}
+                        </p>
+                    </div>
+                    <div class="flex-shrink-0 flex flex-col gap-2">
+                        ${!notif.leida ? `
+                            <button onclick="marcarComoLeida(${notif.id})" 
+                                    class="text-blue-600 hover:text-blue-800 transition-colors" 
+                                    title="Marcar como leída">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        ` : ''}
+                        ${!notif.archivada ? `
+                            <button onclick="archivarNotificacion(${notif.id})" 
+                                    class="text-gray-600 hover:text-gray-800 transition-colors" 
+                                    title="Archivar">
+                                <i class="fas fa-archive"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Marcar notificación como leída
+    async function marcarComoLeida(id) {
+        try {
+            const response = await fetch(`/admin/notificaciones/${id}/marcar-leida`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                cargarNotificaciones(tabActual);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al actualizar notificación');
+        }
+    }
+
+    // Archivar notificación
+    async function archivarNotificacion(id) {
+        try {
+            const response = await fetch(`/admin/notificaciones/${id}/archivar`, {
+                method: 'POST'
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                cargarNotificaciones(tabActual);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al archivar notificación');
+        }
+    }
+
+    // Marcar todas como leídas
+    async function marcarTodasComoLeidas() {
+        if (!confirm('¿Marcar todas las notificaciones como leídas?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/admin/notificaciones/marcar-todas-leidas', {
+                method: 'POST'
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                cargarNotificaciones(tabActual);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al actualizar notificaciones');
+        }
+    }
+
+    // Mostrar mensaje de error
+    function mostrarError(mensaje) {
+        const container = document.getElementById('notificaciones-container');
+        container.innerHTML = `
+            <div class="text-center py-12">
+                <i class="fas fa-exclamation-circle text-4xl text-red-500"></i>
+                <p class="text-red-500 mt-4">${mensaje}</p>
+                <button onclick="cargarNotificaciones(tabActual)" 
+                        class="mt-4 bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                    Reintentar
+                </button>
+            </div>
+        `;
     }
 </script>
-        </main>
-    </div>
-
-    <!-- WhatsApp Support -->
-    <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
-</div>
 
 </body>
 </html>
