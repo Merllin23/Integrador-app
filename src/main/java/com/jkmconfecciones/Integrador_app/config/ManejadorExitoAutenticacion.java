@@ -1,5 +1,7 @@
 package com.jkmconfecciones.Integrador_app.config;
 
+import com.jkmconfecciones.Integrador_app.entidades.Usuario;
+import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,8 @@ public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler
 
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -29,18 +33,26 @@ public class ManejadorExitoAutenticacion implements AuthenticationSuccessHandler
 
         String correo = authentication.getName();
 
-        usuarioService.buscarPorCorreo(correo).ifPresent(usuario -> {
-            // Reinicia los intentos fallidos
+        // Buscar el usuario en BD (SEGURO hacer esto)
+        Usuario usuario = usuarioService.buscarPorCorreo(correo).orElse(null);
+
+        if (usuario != null) {
+            // Registrar auditoría de login exitoso
+            auditoriaService.registrarLogin(usuario, request);
+
+            // Reiniciar intentos fallidos
             usuarioService.reiniciarIntentos(usuario);
 
-            // Guardamos la fecha del último login
+            // Actualizar fecha de último login
             usuario.setFechaUltimoLogin(LocalDateTime.now());
             usuarioService.guardar(usuario);
 
             log.info("Usuario '{}' inició sesión correctamente. Intentos reiniciados y fecha de último login actualizada.", correo);
-        });
+        } else {
+            log.error("No se encontró el usuario '{}' después del login. ¡Revisar!", correo);
+        }
 
-        // Redirigir según el rol directamente
+        // Redirigir según rol
         String rol = authentication.getAuthorities().iterator().next().getAuthority();
 
         if ("ROLE_ADMINISTRADOR".equals(rol)) {

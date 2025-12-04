@@ -1,5 +1,7 @@
 package com.jkmconfecciones.Integrador_app.config;
 
+import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
+import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,12 @@ public class SeguridadConfig {
 
     @Autowired
     private NoCacheFilter noCacheFilter;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Bean
     public PasswordEncoder codificadorContrasena() {
@@ -62,6 +70,15 @@ public class SeguridadConfig {
                         .deleteCookies("JSESSIONID") // elimina cookie de sesión
                         .clearAuthentication(true)
                         .permitAll()
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            if (authentication != null) {
+                                String correo = authentication.getName();
+                                usuarioService.buscarPorCorreo(correo).ifPresent(usuario -> {
+                                    auditoriaService.registrarLogout(usuario, request);
+                                });
+                            }
+                            response.sendRedirect("/login?logout=true");
+                        })
                 )
                 .headers(headers -> headers
                         .cacheControl(cache -> cache.disable())

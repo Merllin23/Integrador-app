@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller.admin;
 
+import com.jkmconfecciones.Integrador_app.DTO.AuditoriaDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
@@ -137,28 +138,6 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
-    @GetMapping("/notificaciones")
-    public String paginaNotificaciones(Model model) {
-        model.addAttribute("currentPage", "notificaciones");
-        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
-        return "fragments/admin-layout";
-    }
-
-
-    @GetMapping("/registroAuditoriaSeguridad")
-    public String paginaRegistroAuditoria(Model model) {
-        model.addAttribute("currentPage", "registroAuditoriaSeguridad");
-        model.addAttribute("pageTitle", "Auditoría de Seguridad - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/registroAuditoriaSeguridad :: mainContent");
-        return "fragments/admin-layout";
-    }
 
     @GetMapping("/productos/nuevo")
     public String adminNuevoProducto(Model model) {
@@ -661,6 +640,20 @@ public class AdminControlador {
         return "redirect:/admin/clientes";
     }
 
+    @GetMapping("/notificaciones")
+    public String paginaNotificaciones(Model model) {
+
+        model.addAttribute("currentPage", "notificaciones");
+        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
+
+        // Fragmentos del HTML
+        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
+        model.addAttribute("extraCss", "admin/notificaciones :: extraCss");
+        model.addAttribute("extraJs", "admin/notificaciones :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
     
     @GetMapping("/api/notificaciones")
     @ResponseBody
@@ -799,6 +792,19 @@ public class AdminControlador {
         }
     }
 
+
+    @GetMapping("/registroAuditoriaSeguridad")
+    public String paginaRegistroAuditoria(Model model) {
+        model.addAttribute("currentPage", "registroAuditoriaSeguridad");
+        model.addAttribute("pageTitle", "Auditoría de Seguridad - JKM Confecciones");
+
+        model.addAttribute("mainContent", "admin/registroAuditoriaSeguridad :: mainContent");
+        model.addAttribute("extraCss", "admin/registroAuditoriaSeguridad :: extraCss");
+        model.addAttribute("extraJs", "admin/registroAuditoriaSeguridad :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
     @GetMapping("/api/auditoria")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> obtenerAuditoria(
@@ -811,20 +817,35 @@ public class AdminControlador {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<AuditoriaSeguridad> auditoriaPage;
-            
+
             if (usuario != null || accion != null || fechaInicio != null || fechaFin != null) {
                 auditoriaPage = auditoriaService.buscarConFiltros(usuario, accion, fechaInicio, fechaFin, pageable);
             } else {
                 auditoriaPage = auditoriaService.obtenerTodos(pageable);
             }
-            
+
+            List<AuditoriaDTO> registrosDTO = auditoriaPage.getContent()
+                    .stream()
+                    .map(a -> new AuditoriaDTO(
+                            a.getUsuario() != null ? a.getUsuario().getCorreo() : "Desconocido",
+                            a.getAccion(),
+                            a.getRecurso(),
+                            a.getRecursoId(),
+                            a.getIpAddress(),
+                            a.getFechaHora() != null ? a.getFechaHora().toString() : null,
+                            a.getEstado(),
+                            a.getDetalles(),
+                            a.getUserAgent()
+                    ))
+                    .toList();
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("registros", auditoriaPage.getContent());
+            response.put("registros", registrosDTO);
             response.put("totalElementos", auditoriaPage.getTotalElements());
             response.put("totalPaginas", auditoriaPage.getTotalPages());
             response.put("paginaActual", auditoriaPage.getNumber());
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error al obtener registros de auditoría", e);
