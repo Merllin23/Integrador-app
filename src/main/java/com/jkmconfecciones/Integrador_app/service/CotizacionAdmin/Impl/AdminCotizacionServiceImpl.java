@@ -19,6 +19,9 @@ import java.util.List;
 public class AdminCotizacionServiceImpl implements AdminCotizacionService {
 
     private final CotizacionRepositorio cotizacionRepositorio;
+    private final com.jkmconfecciones.Integrador_app.service.NotificacionAutomaticaService notificacionAutomaticaService;
+    private final com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService auditoriaService;
+    private final com.jkmconfecciones.Integrador_app.repositorios.UsuarioRepositorio usuarioRepositorio;
 
 
     private String obtenerUsuarioActual() {
@@ -49,6 +52,29 @@ public class AdminCotizacionServiceImpl implements AdminCotizacionService {
         // Logger
         log.info("ADMIN '{}' cambió el estado de la Cotización ID {} de '{}' a '{}'",
                 admin, id, estadoAnterior, nuevoEstado);
+                
+        // Notificar al cliente
+        try {
+            notificacionAutomaticaService.notificarCambioEstadoCotizacion(cotizacion, estadoAnterior, nuevoEstado);
+        } catch (Exception e) {
+            log.error("Error al generar notificación de cambio de estado", e);
+        }
+        
+        // Registrar auditoría
+        try {
+            Usuario usuario = usuarioRepositorio.findByCorreo(admin).orElse(null);
+            if (usuario != null) {
+                auditoriaService.registrarAccionSimple(
+                    usuario,
+                    "ACTUALIZAR_ESTADO_COTIZACION",
+                    "COTIZACION",
+                    "EXITOSO",
+                    String.format("Cotización #%d: %s → %s", id, estadoAnterior, nuevoEstado)
+                );
+            }
+        } catch (Exception e) {
+            log.error("Error al registrar auditoría", e);
+        }
     }
 
     @Override

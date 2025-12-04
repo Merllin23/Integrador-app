@@ -33,6 +33,9 @@ public class ProductoServiceImpl implements ProductoService {
     private final ColegioRepositorio colegioRepositorio;
     private final CategoriaRepositorio categoriaRepositorio;
     private final ProductoTallaRepositorio productoTallaRepositorio;
+    private final com.jkmconfecciones.Integrador_app.service.NotificacionAutomaticaService notificacionAutomaticaService;
+    private final com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService auditoriaService;
+    private final com.jkmconfecciones.Integrador_app.repositorios.UsuarioRepositorio usuarioRepositorio;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductoServiceImpl.class);
     private static final String CARPETA_IMAGENES = "C:\\jkm\\productos\\";
@@ -128,6 +131,9 @@ public class ProductoServiceImpl implements ProductoService {
         Producto existente = productoRepositorio.findById(producto.getId().longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + producto.getId()));
 
+        // Guardar precio anterior para detectar cambios
+        Double precioAnterior = existente.getPrecioBase();
+
         String nombreOriginal = producto.getNombre();
         String nombreLimpio = (nombreOriginal != null) ? nombreOriginal.trim().replaceAll("\\s{2,}", " ") : "";
         Preconditions.checkArgument(!nombreLimpio.isEmpty() && nombreLimpio.length() >= 2,
@@ -195,6 +201,31 @@ public class ProductoServiceImpl implements ProductoService {
         Producto actualizado = productoRepositorio.save(existente);
         logger.info("Usuario '{}' actualizó el producto '{}' con ID {}", username, actualizado.getNombre(), actualizado.getId());
 
+        // Registrar auditoría
+        try {
+            Usuario usuario = usuarioRepositorio.findByCorreo(username).orElse(null);
+            if (usuario != null) {
+                auditoriaService.registrarAccionSimple(
+                    usuario,
+                    "ACTUALIZAR_PRODUCTO",
+                    "PRODUCTO",
+                    "EXITOSO",
+                    "Producto actualizado: " + actualizado.getNombre()
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Error al registrar auditoría", e);
+        }
+
+        // Notificar si hubo cambio de precio
+        if (precioAnterior != null && !precioAnterior.equals(actualizado.getPrecioBase())) {
+            try {
+                notificacionAutomaticaService.notificarCambioPrecio(actualizado, precioAnterior, actualizado.getPrecioBase());
+            } catch (Exception e) {
+                logger.error("Error al generar notificación de cambio de precio", e);
+            }
+        }
+
         return actualizado;
     }
 
@@ -202,11 +233,33 @@ public class ProductoServiceImpl implements ProductoService {
     public void actualizarStock(Integer productoId, Integer cantidad) {
         ProductoTalla detalle = productoTallaRepositorio.findById(productoId.longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        
+        int stockAnterior = detalle.getCantidadStock();
         detalle.setCantidadStock(cantidad);
         productoTallaRepositorio.save(detalle);
 
         String username = obtenerUsuarioLogueado();
         logger.info("Usuario '{}' actualizó stock: Producto ID {}, nueva cantidad {}", username, productoId, cantidad);
+        
+        // Registrar auditoría
+        try {
+            Usuario usuario = usuarioRepositorio.findByCorreo(username).orElse(null);
+            if (usuario != null) {
+                auditoriaService.registrarAccionSimple(
+                    usuario,
+                    "ACTUALIZAR_STOCK",
+                    "PRODUCTO_TALLA",
+                    "EXITOSO",
+                    String.format("Stock actualizado: %s - %s (De %d a %d unidades)",
+                        detalle.getProducto().getNombre(),
+                        detalle.getTalla().getNombreTalla(),
+                        stockAnterior,
+                        cantidad)
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Error al registrar auditoría", e);
+        }
     }
 
     @Override

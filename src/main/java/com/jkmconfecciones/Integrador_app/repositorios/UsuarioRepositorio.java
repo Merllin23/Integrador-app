@@ -18,4 +18,6 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
 
     List<Usuario> findByEstadoAndFechaUltimoLoginBefore(String estado, LocalDateTime fecha);
 
+    List<Usuario> findByRolNombreRol(String nombreRol);
+
 }

@@ -28,6 +28,12 @@ public class CotizacionServiceImpl implements CotizacionService {
     @Autowired
     private DetalleCotizacionRepositorio detalleCotizacionRepositorio;
 
+    @Autowired
+    private com.jkmconfecciones.Integrador_app.service.NotificacionAutomaticaService notificacionAutomaticaService;
+
+    @Autowired
+    private com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService auditoriaService;
+
     @Override
     @Transactional
     public Cotizacion crearCotizacion(CotizacionRequestDTO dto, String correoUsuario) {
@@ -79,6 +85,26 @@ public class CotizacionServiceImpl implements CotizacionService {
 
         // 5. Guardar detalles
         detalleCotizacionRepositorio.saveAll(detalles);
+        
+        // Generar notificación para administradores
+        try {
+            notificacionAutomaticaService.notificarNuevaCotizacion(cotizacion);
+        } catch (Exception e) {
+            // Log error pero no fallar la transacción
+        }
+        
+        // Registrar auditoría
+        try {
+            auditoriaService.registrarAccionSimple(
+                usuario,
+                "CREAR_COTIZACION",
+                "COTIZACION",
+                "EXITOSO",
+                String.format("Cotización creada #%d por monto S/ %.2f", cotizacion.getId(), total)
+            );
+        } catch (Exception e) {
+            // Log error pero no fallar la transacción
+        }
 
         return cotizacion;
     }
