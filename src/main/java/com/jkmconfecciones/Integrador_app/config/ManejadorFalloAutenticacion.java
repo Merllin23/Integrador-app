@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.config;
 
+import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +18,13 @@ import java.io.IOException;
 @Component
 public class ManejadorFalloAutenticacion implements AuthenticationFailureHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ManejadorFalloAutenticacion.class); // 👈 Logger
+    private static final Logger log = LoggerFactory.getLogger(ManejadorFalloAutenticacion.class); //  Logger
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
@@ -29,6 +33,8 @@ public class ManejadorFalloAutenticacion implements AuthenticationFailureHandler
             throws IOException, ServletException {
 
         String correo = request.getParameter("username");
+
+        auditoriaService.registrarLoginFallido(correo, request);
 
         if (exception instanceof LockedException) {
             log.warn("Usuario '{}' bloqueado temporalmente al intentar iniciar sesión.", correo);

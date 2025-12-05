@@ -122,18 +122,37 @@ public class AuditoriaService {
     }
 
     //Obtener IP del cliente
-     
+
     private String obtenerIpCliente(HttpServletRequest request) {
-        String ipAddress = request.getHeader("X-Forwarded-For");
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getHeader("Proxy-Client-IP");
+
+        String[] cabeceras = {
+                "X-Forwarded-For",
+                "X-Real-IP",
+                "Proxy-Client-IP",
+                "WL-Proxy-Client-IP",
+                "HTTP_X_FORWARDED_FOR",
+                "HTTP_X_FORWARDED",
+                "HTTP_X_CLUSTER_CLIENT_IP",
+                "HTTP_CLIENT_IP",
+                "HTTP_FORWARDED_FOR",
+                "HTTP_FORWARDED"
+        };
+
+        for (String header : cabeceras) {
+            String ip = request.getHeader(header);
+
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+
+                // Si hay varias IPs separadas por coma → tomar la primera
+                if (ip.contains(",")) {
+                    return ip.split(",")[0].trim();
+                }
+
+                return ip;
+            }
         }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ipAddress == null || ipAddress.isEmpty() || "unknown".equalsIgnoreCase(ipAddress)) {
-            ipAddress = request.getRemoteAddr();
-        }
-        return ipAddress;
+
+        return request.getRemoteAddr();
     }
+
 }
