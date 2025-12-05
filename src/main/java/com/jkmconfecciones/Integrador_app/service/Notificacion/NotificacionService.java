@@ -136,4 +136,11 @@ public class NotificacionService {
         notificacionRepositorio.saveAll(notificaciones);
         log.info("Todas las notificaciones del usuario {} marcadas como leídas", usuario.getId());
     }
+
+    public boolean existeNotificacion(Long usuarioId, Long referenciaId, String referenciaTipo) {
+        return !notificacionRepositorio
+                .findAllByUsuarioIdAndReferenciaIdAndReferenciaTipo(usuarioId, referenciaId, referenciaTipo)
+                .isEmpty();
+    }
+
 }
