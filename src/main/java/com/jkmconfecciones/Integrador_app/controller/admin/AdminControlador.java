@@ -7,6 +7,7 @@ import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService;
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.Tallas.ProductoTallaService;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
 import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
@@ -47,6 +48,7 @@ public class AdminControlador {
     private final AuditoriaService auditoriaService;
     private final UsuarioService usuarioService;
 
+    private final ProductoTallaService productoTallaService;
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -876,5 +878,35 @@ public class AdminControlador {
         }
     }
 
+    @GetMapping("/tallas")
+    public String mostrarTallas(Model model) {
+        List<ProductoTalla> productosTallas = productoTallaService.listarTodos();
+        model.addAttribute("productosTallas", productosTallas);
+        model.addAttribute("currentPage", "tallas");
+        model.addAttribute("pageTitle", "Gestión de Tallas - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/tallas :: mainContent");
+        model.addAttribute("extraCss", "admin/tallas :: extraCss");
+        model.addAttribute("extraJs", "admin/tallas :: extraJs");
+        return "fragments/admin-layout";
+    }
 
+    @GetMapping("/tallas/api/list")
+    @ResponseBody
+    public List<Map<String, Object>> listarTallas() {
+        return productoTallaService.listarTallasComoMap();
+    }
+
+    @PutMapping("/tallas/api/{id}/toggle-estado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleEstado(@PathVariable Long id,
+                                                            @RequestBody Map<String, Boolean> request) {
+        Boolean nuevoEstado = request.get("activo");
+        return ResponseEntity.ok(productoTallaService.toggleEstado(id, nuevoEstado));
+    }
+
+    @GetMapping("/tallas/api/{id}")
+    @ResponseBody
+    public Map<String, Object> obtenerDetalle(@PathVariable Long id) {
+        return productoTallaService.obtenerDetalle(id);
+    }
 }
