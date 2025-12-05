@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface NotificacionRepositorio extends JpaRepository<Notificacion, Long> {
@@ -32,4 +33,16 @@ public interface NotificacionRepositorio extends JpaRepository<Notificacion, Lon
 
     // Buscar por tipo y usuario
     List<Notificacion> findByUsuarioAndTipoOrderByFechaCreacionDesc(Usuario usuario, String tipo);
+
+    Optional<Notificacion> findByUsuarioIdAndReferenciaIdAndReferenciaTipo(
+            Long usuarioId,
+            Long referenciaId,
+            String referenciaTipo
+    );
+
+    List<Notificacion> findAllByUsuarioIdAndReferenciaIdAndReferenciaTipo(
+            Long usuarioId,
+            Long referenciaId,
+            String referenciaTipo
+    );
 }

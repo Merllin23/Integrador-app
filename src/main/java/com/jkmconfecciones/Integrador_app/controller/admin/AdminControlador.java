@@ -662,7 +662,7 @@ public class AdminControlador {
         try {
             Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesNoArchivadas(usuario);
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesUsuario(usuario);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);

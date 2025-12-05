@@ -40,26 +40,25 @@
     </div>
 
     <main class="bg-white rounded-lg shadow-sm p-6">
-
-        <!-- Tabs -->
         <div class="border-b border-gray-200 mb-8">
             <nav class="flex space-x-8" aria-label="Tabs">
                 <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red"
-                        onclick="switchTab('todos')">
+                        onclick="switchTab('todos', event)">
                     Todos (<span id="count-todos">0</span>)
                 </button>
+
                 <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
-                        onclick="switchTab('no-leidas')">
+                        onclick="switchTab('no-leidas', event)">
                     No leídas (<span id="count-no-leidas">0</span>)
                 </button>
+
                 <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
-                        onclick="switchTab('archivadas')">
+                        onclick="switchTab('archivadas', event)">
                     Archivadas (<span id="count-archivadas">0</span>)
                 </button>
             </nav>
         </div>
 
-        <!-- Contenedor de notificaciones -->
         <div id="notificaciones-container" class="space-y-3">
             <div class="text-center py-12">
                 <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
@@ -67,27 +66,9 @@
             </div>
         </div>
 
-        <!-- No notificaciones -->
         <div id="no-notificaciones" class="text-center py-12 hidden">
             <i class="fas fa-bell-slash text-6xl text-gray-300"></i>
             <p class="text-gray-500 mt-4 text-lg">No hay notificaciones</p>
-        </div>
-
-        <!-- Paginación -->
-        <div id="paginacion-container" class="mt-6 hidden">
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="text-sm text-blue-800">
-                    Mostrando <strong id="inicio-notif">0</strong> a <strong id="fin-notif">0</strong> de <strong id="total-notif">0</strong> notificaciones
-                </span>
-                </div>
-            </div>
-
-            <div class="flex justify-center gap-2" id="botones-paginacion-notif"></div>
         </div>
 
     </main>
@@ -95,38 +76,185 @@
 </th:block>
 
 <th:block th:fragment="extraJs">
-
     <script>
         let notificacionesActuales = [];
         let tabActual = 'todos';
-        let paginaActualNotif = 0;
-        const notificacionesPorPagina = 10;
 
-        document.addEventListener('DOMContentLoaded', () => cargarNotificaciones('todos'));
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.notificacionesInicializadas) {
+                window.notificacionesInicializadas = true;
+                cargarNotificaciones('todos');
+            }
+        });
 
-        /* Todas tus funciones JS tal cual… */
-        /* NO TE LAS QUITO, VAN COMPLETITAS */
-
-        // Cambiar de tab
-        function switchTab(tabName) {
+        function switchTab(tabName, event) {
             tabActual = tabName;
-            paginaActualNotif = 0;
 
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active', 'border-jk-red', 'text-jk-red');
                 btn.classList.add('border-transparent', 'text-gray-500');
             });
 
-            event.target.classList.add('active', 'border-jk-red', 'text-jk-red');
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active', 'border-jk-red', 'text-jk-red');
+            }
 
             cargarNotificaciones(tabName);
         }
 
-        // ... Y TODO TU JS EXACTO SIN ELIMINAR NADA ...
-        // (si quieres también te lo puedo limpiar)
+        async function cargarNotificaciones(tab) {
+            let url = '/admin/api/notificaciones';
+            if (tab === 'no-leidas') url = '/admin/api/notificaciones/no-leidas';
+            if (tab === 'archivadas') url = '/admin/api/notificaciones/archivadas';
+
+            const contenedor = document.getElementById('notificaciones-container');
+            const noNotif = document.getElementById('no-notificaciones');
+
+            const countTodos = document.getElementById('count-todos');
+            const countNoLeidas = document.getElementById('count-no-leidas');
+            const countArchivadas = document.getElementById('count-archivadas');
+
+            contenedor.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
+                </div>
+            `;
+            noNotif.classList.add('hidden');
+
+            try {
+                const res = await fetch(url, { credentials: 'same-origin' });
+
+                if (!res.ok) {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                    return;
+                }
+
+                const data = await res.json();
+                const notas = data.notificaciones ?? [];
+
+                /** ============================================
+                    FIX PRINCIPAL → Ya no dependemos de notas.length > 0
+                ============================================== */
+                if (data.success) {
+                    notificacionesActuales = notas;
+                    contenedor.innerHTML = '';
+                    noNotif.classList.add('hidden');
+
+                    if (notas.length === 0) {
+                        noNotif.classList.remove('hidden');
+                        return;
+                    }
+
+                    notas.forEach(n => {
+                        const id = n.id;
+                        const titulo = n.titulo ?? 'Sin título';
+                        const mensaje = n.mensaje ?? '';
+                        const leida =!!n.leida;
+                        const fecha = n.fechaCreacion ?? null;
+                        const fechaTexto = fecha ? new Date(fecha).toLocaleString('es-PE') : '';
+
+                        const div = document.createElement('div');
+                        div.classList.add(
+                            'p-4','border','rounded','shadow-sm',
+                            leida ? '' : 'bg-blue-50',
+                            'flex','justify-between','items-center'
+                        );
+
+                        div.innerHTML = `
+                            <div>
+                                <strong class="block">${titulo}</strong>
+                                <p class="text-gray-700">${mensaje}</p>
+                                ${fechaTexto ? `<small class="text-xs text-gray-400">${fechaTexto}</small>` : ''}
+                            </div>
+
+                            <div class="ml-4 flex flex-col gap-1 text-right">
+
+                                ${!leida
+                                    ? `<button onclick="marcarComoLeida(${id})"
+                                              class="text-sm text-jk-blue hover:underline">
+                                             Marcar leída
+                                       </button>`
+                                    : `<span class="text-sm text-gray-500">Leída</span>`}
+
+                                <button onclick="archivar(${id})"
+                                        class="text-sm text-jk-red hover:underline">
+                                    Archivar
+                                </button>
+                            </div>
+                        `;
+                        contenedor.appendChild(div);
+                    });
+                } else {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                }
+
+                // Actualización de contadores
+                countTodos.textContent = data.total ?? notas.length;
+                countNoLeidas.textContent = data.noLeidas ?? notas.filter(n => !n.leida).length;
+                countArchivadas.textContent = data.archivadas ?? countArchivadas.textContent;
+
+            } catch (e) {
+                console.error("Error:", e);
+                contenedor.innerHTML = '';
+                noNotif.classList.remove('hidden');
+            }
+        }
+
+        async function marcarComoLeida(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/marcar-leida`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar leída:", e);
+            }
+        }
+
+        async function archivar(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/archivar`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al archivar:", e);
+            }
+        }
+
+        async function marcarTodasComoLeidas() {
+            try {
+                const res = await fetch('/admin/api/notificaciones/marcar-todas-leidas', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar todas:", e);
+            }
+        }
 
     </script>
-
 </th:block>
 
 </html>
