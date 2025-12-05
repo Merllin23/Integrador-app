@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Rol - JKM Confecciones</title>
+
+    <th:block th:fragment="extraCss">
+        <!-- Aquí puedes agregar CSS adicional si lo necesitas -->
+    </th:block>
+</head>
+
+<body class="bg-gray-50 text-gray-900 font-sans">
+<th:block th:fragment="mainContent">
+    <div class="max-w-7xl mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-1">Cambiar Rol de Usuario</h1>
+        <p class="text-gray-500 mb-6">Selecciona el rol que deseas asignar a cada usuario y haz clic en actualizar</p>
+
+        <!-- FILTROS -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div class="flex gap-2 flex-wrap">
+                <input type="text" id="searchInput" placeholder="Buscar usuario por nombre o correo"
+                       class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       onkeyup="aplicarFiltro()">
+                <button onclick="recargar()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">Recargar</button>
+            </div>
+        </div>
+
+        <!-- TABLA -->
+        <div class="bg-white rounded-xl shadow overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 text-left font-medium text-gray-700">Nombre</th>
+                    <th class="px-6 py-3 text-left font-medium text-gray-700">Correo</th>
+                    <th class="px-6 py-3 text-left font-medium text-gray-700">Rol Actual</th>
+                    <th class="px-6 py-3 text-left font-medium text-gray-700">Asignar Nuevo Rol</th>
+                    <th class="px-6 py-3 text-center font-medium text-gray-700">Acción</th>
+                </tr>
+                </thead>
+                <tbody id="tablaUsuarios" class="bg-white divide-y divide-gray-200">
+                <!-- Mensaje si no hay usuarios -->
+                <tr th:if="${usuarios.isEmpty()}">
+                    <td colspan="5" class="text-center py-8 text-gray-400">
+                        <i class="fas fa-inbox mr-2"></i> No hay usuarios disponibles
+                    </td>
+                </tr>
+
+                <!-- Lista de usuarios -->
+                <tr th:each="usuario : ${usuarios}" class="hover:bg-gray-50">
+                    <td class="px-6 py-4" th:text="${usuario.nombre} + ' ' + (${usuario.apellido} ?: '')"></td>
+                    <td class="px-6 py-4" th:text="${usuario.correo}"></td>
+                    <td class="px-6 py-4" th:text="${usuario.rol.nombreRol}"></td>
+
+                    <!-- Columna de Asignar Nuevo Rol -->
+                    <td class="px-6 py-4">
+                        <select form="formRol_${usuario.id}" name="rolId" class="px-2 py-1 border border-gray-300 rounded-lg w-full">
+                            <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombreRol}"
+                                    th:selected="${rol.id} == ${usuario.rol.id}"></option>
+                        </select>
+                    </td>
+
+                    <!-- Columna de Acción -->
+                    <td class="px-6 py-4 text-center">
+                        <form th:id="'formRol_' + ${usuario.id}" th:action="@{/admin/{id}/rol(id=${usuario.id})}" method="post">
+                            <button type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                                Actualizar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- PAGINACIÓN MEJORADA -->
+        <div class="flex justify-end mt-4 gap-1 flex-wrap">
+            <!-- Botón Anterior -->
+            <a th:if="${currentPage > 0}"
+               th:href="@{/admin/cambiarrol(page=${currentPage - 1}, size=${usuariosPage.size})}"
+               class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">Anterior</a>
+            <span th:unless="${currentPage > 0}"
+                  class="px-3 py-1 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Anterior</span>
+
+            <!-- Números de página dinámicos -->
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+        <a th:if="${i != currentPage}"
+           th:href="@{/admin/cambiarrol(page=${i}, size=${usuariosPage.size})}"
+           class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition"
+           th:text="${i + 1}"></a>
+        <span th:if="${i == currentPage}"
+              class="px-3 py-1 bg-blue-600 text-white rounded transition"
+              th:text="${i + 1}"></span>
+    </span>
+
+            <!-- Botón Siguiente -->
+            <a th:if="${currentPage + 1 < totalPages}"
+               th:href="@{/admin/cambiarrol(page=${currentPage + 1}, size=${usuariosPage.size})}"
+               class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 transition">Siguiente</a>
+            <span th:unless="${currentPage + 1 < totalPages}"
+                  class="px-3 py-1 bg-gray-100 text-gray-400 rounded cursor-not-allowed">Siguiente</span>
+        </div>
+
+    </div>
+</th:block>
+
+<th:block th:fragment="extraJs">
+    <script>
+        function aplicarFiltro() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#tablaUsuarios tr[th\\:each]');
+            rows.forEach(row => {
+                const nombre = row.querySelector('td:nth-child(1)').innerText.toLowerCase();
+                const correo = row.querySelector('td:nth-child(2)').innerText.toLowerCase();
+                row.style.display = (nombre.includes(searchText) || correo.includes(searchText)) ? '' : 'none';
+            });
+        }
+
+        function recargar() {
+            document.getElementById('searchInput').value = '';
+            aplicarFiltro();
+        }
+    </script>
+</th:block>
+</body>
+</html>

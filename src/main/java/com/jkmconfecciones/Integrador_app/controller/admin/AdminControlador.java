@@ -75,6 +75,7 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
+
     @GetMapping("/cargaMasivaDatos")
     public String paginaCargadeDatos(Model model) {
         model.addAttribute("currentPage", "cargaMasivaDatos");
@@ -909,4 +910,47 @@ public class AdminControlador {
     public Map<String, Object> obtenerDetalle(@PathVariable Long id) {
         return productoTallaService.obtenerDetalle(id);
     }
+
+    @GetMapping("/cambiarrol")
+    public String mostrarCambiarRol(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        Page<Usuario> usuariosPage = usuarioService.listarTodos(PageRequest.of(page, size));
+        List<Rol> roles = usuarioService.listarRoles();
+
+        model.addAttribute("usuariosPage", usuariosPage);
+        model.addAttribute("usuarios", usuariosPage.getContent());
+        model.addAttribute("roles", roles);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", usuariosPage.getTotalPages());
+
+        // Datos para el layout
+        model.addAttribute("pageTitle", "Cambiar Rol de Usuario - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/cambiarRol :: mainContent");
+        model.addAttribute("extraCss", "admin/cambiarRol :: extraCss");
+        model.addAttribute("extraJs", "admin/cambiarRol :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    // actualizar rol de un usuario
+    @PostMapping("/{id}/rol")
+    public String actualizarRol(
+            @PathVariable Long id,
+            @RequestParam Long rolId,
+            Model model
+    ) {
+        try {
+            // Delegamos al servicio
+            usuarioService.cambiarRol(id, rolId);
+            model.addAttribute("success", "Rol actualizado correctamente");
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        // Redirigimos a la misma página
+        return "redirect:/admin/cambiarrol";
+    }
+
 }
