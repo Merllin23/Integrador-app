@@ -5,6 +5,7 @@ import com.jkmconfecciones.Integrador_app.entidades.Rol;
 import com.jkmconfecciones.Integrador_app.repositorios.UsuarioRepositorio;
 import com.jkmconfecciones.Integrador_app.repositorios.RolRepositorio;
 import com.jkmconfecciones.Integrador_app.service.RegistroService;
+import com.jkmconfecciones.Integrador_app.service.RecaptchaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +29,9 @@ public class RegistroServiceImpl implements RegistroService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private RecaptchaService recaptchaService;
+
     // Control temporal de IPs
     private final Map<String, Integer> registrosPorIp = new HashMap<>();
     private final Map<String, LocalDateTime> ultimoIntentoIp = new HashMap<>();
@@ -38,9 +42,14 @@ public class RegistroServiceImpl implements RegistroService {
     @Override
     public String registrarUsuario(Usuario usuario, String captchaToken, String ip) {
 
-        // Validar CAPTCHA
+        // 🔐 Validar CAPTCHA con Google reCAPTCHA
         if (captchaToken == null || captchaToken.isBlank()) {
             return "Por favor, completa el CAPTCHA.";
+        }
+
+        boolean captchaValido = recaptchaService.verificarCaptcha(captchaToken, ip);
+        if (!captchaValido) {
+            return "El CAPTCHA no es válido. Por favor, inténtalo de nuevo.";
         }
 
         // Limitar registros por IP

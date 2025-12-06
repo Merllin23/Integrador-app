@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller.admin;
 
+import com.jkmconfecciones.Integrador_app.DTO.AuditoriaDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
@@ -7,9 +8,16 @@ import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
+import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
+import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +45,9 @@ public class AdminControlador {
     private final TallaService tallaService;
     private final AdminCotizacionService adminCotizacionService;
     private final ClienteService clienteService;
+    private final NotificacionService notificacionService;
+    private final UsuarioService usuarioService;
+    private final AuditoriaService auditoriaService;
 
 
     @GetMapping("/panel")
@@ -128,18 +139,6 @@ public class AdminControlador {
         model.addAttribute("extraJs", "admin/inventario :: extraJs");
         return "fragments/admin-layout";
     }
-
-    @GetMapping("/notificaciones")
-    public String paginaNotificaciones(Model model) {
-        model.addAttribute("currentPage", "notificaciones");
-        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
-        return "fragments/admin-layout";
-    }
-
 
     @GetMapping("/registroAuditoriaSeguridad")
     public String paginaRegistroAuditoria(Model model) {
@@ -651,6 +650,231 @@ public class AdminControlador {
 
         clienteService.guardar(usuario);
         return "redirect:/admin/clientes";
+    }
+
+    // ========== NOTIFICACIONES ==========
+
+    @GetMapping("/notificaciones")
+    public String paginaNotificaciones(Model model) {
+
+        model.addAttribute("currentPage", "notificaciones");
+        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
+
+        // Fragmentos del HTML
+        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
+        model.addAttribute("extraCss", "admin/notificaciones :: extraCss");
+        model.addAttribute("extraJs", "admin/notificaciones :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/api/notificaciones")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerNotificaciones(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesUsuario(usuario);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("notificaciones", notificaciones);
+            response.put("total", notificaciones.size());
+            response.put("noLeidas", notificacionService.contarNotificacionesNoLeidas(usuario));
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al obtener notificaciones", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al cargar notificaciones");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/api/notificaciones/no-leidas")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerNotificacionesNoLeidas(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesNoLeidas(usuario);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("notificaciones", notificaciones);
+            response.put("total", notificaciones.size());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al obtener notificaciones no leídas", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al cargar notificaciones");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/api/notificaciones/archivadas")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerNotificacionesArchivadas(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesArchivadas(usuario);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("notificaciones", notificaciones);
+            response.put("total", notificaciones.size());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al obtener notificaciones archivadas", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al cargar notificaciones");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/api/notificaciones/{id}/marcar-leida")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> marcarComoLeida(@PathVariable Long id) {
+        try {
+            notificacionService.marcarComoLeida(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Notificación marcada como leída");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al marcar notificación como leída", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al actualizar notificación");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/api/notificaciones/{id}/archivar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> archivarNotificacion(@PathVariable Long id) {
+        try {
+            notificacionService.marcarComoArchivada(id);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Notificación archivada");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al archivar notificación", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al archivar notificación");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/api/notificaciones/marcar-todas-leidas")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> marcarTodasComoLeidas(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        try {
+            Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            notificacionService.marcarTodasComoLeidas(usuario);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Todas las notificaciones marcadas como leídas");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al marcar todas las notificaciones como leídas", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al actualizar notificaciones");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    // ========== API AUDITORÍA ==========
+
+    @GetMapping("/api/auditoria")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerAuditoria(
+            @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String accion,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        try {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<AuditoriaSeguridad> auditoriaPage;
+
+            if (usuario != null || accion != null || fechaInicio != null || fechaFin != null) {
+                auditoriaPage = auditoriaService.buscarConFiltros(usuario, accion, fechaInicio, fechaFin, pageable);
+            } else {
+                auditoriaPage = auditoriaService.obtenerTodos(pageable);
+            }
+
+            List<AuditoriaDTO> registrosDTO = auditoriaPage.getContent()
+                    .stream()
+                    .map(a -> new AuditoriaDTO(
+                            a.getUsuario() != null ? a.getUsuario().getCorreo() : "Desconocido",
+                            a.getAccion(),
+                            a.getRecurso(),
+                            a.getRecursoId(),
+                            a.getIpAddress(),
+                            a.getFechaHora() != null ? a.getFechaHora().toString() : null,
+                            a.getEstado(),
+                            a.getDetalles(),
+                            a.getUserAgent()
+                    ))
+                    .toList();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("registros", registrosDTO);
+            response.put("totalElementos", auditoriaPage.getTotalElements());
+            response.put("totalPaginas", auditoriaPage.getTotalPages());
+            response.put("paginaActual", auditoriaPage.getNumber());
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al obtener registros de auditoría", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al cargar registros de auditoría");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/api/auditoria/recientes")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> obtenerAuditoriaReciente() {
+        try {
+            List<AuditoriaSeguridad> registros = auditoriaService.obtenerUltimosRegistros();
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("registros", registros);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al obtener registros recientes de auditoría", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al cargar registros");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
 

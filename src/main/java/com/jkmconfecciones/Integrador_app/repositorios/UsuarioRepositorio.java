@@ -13,6 +13,8 @@ public interface UsuarioRepositorio extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByCorreo(String correo);
 
     Page<Usuario> findByRolNombreRol(String nombreRol, Pageable pageable);
+    
+    List<Usuario> findByRolNombreRol(String nombreRol);
 
     Page<Usuario> findByNombreContainingIgnoreCaseAndRolNombreRol(String nombre, String rol, Pageable pageable);
 

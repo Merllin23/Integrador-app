@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notificaciones - JKM Confecciones</title>
 
-    <!-- Tailwind & FontAwesome -->
+<th:block th:fragment="extraCss">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
           theme: {
@@ -25,181 +20,237 @@
           }
         }
     </script>
-</head>
+</th:block>
 
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
-            <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
-        </div>
+<th:block th:fragment="mainContent">
 
-        <main class="bg-white rounded-lg shadow-sm p-6">
-
-            <!-- Tabs -->
-            <div class="border-b border-gray-200 mb-8">
-                <nav class="flex space-x-8" aria-label="Tabs">
-                    <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red" onclick="switchTab('todos')">
-                        Todos
-                    </button>
-                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('no-leidas')">
-                        No leídas
-                    </button>
-                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('archivadas')">
-                        Archivadas
-                    </button>
-                </nav>
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
+                <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
             </div>
-
-            <!-- Notifications Sections -->
-            <div class="space-y-8">
-                <!-- Nuevas Cotizaciones -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Nuevas Cotizaciones</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-blue-600 text-xl">description</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Uniformes Escolares S.A.</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12345</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Nuevo
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-blue-600 text-xl">description</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Nuevo cotización de Equipamiento Escolar Ltda.</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cotización #12346</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            Nuevo
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Stock Crítico -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Stock Crítico</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-orange-600 text-xl">warning</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Camisas Escolares Azules</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 67890</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                            Crítico
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-orange-600 text-xl">warning</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Stock bajo para Pantalones Escolares Grises</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 12348</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                                            Crítico
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Cambios de Precio -->
-                <section>
-                    <h3 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Cambios de Precio</h3>
-                    <div class="space-y-3">
-                        <div class="bg-card-light dark:bg-card-dark border border-border-light dark:border-border-dark rounded-xl p-6 hover:shadow-md transition-shadow duration-200">
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0">
-                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <span class="material-icons text-purple-600 text-xl">sell</span>
-                                    </div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-base font-semibold text-text-light dark:text-text-dark">Cambio de precio para Chaquetas de Uniforme Escolar</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Producto ID: 98765</p>
-                                </div>
-                                <div class="flex-shrink-0">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                            Actualizado
-                                        </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Margen inferior para mejor espaciado -->
-            <div class="pb-16"></div>
+            <button onclick="marcarTodasComoLeidas()"
+                    class="bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                <i class="fas fa-check-double mr-2"></i>
+                Marcar todas como leídas
+            </button>
         </div>
-    </main>
-</div>
-
-<script>
-    function switchTab(tabName) {
-        // Remove active class from all tabs
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.classList.remove('active', 'border-red-500', 'text-red-600');
-            button.classList.add('border-transparent', 'text-gray-500');
-        });
-
-        // Add active class to clicked tab
-        event.target.classList.add('active', 'border-red-500', 'text-red-600');
-        event.target.classList.remove('border-transparent', 'text-gray-500');
-
-        // Here you would typically show/hide content based on the selected tab
-        console.log('Switched to tab:', tabName);
-    }
-</script>
-        </main>
     </div>
 
-    <!-- WhatsApp Support -->
-    <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
-</div>
+    <main class="bg-white rounded-lg shadow-sm p-6">
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="flex space-x-8" aria-label="Tabs">
+                <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red"
+                        onclick="switchTab('todos', event)">
+                    Todos (<span id="count-todos">0</span>)
+                </button>
 
-</body>
+                <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
+                        onclick="switchTab('no-leidas', event)">
+                    No leídas (<span id="count-no-leidas">0</span>)
+                </button>
+
+                <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
+                        onclick="switchTab('archivadas', event)">
+                    Archivadas (<span id="count-archivadas">0</span>)
+                </button>
+            </nav>
+        </div>
+
+        <div id="notificaciones-container" class="space-y-3">
+            <div class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
+            </div>
+        </div>
+
+        <div id="no-notificaciones" class="text-center py-12 hidden">
+            <i class="fas fa-bell-slash text-6xl text-gray-300"></i>
+            <p class="text-gray-500 mt-4 text-lg">No hay notificaciones</p>
+        </div>
+
+    </main>
+
+</th:block>
+
+<th:block th:fragment="extraJs">
+    <script>
+        let notificacionesActuales = [];
+        let tabActual = 'todos';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.notificacionesInicializadas) {
+                window.notificacionesInicializadas = true;
+                cargarNotificaciones('todos');
+            }
+        });
+
+        function switchTab(tabName, event) {
+            tabActual = tabName;
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'border-jk-red', 'text-jk-red');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active', 'border-jk-red', 'text-jk-red');
+            }
+
+            cargarNotificaciones(tabName);
+        }
+
+        async function cargarNotificaciones(tab) {
+            let url = '/admin/api/notificaciones';
+            if (tab === 'no-leidas') url = '/admin/api/notificaciones/no-leidas';
+            if (tab === 'archivadas') url = '/admin/api/notificaciones/archivadas';
+
+            const contenedor = document.getElementById('notificaciones-container');
+            const noNotif = document.getElementById('no-notificaciones');
+
+            const countTodos = document.getElementById('count-todos');
+            const countNoLeidas = document.getElementById('count-no-leidas');
+            const countArchivadas = document.getElementById('count-archivadas');
+
+            contenedor.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
+                </div>
+            `;
+            noNotif.classList.add('hidden');
+
+            try {
+                const res = await fetch(url, { credentials: 'same-origin' });
+
+                if (!res.ok) {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                    return;
+                }
+
+                const data = await res.json();
+                const notas = data.notificaciones ?? [];
+
+                if (data.success) {
+                    notificacionesActuales = notas;
+                    contenedor.innerHTML = '';
+                    noNotif.classList.add('hidden');
+
+                    if (notas.length === 0) {
+                        noNotif.classList.remove('hidden');
+                        return;
+                    }
+
+                    notas.forEach(n => {
+                        const id = n.id;
+                        const titulo = n.titulo ?? 'Sin título';
+                        const mensaje = n.mensaje ?? '';
+                        const leida =!!n.leida;
+                        const fecha = n.fechaCreacion ?? null;
+                        const fechaTexto = fecha ? new Date(fecha).toLocaleString('es-PE') : '';
+
+                        const div = document.createElement('div');
+                        div.classList.add(
+                            'p-4','border','rounded','shadow-sm',
+                            leida ? '' : 'bg-blue-50',
+                            'flex','justify-between','items-center'
+                        );
+
+                        div.innerHTML = `
+                            <div>
+                                <strong class="block">${titulo}</strong>
+                                <p class="text-gray-700">${mensaje}</p>
+                                ${fechaTexto ? `<small class="text-xs text-gray-400">${fechaTexto}</small>` : ''}
+                            </div>
+
+                            <div class="ml-4 flex flex-col gap-1 text-right">
+
+                                ${!leida
+                                    ? `<button onclick="marcarComoLeida(${id})"
+                                              class="text-sm text-jk-blue hover:underline">
+                                             Marcar leída
+                                       </button>`
+                                    : `<span class="text-sm text-gray-500">Leída</span>`}
+
+                                <button onclick="archivar(${id})"
+                                        class="text-sm text-jk-red hover:underline">
+                                    Archivar
+                                </button>
+                            </div>
+                        `;
+                        contenedor.appendChild(div);
+                    });
+                } else {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                }
+
+                countTodos.textContent = data.total ?? notas.length;
+                countNoLeidas.textContent = data.noLeidas ?? notas.filter(n => !n.leida).length;
+                countArchivadas.textContent = data.archivadas ?? countArchivadas.textContent;
+
+            } catch (e) {
+                console.error("Error:", e);
+                contenedor.innerHTML = '';
+                noNotif.classList.remove('hidden');
+            }
+        }
+
+        async function marcarComoLeida(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/marcar-leida`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar leída:", e);
+            }
+        }
+
+        async function archivar(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/archivar`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al archivar:", e);
+            }
+        }
+
+        async function marcarTodasComoLeidas() {
+            try {
+                const res = await fetch('/admin/api/notificaciones/marcar-todas-leidas', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar todas:", e);
+            }
+        }
+
+    </script>
+</th:block>
+
 </html>
