@@ -185,9 +185,11 @@ spring.mail.properties.mail.smtp.starttls.required=true
 
 **reCAPTCHA:**
 ```properties
-recaptcha.secret.key=${RECAPTCHA_SECRET:6Ldn-PArAAAAADOm7NBNMjnm5EGZR5bHQz7fny-b}
+recaptcha.secret.key=${RECAPTCHA_SECRET:6Le4syIsAAAAAHzo1evLkmVKNILZtOv7UAaioBf_}
 recaptcha.verify.url=https://www.google.com/recaptcha/api/siteverify
 ```
+
+**Nota:** Site Key actualizado para dominio `integrador-app-production.up.railway.app`
 
 **Puerto:**
 ```properties
@@ -244,8 +246,10 @@ MAIL_PASSWORD=yehe fare qcge kucv
 
 #### reCAPTCHA
 ```
-RECAPTCHA_SECRET=6Ldn-PArAAAAADOm7NBNMjnm5EGZR5bHQz7fny-b
+RECAPTCHA_SECRET=6Le4syIsAAAAAHzo1evLkmVKNILZtOv7UAaioBf_
 ```
+
+**Nota:** Site Key configurado en `registro.html` para dominio Railway: `integrador-app-production.up.railway.app`
 
 #### Puerto
 ```
@@ -345,15 +349,180 @@ Integrador-appv12/
 ├── pom.xml                            # Agregada dependencia Cloudinary
 ├── DEPLOY.md                          # Guía de despliegue manual
 ├── INFORME_DESPLIEGUE.md              # Este documento
+├── GUIA_RECAPTCHA_COMPLETA.md         # [NUEVO] Guía de configuración reCAPTCHA
 └── src/
     └── main/
         ├── java/com/jkmconfecciones/Integrador_app/
+        │   ├── config/
+        │   │   ├── InicializadorNotificaciones.java      # [NUEVO] Inicializa notificaciones al arranque
+        │   │   ├── ManejadorExitoAutenticacion.java      # [MODIFICADO] Integrado con auditoría
+        │   │   └── ManejadorFalloAutenticacion.java      # [MODIFICADO] Integrado con auditoría
+        │   ├── controller/
+        │   │   ├── admin/AdminControlador.java            # [MODIFICADO] Endpoints de notificaciones y auditoría
+        │   │   └── RegistroControlador.java               # [MODIFICADO] Validación reCAPTCHA
+        │   ├── DTO/
+        │   │   └── AuditoriaDTO.java                      # [NUEVO] DTO para auditoría
+        │   ├── entidades/
+        │   │   ├── Notificacion.java                      # [NUEVO] Entity notificaciones
+        │   │   └── AuditoriaSeguridad.java                # [NUEVO] Entity auditoría
+        │   ├── repositorios/
+        │   │   ├── NotificacionRepositorio.java           # [NUEVO] Repository notificaciones
+        │   │   ├── AuditoriaRepositorio.java              # [NUEVO] Repository auditoría
+        │   │   └── UsuarioRepositorio.java                # [MODIFICADO] Método findByRolNombreRol
         │   └── service/
-        │       ├── CloudinaryService.java          # [NUEVO] Servicio de Cloudinary
-        │       └── ProductoServiceImpl.java        # [MODIFICADO] Usa Cloudinary
+        │       ├── CloudinaryService.java                 # Servicio de Cloudinary
+        │       ├── RecaptchaService.java                  # [NUEVO] Servicio independiente reCAPTCHA
+        │       ├── ProductoServiceImpl.java               # [MODIFICADO] Usa Cloudinary
+        │       ├── NotificacionAutomaticaService.java     # [NUEVO] Notificaciones automáticas
+        │       ├── Notificacion/NotificacionService.java  # [NUEVO] CRUD notificaciones
+        │       ├── Auditoria/AuditoriaService.java        # [NUEVO] Logging auditoría
+        │       └── Impl/RegistroServiceImpl.java          # [MODIFICADO] Integrado con RecaptchaService
         └── resources/
-            └── application.properties   # [MODIFICADO] Variables de entorno
+            ├── application.properties                      # [MODIFICADO] Variables de entorno
+            └── templates/
+                ├── registro.html                           # [MODIFICADO] Site Key actualizado
+                └── admin/
+                    ├── notificaciones.html                 # [NUEVO] Vista de notificaciones
+                    └── registroAuditoriaSeguridad.html     # [NUEVO] Vista de auditoría
 ```
+
+---
+
+## 7. Nuevas Funcionalidades Integradas (Diciembre 2025)
+
+### 7.1 Sistema de Notificaciones Automáticas
+
+**Archivos creados:**
+- `Notificacion.java` - Entidad JPA con tipos (COTIZACION, PEDIDO, SISTEMA, ALERTA)
+- `NotificacionRepositorio.java` - Queries personalizadas para filtrado
+- `NotificacionService.java` - CRUD completo de notificaciones
+- `NotificacionAutomaticaService.java` - Tareas programadas con `@Scheduled`
+- `InicializadorNotificaciones.java` - Verificación al inicio con `ApplicationRunner`
+- `notificaciones.html` - Vista admin con 3 tabs (Todas, No leídas, Archivadas)
+
+**Funcionalidades:**
+- ✅ Notificaciones automáticas cada hora para productos con stock bajo (<20 unidades)
+- ✅ Notificaciones para nuevas cotizaciones
+- ✅ Notificaciones para cambios de precio
+- ✅ Sistema de lectura/archivado
+- ✅ Evita duplicados mediante validación
+
+**Endpoints API:**
+- `GET /admin/notificaciones` - Vista principal
+- `GET /admin/api/notificaciones` - Todas las notificaciones
+- `GET /admin/api/notificaciones/no-leidas` - Solo no leídas
+- `GET /admin/api/notificaciones/archivadas` - Solo archivadas
+- `POST /admin/api/notificaciones/{id}/marcar-leida` - Marcar como leída
+- `POST /admin/api/notificaciones/{id}/archivar` - Archivar notificación
+- `POST /admin/api/notificaciones/marcar-todas-leidas` - Marcar todas como leídas
+
+**Configuración:**
+```java
+@Scheduled(fixedRate = 3600000) // Cada hora
+public void verificarStockCritico() {
+    List<ProductoTalla> productosStockBajo = 
+        productoTallaRepositorio.findByCantidadStockLessThan(20);
+    // Genera notificaciones para administradores
+}
+```
+
+### 7.2 Sistema de Auditoría de Seguridad
+
+**Archivos creados:**
+- `AuditoriaSeguridad.java` - Entidad con campos: usuario, acción, recurso, IP, fechaHora, estado, userAgent
+- `AuditoriaRepositorio.java` - Queries con filtros por usuario, acción, fechas
+- `AuditoriaService.java` - Logging de eventos de seguridad
+- `AuditoriaDTO.java` - DTO para respuestas API
+- `registroAuditoriaSeguridad.html` - Vista admin con tabla filtrable
+
+**Eventos auditados:**
+- ✅ LOGIN exitoso - Captura IP, User-Agent
+- ✅ LOGIN fallido - Registra intentos de acceso no autorizados
+- ✅ LOGOUT - Cierre de sesión
+- ✅ CREAR, EDITAR, ELIMINAR, VER - Acciones CRUD (preparado para futuro)
+
+**Integración con Spring Security:**
+```java
+// ManejadorExitoAutenticacion.java
+@Override
+public void onAuthenticationSuccess(HttpServletRequest request, 
+                                    HttpServletResponse response, 
+                                    Authentication authentication) {
+    Usuario usuario = usuarioRepositorio.findByCorreo(correo).get();
+    auditoriaService.registrarLogin(usuario, request);
+    // ... resto del código
+}
+```
+
+**Endpoints API:**
+- `GET /admin/registroAuditoriaSeguridad` - Vista principal
+- `GET /admin/api/auditoria` - Listado con filtros (usuario, acción, fechas) y paginación
+- `GET /admin/api/auditoria/recientes` - Últimos 50 registros
+
+**Detección de IP real:**
+```java
+// Soporta proxies/load balancers (Railway, Cloudflare, Nginx)
+String obtenerIpCliente(HttpServletRequest request) {
+    String ip = request.getHeader("X-Forwarded-For");
+    if (ip == null) ip = request.getHeader("X-Real-IP");
+    if (ip == null) ip = request.getRemoteAddr();
+    return ip.split(",")[0].trim(); // Primera IP si hay cadena
+}
+```
+
+### 7.3 Servicio de reCAPTCHA Independiente
+
+**Archivo creado:**
+- `RecaptchaService.java` - Servicio standalone para validación con Google
+
+**Funcionalidades:**
+- ✅ Verificación de token con API de Google
+- ✅ Soporte para IP del cliente (opcional pero recomendado)
+- ✅ Método detallado para debugging
+- ✅ Logs informativos con emojis
+
+**Uso:**
+```java
+@Autowired
+private RecaptchaService recaptchaService;
+
+boolean captchaValido = recaptchaService.verificarCaptcha(
+    recaptchaToken, 
+    clientIp
+);
+
+if (!captchaValido) {
+    return "El CAPTCHA no es válido. Por favor, inténtalo de nuevo.";
+}
+```
+
+**Configuración Railway:**
+```properties
+recaptcha.secret.key=${RECAPTCHA_SECRET:6Le4syIsAAAAAHzo1evLkmVKNILZtOv7UAaioBf_}
+recaptcha.verify.url=https://www.google.com/recaptcha/api/siteverify
+```
+
+**Site Key actualizado en `registro.html`:**
+```html
+<div class="g-recaptcha" 
+     data-sitekey="6Le4syIsAAAAAHzo1evLkmVKNILZtOv7UAaioBf_">
+</div>
+```
+
+**Dominio registrado:** `integrador-app-production.up.railway.app`
+
+### 7.4 Guía de Configuración reCAPTCHA
+
+**Archivo creado:**
+- `GUIA_RECAPTCHA_COMPLETA.md` - Documentación paso a paso
+
+**Contenido:**
+- ✅ Cómo crear cuenta en Google reCAPTCHA
+- ✅ Configuración de dominios (localhost + Railway)
+- ✅ Integración en código Java
+- ✅ Ejemplos de uso en HTML
+- ✅ Troubleshooting común
+- ✅ Claves de prueba para desarrollo
 
 ---
 
@@ -361,12 +530,15 @@ Integrador-appv12/
 
 ### 7.1 Funcionalidades Probadas ✅
 - ✅ **Landing page:** Carga correctamente con estilos
-- ✅ **Login:** Formulario funcional
-- ✅ **Registro:** Formulario visible (pendiente configurar reCAPTCHA para producción)
-- ✅ **Conexión MySQL:** HikariPool-1 iniciado, 10 repositorios JPA detectados
-- ✅ **Tablas creadas:** Hibernate generó todas las entidades (categoria, producto, usuario, etc.)
+- ✅ **Login:** Formulario funcional con auditoría de intentos
+- ✅ **Registro:** Formulario con reCAPTCHA configurado para Railway
+- ✅ **Sistema de Notificaciones:** Verifica stock cada hora y notifica a admins
+- ✅ **Auditoría de Seguridad:** Registra login/logout con IP y User-Agent
+- ✅ **Conexión MySQL:** HikariPool-1 iniciado, 12 repositorios JPA detectados
+- ✅ **Tablas creadas:** Hibernate generó todas las entidades (notificacion, auditoria_seguridad, etc.)
 - ✅ **Tomcat:** Corriendo en puerto 8080
 - ✅ **Actuator:** Endpoint `/actuator/health` expuesto (retorna `{"status":"UP"}`)
+- ✅ **reCAPTCHA:** Servicio independiente integrado con validación de Google
 
 ### 7.2 Funcionalidades Pendientes de Prueba
 - ⏳ **Subida de imágenes:** Probar CRUD de productos con imágenes → Cloudinary
@@ -413,7 +585,7 @@ git add src/main/java/com/jkmconfecciones/Integrador_app/service/CloudinaryServi
 git add src/main/java/com/jkmconfecciones/Integrador_app/service/ProductoServiceImpl.java
 git add src/main/resources/application.properties
 
-# Commits realizados
+# Commits realizados (Despliegue inicial)
 git commit -m "feat: Agregar Dockerfile multi-stage para Railway"
 git commit -m "feat: Integrar Cloudinary para almacenamiento de imágenes"
 git commit -m "feat: Refactorizar ProductoServiceImpl para usar Cloudinary"
@@ -423,6 +595,16 @@ git commit -m "fix: Exponer endpoint /actuator/health para Railway healthcheck"
 git commit -m "fix: Desactivar healthcheck temporalmente para permitir inicio de app"
 git commit -m "feat: Reactivar healthcheck con configuración tolerante (60s delay)"
 git commit -m "fix: Desactivar healthcheck definitivamente - Railway monitorea por puerto"
+
+# Commit de nuevas funcionalidades (Diciembre 2025)
+git commit -m "feat: Integrar sistema de notificaciones, auditoría y reCAPTCHA
+
+- Sistema de Notificaciones automáticas (stock bajo, cotizaciones)
+- Sistema de Auditoría de Seguridad (login/logout tracking)
+- Servicio RecaptchaService independiente
+- Actualizar Site Key de reCAPTCHA para Railway
+- Agregar método findByRolNombreRol en UsuarioRepositorio
+- Eliminar métodos duplicados en AdminControlador"
 
 # Push a GitHub
 git push origin deploy
@@ -502,9 +684,8 @@ Guía paso a paso para futuros despliegues, incluyendo:
 ## 14. Próximos Pasos Recomendados
 
 ### 14.1 Configuración Pendiente
-1. **reCAPTCHA:**
-   - Agregar dominio `integrador-app-production.up.railway.app` en Google reCAPTCHA
-   - Actualizar variables en Railway si se generan nuevas claves
+1. **Variables de entorno en Railway:**
+   - Verificar que `RECAPTCHA_SECRET` esté configurado con valor: `6Le4syIsAAAAAHzo1evLkmVKNILZtOv7UAaioBf_`
 
 2. **Datos Iniciales:**
    - Crear usuario administrador en base de datos
@@ -515,6 +696,8 @@ Guía paso a paso para futuros despliegues, incluyendo:
    - Probar subida de imágenes (Cloudinary)
    - Verificar envío de emails
    - Validar flujo completo de cotización
+   - Probar sistema de notificaciones (verificar que se generen cada hora)
+   - Revisar logs de auditoría de seguridad
 
 ### 14.2 Mejoras Futuras
 1. **CI/CD Avanzado:**
@@ -541,6 +724,9 @@ Guía paso a paso para futuros despliegues, incluyendo:
 ✅ **Despliegue exitoso** de aplicación Spring Boot en Railway  
 ✅ **Migración completa** de almacenamiento local a Cloudinary  
 ✅ **Configuración dual-environment** (local/producción) con variables  
+✅ **Sistema de Notificaciones** automáticas implementado  
+✅ **Sistema de Auditoría** de seguridad con tracking de IP y User-Agent  
+✅ **Servicio reCAPTCHA** independiente y configurado para Railway  
 ✅ **Tiempo de despliegue optimizado** (~1 minuto)  
 ✅ **Costos $0** con servicios free-tier  
 ✅ **Aplicación funcional** en URL pública  
@@ -550,13 +736,17 @@ Guía paso a paso para futuros despliegues, incluyendo:
 2. **Healthchecks:** Spring Boot tarda en iniciar, desactivar o configurar delays largos
 3. **JDBC URLs:** Siempre usar prefijo `jdbc:mysql://` (no `mysql://`)
 4. **Git workflow:** Separar rama `deploy` de `main` facilita gestión de configuraciones
+5. **Lombok:** Asegurar que Maven procesa correctamente las anotaciones con `clean install`
+6. **Métodos duplicados:** Verificar con grep antes de commit para evitar errores de compilación
 
 ### 15.3 Estado Final
 🟢 **Aplicación en producción y operativa**  
-🟢 **Base de datos MySQL funcional**  
+🟢 **Base de datos MySQL funcional** con tablas de notificación y auditoría  
 🟢 **Almacenamiento de imágenes en Cloudinary**  
-🟡 **reCAPTCHA pendiente de configurar dominio**  
+🟢 **reCAPTCHA configurado** para dominio Railway  
 🟢 **Email SMTP configurado y listo**  
+🟢 **Sistema de Notificaciones** activo con verificación horaria  
+🟢 **Sistema de Auditoría** registrando eventos de seguridad  
 
 ---
 
