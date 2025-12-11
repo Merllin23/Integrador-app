@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notificaciones - JKM Confecciones</title>
 
-    <!-- Tailwind & FontAwesome -->
+<th:block th:fragment="extraCss">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
           theme: {
@@ -25,368 +20,241 @@
           }
         }
     </script>
-</head>
+</th:block>
 
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
-                    <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
-                </div>
-                <button onclick="marcarTodasComoLeidas()" class="bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                    <i class="fas fa-check-double mr-2"></i>
-                    Marcar todas como leídas
-                </button>
+<th:block th:fragment="mainContent">
+
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-semibold text-jk-blue">Notificaciones</h1>
+                <p class="text-gray-600 mt-2">Gestiona tus notificaciones</p>
             </div>
+            <button onclick="marcarTodasComoLeidas()"
+                    class="bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                <i class="fas fa-check-double mr-2"></i>
+                Marcar todas como leídas
+            </button>
+        </div>
+    </div>
+
+    <main class="bg-white rounded-lg shadow-sm p-6">
+        <div class="border-b border-gray-200 mb-8">
+            <nav class="flex space-x-8" aria-label="Tabs">
+                <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red"
+                        onclick="switchTab('todos', event)">
+                    Todos (<span id="count-todos">0</span>)
+                </button>
+
+                <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
+                        onclick="switchTab('no-leidas', event)">
+                    No leídas (<span id="count-no-leidas">0</span>)
+                </button>
+
+                <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500"
+                        onclick="switchTab('archivadas', event)">
+                    Archivadas (<span id="count-archivadas">0</span>)
+                </button>
+            </nav>
         </div>
 
-        <main class="bg-white rounded-lg shadow-sm p-6">
-
-            <!-- Tabs -->
-            <div class="border-b border-gray-200 mb-8">
-                <nav class="flex space-x-8" aria-label="Tabs">
-                    <button class="tab-button active border-b-2 border-jk-red py-4 px-1 text-sm font-medium text-jk-red" onclick="switchTab('todos')">
-                        Todos (<span id="count-todos">0</span>)
-                    </button>
-                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('no-leidas')">
-                        No leídas (<span id="count-no-leidas">0</span>)
-                    </button>
-                    <button class="tab-button border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300" onclick="switchTab('archivadas')">
-                        Archivadas (<span id="count-archivadas">0</span>)
-                    </button>
-                </nav>
-            </div>
-
-            <!-- Contenedor de notificaciones -->
-            <div id="notificaciones-container" class="space-y-3">
-                <!-- Las notificaciones se cargarán dinámicamente -->
-                <div class="text-center py-12">
-                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
-                    <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
-                </div>
-            </div>
-
-            <!-- Mensaje cuando no hay notificaciones -->
-            <div id="no-notificaciones" class="text-center py-12 hidden">
-                <i class="fas fa-bell-slash text-6xl text-gray-300"></i>
-                <p class="text-gray-500 mt-4 text-lg">No hay notificaciones</p>
-            </div>
-
-            <!-- Resumen y Paginación -->
-            <div id="paginacion-container" class="mt-6 hidden">
-                <!-- Resumen -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span class="text-sm text-blue-800">
-                            Mostrando <strong id="inicio-notif">0</strong> a <strong id="fin-notif">0</strong> de <strong id="total-notif">0</strong> notificaciones
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Botones de paginación -->
-                <div class="flex justify-center gap-2" id="botones-paginacion-notif">
-                    <!-- Botones se generarán dinámicamente -->
-                </div>
-            </div>
-
-        </main>
-    </div>
-</div>
-
-<script>
-    let notificacionesActuales = [];
-    let tabActual = 'todos';
-    let paginaActualNotif = 0;
-    const notificacionesPorPagina = 10;
-
-    // Cargar notificaciones al iniciar
-    document.addEventListener('DOMContentLoaded', function() {
-        cargarNotificaciones('todos');
-    });
-
-    // Cambiar de tab
-    function switchTab(tabName) {
-        tabActual = tabName;
-        paginaActualNotif = 0; // Resetear a primera página
-        
-        // Actualizar estilos de tabs
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.classList.remove('active', 'border-jk-red', 'text-jk-red');
-            button.classList.add('border-transparent', 'text-gray-500');
-        });
-
-        event.target.classList.add('active', 'border-jk-red', 'text-jk-red');
-        event.target.classList.remove('border-transparent', 'text-gray-500');
-
-        cargarNotificaciones(tabName);
-    }
-
-    // Cargar notificaciones desde el backend
-    async function cargarNotificaciones(tipo) {
-        const container = document.getElementById('notificaciones-container');
-        const noNotificaciones = document.getElementById('no-notificaciones');
-        
-        // Mostrar loading
-        container.innerHTML = `
+        <div id="notificaciones-container" class="space-y-3">
             <div class="text-center py-12">
                 <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
                 <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
             </div>
-        `;
-        container.classList.remove('hidden');
-        noNotificaciones.classList.add('hidden');
+        </div>
 
-        try {
-            let url = '/admin/notificaciones/all';
-            if (tipo === 'no-leidas') {
-                url = '/admin/notificaciones/no-leidas';
-            } else if (tipo === 'archivadas') {
-                url = '/admin/notificaciones/archivadas';
+        <div id="no-notificaciones" class="text-center py-12 hidden">
+            <i class="fas fa-bell-slash text-6xl text-gray-300"></i>
+            <p class="text-gray-500 mt-4 text-lg">No hay notificaciones</p>
+        </div>
+
+    </main>
+
+</th:block>
+
+<th:block th:fragment="extraJs">
+    <script>
+        let notificacionesActuales = [];
+        let tabActual = 'todos';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.notificacionesInicializadas) {
+                window.notificacionesInicializadas = true;
+                cargarNotificaciones('todos');
+            }
+        });
+
+        function switchTab(tabName, event) {
+            tabActual = tabName;
+
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active', 'border-jk-red', 'text-jk-red');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active', 'border-jk-red', 'text-jk-red');
             }
 
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.success) {
-                notificacionesActuales = data.notificaciones || [];
-                actualizarContadores(data);
-                mostrarNotificacionesPaginadas();
-                actualizarPaginacionNotificaciones();
-            } else {
-                mostrarError('Error al cargar notificaciones');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error de conexión');
-        }
-    }
-
-    // Mostrar notificaciones paginadas
-    function mostrarNotificacionesPaginadas() {
-        const container = document.getElementById('notificaciones-container');
-        const noNotificaciones = document.getElementById('no-notificaciones');
-        const paginacionContainer = document.getElementById('paginacion-container');
-
-        if (!notificacionesActuales || notificacionesActuales.length === 0) {
-            container.classList.add('hidden');
-            noNotificaciones.classList.remove('hidden');
-            paginacionContainer.classList.add('hidden');
-            return;
+            cargarNotificaciones(tabName);
         }
 
-        const inicio = paginaActualNotif * notificacionesPorPagina;
-        const fin = inicio + notificacionesPorPagina;
-        const notificacionesPagina = notificacionesActuales.slice(inicio, fin);
+        async function cargarNotificaciones(tab) {
+            let url = '/admin/api/notificaciones';
+            if (tab === 'no-leidas') url = '/admin/api/notificaciones/no-leidas';
+            if (tab === 'archivadas') url = '/admin/api/notificaciones/archivadas';
 
-        container.classList.remove('hidden');
-        noNotificaciones.classList.add('hidden');
-        
-        container.innerHTML = notificacionesPagina.map(notif => crearNotificacionHTML(notif)).join('');
+            const contenedor = document.getElementById('notificaciones-container');
+            const noNotif = document.getElementById('no-notificaciones');
 
-        // Actualizar resumen
-        document.getElementById('inicio-notif').textContent = inicio + 1;
-        document.getElementById('fin-notif').textContent = Math.min(fin, notificacionesActuales.length);
-        document.getElementById('total-notif').textContent = notificacionesActuales.length;
-        paginacionContainer.classList.remove('hidden');
-    }
+            const countTodos = document.getElementById('count-todos');
+            const countNoLeidas = document.getElementById('count-no-leidas');
+            const countArchivadas = document.getElementById('count-archivadas');
 
-    // Actualizar botones de paginación
-    function actualizarPaginacionNotificaciones() {
-        const container = document.getElementById('botones-paginacion-notif');
-        const totalPaginas = Math.ceil(notificacionesActuales.length / notificacionesPorPagina);
-        
-        if (totalPaginas <= 1) {
-            container.innerHTML = '';
-            return;
-        }
-        
-        let html = '';
-        
-        // Botón anterior
-        if (paginaActualNotif > 0) {
-            html += `<button onclick="irAPagina(${paginaActualNotif - 1})" 
-                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>`;
-        }
-        
-        // Botones de páginas
-        for (let i = 0; i < totalPaginas; i++) {
-            const activeClass = i === paginaActualNotif ? 'bg-jk-blue text-white' : 'border border-gray-300 hover:bg-gray-100';
-            html += `<button onclick="irAPagina(${i})" 
-                            class="${activeClass} px-3 py-1 rounded-lg transition-colors">
-                        ${i + 1}
-                    </button>`;
-        }
-        
-        // Botón siguiente
-        if (paginaActualNotif < totalPaginas - 1) {
-            html += `<button onclick="irAPagina(${paginaActualNotif + 1})" 
-                            class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>`;
-        }
-        
-        container.innerHTML = html;
-    }
-
-    // Ir a página específica
-    function irAPagina(pagina) {
-        paginaActualNotif = pagina;
-        mostrarNotificacionesPaginadas();
-        actualizarPaginacionNotificaciones();
-    }
-
-    // Actualizar contadores en los tabs
-    function actualizarContadores(data) {
-        if (data.noLeidas !== undefined) {
-            document.getElementById('count-no-leidas').textContent = data.noLeidas;
-        }
-        if (data.total !== undefined && tabActual === 'todos') {
-            document.getElementById('count-todos').textContent = data.total;
-        }
-    }
-
-    // Mostrar notificaciones en el DOM (función de compatibilidad)
-    function mostrarNotificaciones(notificaciones) {
-        // Esta función ahora solo actualiza los datos
-        notificacionesActuales = notificaciones || [];
-        mostrarNotificacionesPaginadas();
-    }
-
-    // Crear HTML para una notificación
-    function crearNotificacionHTML(notif) {
-        const iconos = {
-            'COTIZACION': { icon: 'fa-file-invoice', color: 'blue' },
-            'PEDIDO': { icon: 'fa-shopping-cart', color: 'green' },
-            'SISTEMA': { icon: 'fa-cog', color: 'gray' },
-            'ALERTA': { icon: 'fa-exclamation-triangle', color: 'orange' }
-        };
-
-        const config = iconos[notif.tipo] || { icon: 'fa-bell', color: 'gray' };
-        const fecha = new Date(notif.fechaCreacion).toLocaleString('es-ES');
-        const leidaClass = notif.leida ? 'bg-gray-50' : 'bg-white border-l-4 border-jk-blue';
-
-        return `
-            <div class="${leidaClass} border border-gray-200 rounded-xl p-6 hover:shadow-md transition-all duration-200">
-                <div class="flex items-start space-x-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-12 h-12 bg-${config.color}-100 rounded-lg flex items-center justify-center">
-                            <i class="fas ${config.icon} text-${config.color}-600 text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between mb-2">
-                            <h4 class="text-base font-semibold text-gray-900">${notif.titulo}</h4>
-                            ${!notif.leida ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Nueva</span>' : ''}
-                        </div>
-                        <p class="text-sm text-gray-600 mb-2">${notif.mensaje || ''}</p>
-                        <p class="text-xs text-gray-400">
-                            <i class="far fa-clock mr-1"></i>${fecha}
-                        </p>
-                    </div>
-                    <div class="flex-shrink-0 flex flex-col gap-2">
-                        ${!notif.leida ? `
-                            <button onclick="marcarComoLeida(${notif.id})" 
-                                    class="text-blue-600 hover:text-blue-800 transition-colors" 
-                                    title="Marcar como leída">
-                                <i class="fas fa-check"></i>
-                            </button>
-                        ` : ''}
-                        ${!notif.archivada ? `
-                            <button onclick="archivarNotificacion(${notif.id})" 
-                                    class="text-gray-600 hover:text-gray-800 transition-colors" 
-                                    title="Archivar">
-                                <i class="fas fa-archive"></i>
-                            </button>
-                        ` : ''}
-                    </div>
+            contenedor.innerHTML = `
+                <div class="text-center py-12">
+                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                    <p class="text-gray-500 mt-4">Cargando notificaciones...</p>
                 </div>
-            </div>
-        `;
-    }
+            `;
+            noNotif.classList.add('hidden');
 
-    // Marcar notificación como leída
-    async function marcarComoLeida(id) {
-        try {
-            const response = await fetch(`/admin/notificaciones/${id}/marcar-leida`, {
-                method: 'POST'
-            });
-            const data = await response.json();
+            try {
+                const res = await fetch(url, { credentials: 'same-origin' });
 
-            if (data.success) {
-                cargarNotificaciones(tabActual);
+                if (!res.ok) {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                    return;
+                }
+
+                const data = await res.json();
+                const notas = data.notificaciones ?? [];
+
+                /** ============================================
+                    FIX PRINCIPAL → Ya no dependemos de notas.length > 0
+                ============================================== */
+                if (data.success) {
+                    notificacionesActuales = notas;
+                    contenedor.innerHTML = '';
+                    noNotif.classList.add('hidden');
+
+                    if (notas.length === 0) {
+                        noNotif.classList.remove('hidden');
+                        return;
+                    }
+
+                    notas.forEach(n => {
+                        const id = n.id;
+                        const titulo = n.titulo ?? 'Sin título';
+                        const mensaje = n.mensaje ?? '';
+                        const leida =!!n.leida;
+                        const fecha = n.fechaCreacion ?? null;
+                        const fechaTexto = fecha ? new Date(fecha).toLocaleString('es-PE') : '';
+
+                        const div = document.createElement('div');
+                        div.classList.add(
+                            'p-4','border','rounded','shadow-sm',
+                            leida ? '' : 'bg-blue-50',
+                            'flex','justify-between','items-center'
+                        );
+
+                        div.innerHTML = `
+                            <div>
+                                <strong class="block">${titulo}</strong>
+                                <p class="text-gray-700">${mensaje}</p>
+                                ${fechaTexto ? `<small class="text-xs text-gray-400">${fechaTexto}</small>` : ''}
+                            </div>
+
+                            <div class="ml-4 flex flex-col gap-1 text-right">
+
+                                ${!leida
+                                    ? `<button onclick="marcarComoLeida(${id})"
+                                              class="text-sm text-jk-blue hover:underline">
+                                             Marcar leída
+                                       </button>`
+                                    : `<span class="text-sm text-gray-500">Leída</span>`}
+
+                                <button onclick="archivar(${id})"
+                                        class="text-sm text-jk-red hover:underline">
+                                    Archivar
+                                </button>
+                            </div>
+                        `;
+                        contenedor.appendChild(div);
+                    });
+                } else {
+                    contenedor.innerHTML = '';
+                    noNotif.classList.remove('hidden');
+                }
+
+                // Actualización de contadores
+                countTodos.textContent = data.total ?? notas.length;
+                countNoLeidas.textContent = data.noLeidas ?? notas.filter(n => !n.leida).length;
+                countArchivadas.textContent = data.archivadas ?? countArchivadas.textContent;
+
+            } catch (e) {
+                console.error("Error:", e);
+                contenedor.innerHTML = '';
+                noNotif.classList.remove('hidden');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error al actualizar notificación');
         }
-    }
 
-    // Archivar notificación
-    async function archivarNotificacion(id) {
-        try {
-            const response = await fetch(`/admin/notificaciones/${id}/archivar`, {
-                method: 'POST'
-            });
-            const data = await response.json();
+        async function marcarComoLeida(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/marcar-leida`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
 
-            if (data.success) {
-                cargarNotificaciones(tabActual);
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar leída:", e);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error al archivar notificación');
-        }
-    }
-
-    // Marcar todas como leídas
-    async function marcarTodasComoLeidas() {
-        if (!confirm('¿Marcar todas las notificaciones como leídas?')) {
-            return;
         }
 
-        try {
-            const response = await fetch('/admin/notificaciones/marcar-todas-leidas', {
-                method: 'POST'
-            });
-            const data = await response.json();
+        async function archivar(id) {
+            try {
+                const res = await fetch(`/admin/api/notificaciones/${id}/archivar`, {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
 
-            if (data.success) {
-                cargarNotificaciones(tabActual);
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al archivar:", e);
             }
-        } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error al actualizar notificaciones');
         }
-    }
 
-    // Mostrar mensaje de error
-    function mostrarError(mensaje) {
-        const container = document.getElementById('notificaciones-container');
-        container.innerHTML = `
-            <div class="text-center py-12">
-                <i class="fas fa-exclamation-circle text-4xl text-red-500"></i>
-                <p class="text-red-500 mt-4">${mensaje}</p>
-                <button onclick="cargarNotificaciones(tabActual)" 
-                        class="mt-4 bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                    Reintentar
-                </button>
-            </div>
-        `;
-    }
-</script>
+        async function marcarTodasComoLeidas() {
+            try {
+                const res = await fetch('/admin/api/notificaciones/marcar-todas-leidas', {
+                    method: 'POST',
+                    credentials: 'same-origin'
+                });
 
-</body>
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (data.success) cargarNotificaciones(tabActual);
+
+            } catch (e) {
+                console.error("Error al marcar todas:", e);
+            }
+        }
+
+    </script>
+</th:block>
+
 </html>

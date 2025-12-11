@@ -24,48 +24,65 @@ public class NotificacionAutomaticaService {
     private final ProductoTallaRepositorio productoTallaRepositorio;
     private final UsuarioRepositorio usuarioRepositorio;
 
-    
+
     @Scheduled(fixedRate = 3600000) // Cada hora
     @Transactional
     public void verificarStockCritico() {
         log.info("Verificando stock crítico de productos...");
-        
+
         List<ProductoTalla> productosStockBajo = productoTallaRepositorio.findAll()
                 .stream()
                 .filter(pt -> pt.getCantidadStock() != null && pt.getCantidadStock() < 20)
                 .toList();
 
-        if (!productosStockBajo.isEmpty()) {
-            List<Usuario> administradores = usuarioRepositorio.findByRolNombreRol("ADMINISTRADOR");
-            
-            for (Usuario admin : administradores) {
-                for (ProductoTalla productoTalla : productosStockBajo) {
-                    String nivelCriticidad = productoTalla.getCantidadStock() < 10 ? "CRÍTICO" : "BAJO";
-                    String titulo = String.format("Stock %s: %s - %s", 
-                            nivelCriticidad,
-                            productoTalla.getProducto().getNombre(),
-                            productoTalla.getTalla().getNombreTalla());
-                    
-                    String mensaje = String.format("El producto '%s' (talla %s) tiene solo %d unidades en stock. " +
-                            "Se recomienda reabastecer pronto.",
-                            productoTalla.getProducto().getNombre(),
-                            productoTalla.getTalla().getNombreTalla(),
-                            productoTalla.getCantidadStock());
-
-                    notificacionService.crearNotificacionConReferencia(
-                            "ALERTA",
-                            titulo,
-                            mensaje,
-                            admin,
-                            productoTalla.getId().longValue(),
-                            "PRODUCTO_TALLA"
-                    );
-                }
-            }
-            
-            log.info("Se generaron notificaciones de stock crítico para {} productos", productosStockBajo.size());
+        if (productosStockBajo.isEmpty()) {
+            return;
         }
+
+        List<Usuario> administradores = usuarioRepositorio.findByRolNombreRol("ADMINISTRADOR");
+
+        for (Usuario admin : administradores) {
+            for (ProductoTalla productoTalla : productosStockBajo) {
+
+                // ❗ Evitar duplicados
+                boolean yaExiste = notificacionService.existeNotificacion(
+                        admin.getId(),
+                        productoTalla.getId().longValue(),
+                        "PRODUCTO_TALLA"
+                );
+
+                if (yaExiste) {
+                    continue; // Ya existe → NO crear otra
+                }
+
+                String nivelCriticidad = productoTalla.getCantidadStock() < 10 ? "CRÍTICO" : "BAJO";
+
+                String titulo = String.format("Stock %s: %s - %s",
+                        nivelCriticidad,
+                        productoTalla.getProducto().getNombre(),
+                        productoTalla.getTalla().getNombreTalla());
+
+                String mensaje = String.format(
+                        "El producto '%s' (talla %s) tiene solo %d unidades en stock. Se recomienda reabastecer pronto.",
+                        productoTalla.getProducto().getNombre(),
+                        productoTalla.getTalla().getNombreTalla(),
+                        productoTalla.getCantidadStock()
+                );
+
+                notificacionService.crearNotificacionConReferencia(
+                        "ALERTA",
+                        titulo,
+                        mensaje,
+                        admin,
+                        productoTalla.getId().longValue(),
+                        "PRODUCTO_TALLA"
+                );
+            }
+        }
+
+        log.info("Verificación de stock crítico completada.");
     }
+
 
     //Notifica a los administradores sobre una nueva cotización
     

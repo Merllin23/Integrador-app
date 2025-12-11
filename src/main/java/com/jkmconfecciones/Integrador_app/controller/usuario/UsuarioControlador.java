@@ -166,4 +166,37 @@ public class UsuarioControlador {
     }
 
 
+    @GetMapping("/nosotros")
+    public String mostrarNosotros(Model model) {
+        // Cargar usuario autenticado si está logueado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            String correo = auth.getName();
+            Usuario usuario = usuarioRepositorio.findByCorreo(correo).orElse(null);
+            if (usuario != null) {
+                model.addAttribute("nombreUsuario", usuario.getNombre());
+                model.addAttribute("inicial", usuario.getNombre().substring(0, 1).toUpperCase());
+            }
+        }
+
+        return "usuario/nosotros";
+    }
+
+    @GetMapping("/contacto")
+    public String mostrarContacto(Model model) {
+        // Cargar usuario autenticado si está logueado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+            String correo = auth.getName();
+            Usuario usuario = usuarioRepositorio.findByCorreo(correo).orElse(null);
+            if (usuario != null) {
+                model.addAttribute("nombreUsuario", usuario.getNombre());
+                model.addAttribute("inicial", usuario.getNombre().substring(0, 1).toUpperCase());
+            }
+        }
+
+        return "usuario/contacto";
+    }
+
+
 }

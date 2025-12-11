@@ -1,5 +1,6 @@
 package com.jkmconfecciones.Integrador_app.controller.admin;
 
+import com.jkmconfecciones.Integrador_app.DTO.AuditoriaDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoCargaMasivaDTO;
@@ -8,6 +9,7 @@ import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService;
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.Tallas.ProductoTallaService;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
 import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
@@ -51,6 +53,7 @@ public class AdminControlador {
     private final UsuarioService usuarioService;
     private final CargaMasivaService cargaMasivaService;
 
+    private final ProductoTallaService productoTallaService;
 
     @GetMapping("/panel")
     public String mostrarPanelAdmin(Model model) {
@@ -76,6 +79,7 @@ public class AdminControlador {
         model.addAttribute("mainContent", "admin/pedidos :: mainContent");
         return "fragments/admin-layout";
     }
+
 
     @GetMapping("/cargaMasivaDatos")
     public String paginaCargadeDatos(Model model) {
@@ -144,28 +148,6 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
-    @GetMapping("/notificaciones")
-    public String paginaNotificaciones(Model model) {
-        model.addAttribute("currentPage", "notificaciones");
-        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
-        return "fragments/admin-layout";
-    }
-
-
-    @GetMapping("/registroAuditoriaSeguridad")
-    public String paginaRegistroAuditoria(Model model) {
-        model.addAttribute("currentPage", "registroAuditoriaSeguridad");
-        model.addAttribute("pageTitle", "Auditoría de Seguridad - JKM Confecciones");
-        model.addAttribute("nombre", "Administrador");
-        model.addAttribute("rol", "Administrador");
-
-        model.addAttribute("mainContent", "admin/registroAuditoriaSeguridad :: mainContent");
-        return "fragments/admin-layout";
-    }
 
     @GetMapping("/productos/nuevo")
     public String adminNuevoProducto(Model model) {
@@ -668,6 +650,20 @@ public class AdminControlador {
         return "redirect:/admin/clientes";
     }
 
+    @GetMapping("/notificaciones")
+    public String paginaNotificaciones(Model model) {
+
+        model.addAttribute("currentPage", "notificaciones");
+        model.addAttribute("pageTitle", "Notificaciones - JKM Confecciones");
+
+        // Fragmentos del HTML
+        model.addAttribute("mainContent", "admin/notificaciones :: mainContent");
+        model.addAttribute("extraCss", "admin/notificaciones :: extraCss");
+        model.addAttribute("extraJs", "admin/notificaciones :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
     
     @GetMapping("/api/notificaciones")
     @ResponseBody
@@ -676,7 +672,7 @@ public class AdminControlador {
         try {
             Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesNoArchivadas(usuario);
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesUsuario(usuario);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
@@ -806,6 +802,19 @@ public class AdminControlador {
         }
     }
 
+
+    @GetMapping("/registroAuditoriaSeguridad")
+    public String paginaRegistroAuditoria(Model model) {
+        model.addAttribute("currentPage", "registroAuditoriaSeguridad");
+        model.addAttribute("pageTitle", "Auditoría de Seguridad - JKM Confecciones");
+
+        model.addAttribute("mainContent", "admin/registroAuditoriaSeguridad :: mainContent");
+        model.addAttribute("extraCss", "admin/registroAuditoriaSeguridad :: extraCss");
+        model.addAttribute("extraJs", "admin/registroAuditoriaSeguridad :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
     @GetMapping("/api/auditoria")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> obtenerAuditoria(
@@ -818,20 +827,35 @@ public class AdminControlador {
         try {
             Pageable pageable = PageRequest.of(page, size);
             Page<AuditoriaSeguridad> auditoriaPage;
-            
+
             if (usuario != null || accion != null || fechaInicio != null || fechaFin != null) {
                 auditoriaPage = auditoriaService.buscarConFiltros(usuario, accion, fechaInicio, fechaFin, pageable);
             } else {
                 auditoriaPage = auditoriaService.obtenerTodos(pageable);
             }
-            
+
+            List<AuditoriaDTO> registrosDTO = auditoriaPage.getContent()
+                    .stream()
+                    .map(a -> new AuditoriaDTO(
+                            a.getUsuario() != null ? a.getUsuario().getCorreo() : "Desconocido",
+                            a.getAccion(),
+                            a.getRecurso(),
+                            a.getRecursoId(),
+                            a.getIpAddress(),
+                            a.getFechaHora() != null ? a.getFechaHora().toString() : null,
+                            a.getEstado(),
+                            a.getDetalles(),
+                            a.getUserAgent()
+                    ))
+                    .toList();
+
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
-            response.put("registros", auditoriaPage.getContent());
+            response.put("registros", registrosDTO);
             response.put("totalElementos", auditoriaPage.getTotalElements());
             response.put("totalPaginas", auditoriaPage.getTotalPages());
             response.put("paginaActual", auditoriaPage.getNumber());
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error al obtener registros de auditoría", e);
@@ -862,11 +886,7 @@ public class AdminControlador {
         }
     }
 
-    // ==================== CARGA MASIVA DE DATOS ====================
 
-    /**
-     * Procesa el archivo CSV/Excel subido y retorna los productos validados
-     */
     @PostMapping("/cargaMasivaDatos/procesar")
     @ResponseBody
     public ResponseEntity<ResultadoCargaMasivaDTO> procesarArchivoCargaMasiva(
@@ -887,9 +907,7 @@ public class AdminControlador {
         }
     }
 
-    /**
-     * Importa los productos válidos a la base de datos
-     */
+    //Importa los productos válidos a la base de datos
     @PostMapping("/cargaMasivaDatos/importar")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> importarProductosCargaMasiva(
@@ -934,5 +952,77 @@ public class AdminControlador {
         }
     }
 
+    @GetMapping("/tallas")
+    public String mostrarTallas(Model model) {
+        List<ProductoTalla> productosTallas = productoTallaService.listarTodos();
+        model.addAttribute("productosTallas", productosTallas);
+        model.addAttribute("currentPage", "tallas");
+        model.addAttribute("pageTitle", "Gestión de Tallas - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/tallas :: mainContent");
+        model.addAttribute("extraCss", "admin/tallas :: extraCss");
+        model.addAttribute("extraJs", "admin/tallas :: extraJs");
+        return "fragments/admin-layout";
+    }
 
+    @GetMapping("/tallas/api/list")
+    @ResponseBody
+    public List<Map<String, Object>> listarTallas() {
+        return productoTallaService.listarTallasComoMap();
+    }
+
+    @PutMapping("/tallas/api/{id}/toggle-estado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleEstado(@PathVariable Long id,
+                                                            @RequestBody Map<String, Boolean> request) {
+        Boolean nuevoEstado = request.get("activo");
+        return ResponseEntity.ok(productoTallaService.toggleEstado(id, nuevoEstado));
+    }
+
+    @GetMapping("/tallas/api/{id}")
+    @ResponseBody
+    public Map<String, Object> obtenerDetalle(@PathVariable Long id) {
+        return productoTallaService.obtenerDetalle(id);
+    }
+
+    @GetMapping("/cambiarrol")
+    public String mostrarCambiarRol(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        Page<Usuario> usuariosPage = usuarioService.listarTodos(PageRequest.of(page, size));
+        List<Rol> roles = usuarioService.listarRoles();
+
+        model.addAttribute("usuariosPage", usuariosPage);
+        model.addAttribute("usuarios", usuariosPage.getContent());
+        model.addAttribute("roles", roles);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", usuariosPage.getTotalPages());
+
+        // Datos para el layout
+        model.addAttribute("pageTitle", "Cambiar Rol de Usuario - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/cambiarRol :: mainContent");
+        model.addAttribute("extraCss", "admin/cambiarRol :: extraCss");
+        model.addAttribute("extraJs", "admin/cambiarRol :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    // actualizar rol de un usuario
+    @PostMapping("/{id}/rol")
+    public String actualizarRol(
+            @PathVariable Long id,
+            @RequestParam Long rolId,
+            Model model
+    ) {
+        try {
+            // Delegamos al servicio
+            usuarioService.cambiarRol(id, rolId);
+            model.addAttribute("success", "Rol actualizado correctamente");
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        // Redirigimos a la misma página
+        return "redirect:/admin/cambiarrol";
+    }
 }

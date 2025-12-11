@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Auditoría de Seguridad - JKM Confecciones</title>
 
-    <!-- Tailwind & FontAwesome -->
+<!-- ====================== CSS EXTRA ====================== -->
+<th:block th:fragment="extraCss">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
           theme: {
@@ -25,311 +21,192 @@
           }
         }
     </script>
-</head>
+</th:block>
 
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<!-- ====================== CONTENIDO PRINCIPAL ====================== -->
+<th:block th:fragment="mainContent">
 
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h1 class="text-3xl font-semibold text-jk-blue">Registro de Auditoría de Seguridad</h1>
-            <p class="text-gray-600 mt-2">Monitoreo y seguimiento de actividades de seguridad del sistema</p>
+    <!-- Título -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-semibold text-jk-blue">Auditoría de Seguridad</h1>
+                <p class="text-gray-600 mt-2">Registros del sistema y acciones realizadas por los usuarios</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido -->
+    <div class="bg-white rounded-lg shadow-sm p-6">
+
+        <!-- Buscador -->
+        <div class="flex justify-between mb-6">
+            <input id="buscador" type="text" placeholder="Buscar por usuario, acción o IP..."
+                   class="w-80 px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-jk-blue"
+                   onkeyup="buscarTexto()">
         </div>
 
-        <main class="bg-white rounded-lg shadow-sm p-6">
-            <!-- Filtros de búsqueda -->
-            <div class="mb-8">
-                <h3 class="text-xl font-semibold text-jk-blue mb-4">Filtros de Búsqueda</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
-                        <input type="text" id="filtro-usuario" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-jk-blue" placeholder="Buscar por usuario">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Acción</label>
-                        <select id="filtro-accion" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-jk-blue">
-                            <option value="">Todas las acciones</option>
-                            <option value="LOGIN">Login</option>
-                            <option value="LOGOUT">Logout</option>
-                            <option value="CREAR">Crear</option>
-                            <option value="EDITAR">Editar</option>
-                            <option value="ELIMINAR">Eliminar</option>
-                            <option value="VER">Ver</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha desde</label>
-                        <input type="date" id="filtro-fecha-inicio" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-jk-blue">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha hasta</label>
-                        <input type="date" id="filtro-fecha-fin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-jk-blue">
-                    </div>
-                </div>
-                <div class="mt-4 flex gap-3">
-                    <button onclick="buscarRegistros()" class="bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                        <i class="fas fa-search mr-2"></i>
-                        Buscar
-                    </button>
-                    <button onclick="limpiarFiltros()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg border border-gray-300 transition-colors duration-200">
-                        <i class="fas fa-times mr-2"></i>
-                        Limpiar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tabla de registros -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha/Hora</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recurso</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                        </tr>
-                        </thead>
-                        <tbody id="tabla-auditoria" class="bg-white divide-y divide-gray-200">
-                        <!-- Los registros se cargarán dinámicamente aquí -->
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
-                                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
-                                <p class="text-gray-500 mt-4">Cargando registros...</p>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Paginación -->
-                <div id="paginacion" class="bg-gray-50 px-4 py-3 border-t border-gray-200 sm:px-6">
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">
-                            Mostrando <span class="font-medium" id="inicio-registros">0</span> a <span class="font-medium" id="fin-registros">0</span> de <span class="font-medium" id="total-registros">0</span> registros
-                        </div>
-                        <div id="botones-paginacion" class="flex gap-2">
-                            <!-- Botones de paginación se generarán dinámicamente -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-    </div>
-</div>
-
-<script>
-    let paginaActual = 0;
-    let totalPaginas = 0;
-    const registrosPorPagina = 20;
-
-    // Cargar registros al iniciar
-    document.addEventListener('DOMContentLoaded', function() {
-        cargarRegistros();
-    });
-
-    // Cargar registros desde el backend
-    async function cargarRegistros(pagina = 0) {
-        paginaActual = pagina;
-        
-        const usuario = document.getElementById('filtro-usuario').value;
-        const accion = document.getElementById('filtro-accion').value;
-        const fechaInicio = document.getElementById('filtro-fecha-inicio').value;
-        const fechaFin = document.getElementById('filtro-fecha-fin').value;
-
-        const tbody = document.getElementById('tabla-auditoria');
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="px-6 py-12 text-center">
-                    <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
-                    <p class="text-gray-500 mt-4">Cargando registros...</p>
-                </td>
-            </tr>
-        `;
-
-        try {
-            let url = `/admin/auditoria/registros?page=${pagina}&size=${registrosPorPagina}`;
-            
-            if (usuario) url += `&usuario=${encodeURIComponent(usuario)}`;
-            if (accion) url += `&accion=${encodeURIComponent(accion)}`;
-            if (fechaInicio) url += `&fechaInicio=${encodeURIComponent(fechaInicio)}T00:00:00`;
-            if (fechaFin) url += `&fechaFin=${encodeURIComponent(fechaFin)}T23:59:59`;
-
-            const response = await fetch(url);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('Datos recibidos de auditoría:', data); // Debug
-
-            if (data.success) {
-                const registros = data.registros || [];
-                totalPaginas = data.totalPaginas || 1;
-                
-                if (registros.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
-                                <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                                <p class="text-gray-500 font-medium text-lg">No se encontraron registros de auditoría</p>
-                                <p class="text-gray-400 text-sm mt-2">Los registros de auditoría se generarán automáticamente cuando realices acciones en el sistema</p>
-                                <p class="text-gray-400 text-xs mt-3">Acciones registradas: crear productos, actualizar cotizaciones, modificar stock, etc.</p>
-                            </td>
-                        </tr>
-                    `;
-                    document.getElementById('paginacion').style.display = 'none';
-                } else {
-                    tbody.innerHTML = registros.map(registro => crearFilaHTML(registro)).join('');
-                    document.getElementById('paginacion').style.display = 'block';
-                    actualizarPaginacion(data.paginaActual, data.totalPaginas, data.totalElementos);
-                }
-            } else {
-                mostrarError(data.message || 'Error al cargar registros de auditoría');
-            }
-        } catch (error) {
-            console.error('Error al cargar registros:', error);
-            mostrarError('Error de conexión: ' + error.message);
-        }
-    }
-
-    // Mostrar registros en la tabla
-    function mostrarRegistros(registros) {
-        const tbody = document.getElementById('tabla-auditoria');
-
-        if (!registros || registros.length === 0) {
-            tbody.innerHTML = `
+        <!-- Tabla -->
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                 <tr>
-                    <td colspan="6" class="px-6 py-12 text-center">
-                        <i class="fas fa-info-circle text-4xl text-gray-400"></i>
-                        <p class="text-gray-500 mt-4">No se encontraron registros</p>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onclick="ordenarPor('fecha')">
+                        Fecha <i class="fas fa-sort ml-1"></i>
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onclick="ordenarPor('usuario')">
+                        Usuario <i class="fas fa-sort ml-1"></i>
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Acción
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                        onclick="ordenarPor('ip')">
+                        IP <i class="fas fa-sort ml-1"></i>
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody id="tabla-auditoria" class="bg-white divide-y divide-gray-200">
+                <tr>
+                    <td colspan="4" class="text-center py-10 text-gray-400">
+                        <i class="fas fa-spinner fa-spin text-3xl"></i>
+                        <p class="mt-2">Cargando registros...</p>
                     </td>
                 </tr>
-            `;
-            return;
-        }
+                </tbody>
+            </table>
+        </div>
 
-        tbody.innerHTML = registros.map(reg => crearFilaHTML(reg)).join('');
-    }
+        <!-- Paginación -->
+        <div id="paginacion" class="flex justify-between items-center mt-6 hidden">
+            <span class="text-sm text-gray-600">
+                Página <span id="pagina-actual"></span> de <span id="total-paginas"></span>
+            </span>
 
-    // Crear HTML para una fila de registro
-    function crearFilaHTML(registro) {
-        const fecha = new Date(registro.fechaHora).toLocaleString('es-ES');
-        const estadoClass = registro.estado === 'EXITOSO' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-        const estadoIcon = registro.estado === 'EXITOSO' ? 'fa-check-circle' : 'fa-times-circle';
-        const usuario = registro.usuario ? registro.usuario.correo : 'Sistema';
-
-        return `
-            <tr class="hover:bg-gray-50 transition-colors duration-200 cursor-pointer" onclick="mostrarDetalles(${registro.id})">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${fecha}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-blue">${usuario}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${registro.accion}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${registro.recurso || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${registro.ipAddress || '-'}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${estadoClass}">
-                        <i class="fas ${estadoIcon} mr-1"></i>${registro.estado}
-                    </span>
-                </td>
-            </tr>
-        `;
-    }
-
-    // Actualizar paginación
-    function actualizarPaginacion(paginaActual, totalPaginas, totalElementos) {
-        const inicioRegistros = paginaActual * registrosPorPagina + 1;
-        const finRegistros = Math.min((paginaActual + 1) * registrosPorPagina, totalElementos);
-
-        document.getElementById('inicio-registros').textContent = totalElementos > 0 ? inicioRegistros : 0;
-        document.getElementById('fin-registros').textContent = finRegistros;
-        document.getElementById('total-registros').textContent = totalElementos;
-
-        const botonesPaginacion = document.getElementById('botones-paginacion');
-        let html = '';
-
-        // Botón anterior
-        if (paginaActual > 0) {
-            html += `
-                <button onclick="cargarRegistros(${paginaActual - 1})" 
-                        class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+            <div class="flex gap-2">
+                <button id="btn-prev"
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                        onclick="paginaAnterior()">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-            `;
-        }
 
-        // Botones de páginas
-        const maxBotones = 5;
-        let inicioPagina = Math.max(0, paginaActual - Math.floor(maxBotones / 2));
-        let finPagina = Math.min(totalPaginas, inicioPagina + maxBotones);
-        inicioPagina = Math.max(0, finPagina - maxBotones);
-
-        for (let i = inicioPagina; i < finPagina; i++) {
-            const activeClass = i === paginaActual ? 'bg-jk-blue text-white' : 'border border-gray-300 hover:bg-gray-100';
-            html += `
-                <button onclick="cargarRegistros(${i})" 
-                        class="${activeClass} px-3 py-1 rounded-lg transition-colors">
-                    ${i + 1}
-                </button>
-            `;
-        }
-
-        // Botón siguiente
-        if (paginaActual < totalPaginas - 1) {
-            html += `
-                <button onclick="cargarRegistros(${paginaActual + 1})" 
-                        class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors">
+                <button id="btn-next"
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-100 disabled:opacity-50"
+                        onclick="paginaSiguiente()">
                     <i class="fas fa-chevron-right"></i>
                 </button>
-            `;
+            </div>
+        </div>
+
+    </div>
+
+</th:block>
+
+<th:block th:fragment="extraJs">
+    <script>
+        let pagina = 0;
+        let totalPaginas = 1;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            cargarAuditoria();
+        });
+
+        async function cargarAuditoria() {
+            const url = `/admin/api/auditoria?page=${pagina}&size=20`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!data.success) {
+                    mostrarError("No se pudieron cargar los registros.");
+                    return;
+                }
+
+                llenarTabla(data.registros);
+                actualizarPaginacion(data);
+
+            } catch (error) {
+                console.error(error);
+                mostrarError("Error al conectar con el servidor.");
+            }
         }
 
-        botonesPaginacion.innerHTML = html;
-    }
+        function llenarTabla(registros) {
+            const tabla = document.getElementById("tabla-auditoria");
 
-    // Buscar registros con filtros
-    function buscarRegistros() {
-        cargarRegistros(0);
-    }
+            if (!registros || registros.length === 0) {
+                tabla.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-10 text-gray-500">
+                            <i class="fas fa-folder-open text-4xl"></i>
+                            <p class="mt-2">No hay registros</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
 
-    // Limpiar filtros
-    function limpiarFiltros() {
-        document.getElementById('filtro-usuario').value = '';
-        document.getElementById('filtro-accion').value = '';
-        document.getElementById('filtro-fecha-inicio').value = '';
-        document.getElementById('filtro-fecha-fin').value = '';
-        cargarRegistros(0);
-    }
+            tabla.innerHTML = registros.map(r => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        ${new Date(r.fecha).toLocaleString("es-PE")}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        ${r.usuario || "-"}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        ${r.accion}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                        ${r.ip || "-"}
+                    </td>
+                </tr>
+            `).join("");
+        }
 
-    // Mostrar detalles del registro (puede expandirse en el futuro)
-    function mostrarDetalles(id) {
-        console.log('Detalles del registro:', id);
-        // Aquí se puede implementar un modal con detalles completos
-    }
+        function actualizarPaginacion(data) {
+            pagina = data.paginaActual;
+            totalPaginas = data.totalPaginas;
 
-    // Mostrar mensaje de error
-    function mostrarError(mensaje) {
-        const tbody = document.getElementById('tabla-auditoria');
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="px-6 py-12 text-center">
-                    <i class="fas fa-exclamation-circle text-4xl text-red-500"></i>
-                    <p class="text-red-500 mt-4">${mensaje}</p>
-                    <button onclick="cargarRegistros()" 
-                            class="mt-4 bg-jk-blue hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
-                        Reintentar
-                    </button>
-                </td>
-            </tr>
-        `;
-    }
-</script>
+            document.getElementById("pagina-actual").textContent = pagina + 1;
+            document.getElementById("total-paginas").textContent = totalPaginas;
 
-</body>
+            document.getElementById("paginacion").classList.remove("hidden");
+
+            document.getElementById("btn-prev").disabled = pagina === 0;
+            document.getElementById("btn-next").disabled = pagina >= totalPaginas - 1;
+        }
+
+        function paginaAnterior() {
+            if (pagina > 0) {
+                pagina--;
+                cargarAuditoria();
+            }
+        }
+
+        function paginaSiguiente() {
+            if (pagina < totalPaginas - 1) {
+                pagina++;
+                cargarAuditoria();
+            }
+        }
+
+        function mostrarError(msg) {
+            const tabla = document.getElementById("tabla-auditoria");
+            tabla.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center py-6 text-red-500">
+                        ${msg}
+                    </td>
+                </tr>`;
+        }
+    </script>
+</th:block>
+
 </html>
