@@ -1,162 +1,120 @@
+<div th:fragment="mainContent" xmlns:th="http://www.thymeleaf.org">
+    <!-- Encabezado -->
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+        <h1 class="text-3xl font-semibold text-jk-blue">Carga Masiva de Datos</h1>
+        <p class="text-gray-600 mt-2">Sube archivos CSV o Excel para importar múltiples productos a la vez</p>
+    </div>
 
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carga Masiva de Datos - JKM Confecciones</title>
-
-    <!-- Tailwind & FontAwesome -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                'jk-blue': '#1e3a5f',
-                'jk-red': '#dc3545',
-                'jk-green': '#22c55e',
-                'jk-sidebar': '#1e3a5f',
-                'jk-sidebar-hover': '#2a4d6b'
-              }
-            }
-          }
-        }
-    </script>
-</head>
-
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
-
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h1 class="text-3xl font-semibold text-jk-blue">Carga Masiva de Datos</h1>
-            <p class="text-gray-600 mt-2">Arrastra y suelta tus archivos CSV o Excel aquí para cargar datos en lote. Asegúrate de que los archivos sigan el formato estándar para evitar errores.</p>
+    <!-- Zona de carga de archivos mejorada -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-jk-blue hover:bg-blue-50">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-jk-blue mb-2">Arrastra y suelta archivos aquí</h3>
+                <p class="text-gray-500 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
+                <p class="text-sm text-gray-400 mb-6">o</p>
+                <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls" multiple>
+                <button id="selectFileBtn" class="bg-jk-blue hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+                    <i class="fas fa-folder-open mr-2"></i>
+                    Seleccionar archivo
+                </button>
+            </div>
         </div>
 
-            <!-- Zona de carga de archivos mejorada -->
-            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-jk-blue hover:bg-blue-50">
-                    <div class="flex flex-col items-center">
-                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
-                        <h3 class="text-xl font-semibold text-jk-blue mb-2">Arrastra y suelta archivos aquí</h3>
-                        <p class="text-gray-500 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
-                        <p class="text-sm text-gray-400 mb-6">o</p>
-                        <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls" multiple>
-                        <button id="selectFileBtn" class="bg-jk-blue hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
-                            <i class="fas fa-folder-open mr-2"></i>
-                            Seleccionar archivo
-                        </button>
-                    </div>
-                </div>
+        <!-- Lista de archivos seleccionados -->
+        <div id="fileList" class="mt-4 hidden">
+            <h4 class="text-lg font-semibold text-jk-blue mb-2">Archivos seleccionados:</h4>
+            <div id="fileItems" class="space-y-2"></div>
+        </div>
+    </div>
 
-                <!-- Lista de archivos seleccionados -->
-                <div id="fileList" class="mt-4 hidden">
-                    <h4 class="text-lg font-semibold text-jk-blue mb-2">Archivos seleccionados:</h4>
-                    <div id="fileItems" class="space-y-2"></div>
-                </div>
+    <!-- Botón para descargar plantilla -->
+    <div class="flex justify-between items-center mb-8">
+            <a th:href="@{/admin/cargaMasivaDatos/descargarPlantilla}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200 inline-block">
+                <i class="fas fa-download mr-2"></i>
+                Descargar Plantilla CSV
+            </a>
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i>
+                Descarga la plantilla con el formato correcto y datos de ejemplo
             </div>
+        </div>
 
-            <!-- Botón para descargar plantilla -->
-            <div class="flex justify-between items-center mb-8">
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200">
-                    <i class="fas fa-download mr-2"></i>
-                    Descargar Plantilla de Formato Estándar
-                </button>
-                <div class="text-sm text-gray-500">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Asegúrate de que los archivos sigan el formato estándar para evitar errores
-                </div>
+        <!-- Spinner de carga -->
+        <div id="loadingSpinner" class="hidden text-center py-8">
+            <i class="fas fa-spinner fa-spin text-4xl text-jk-blue mb-4"></i>
+            <p class="text-gray-600">Procesando archivo...</p>
+        </div>
+
+        <!-- Resumen de carga -->
+        <div id="resumenContainer" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-jk-blue">
+                <h4 class="text-sm font-medium text-gray-500 uppercase mb-1">Total Productos</h4>
+                <p id="totalProductos" class="text-3xl font-bold text-jk-blue">0</p>
             </div>
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+                <h4 class="text-sm font-medium text-gray-500 uppercase mb-1">Válidos</h4>
+                <p id="productosValidos" class="text-3xl font-bold text-green-600">0</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+                <h4 class="text-sm font-medium text-gray-500 uppercase mb-1">Con Errores</h4>
+                <p id="productosInvalidos" class="text-3xl font-bold text-red-600">0</p>
+            </div>
+        </div>
 
-            <!-- Vista Previa de Datos -->
-            <h3 class="text-2xl font-bold mb-4 text-jk-blue">Vista Previa de Datos</h3>
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Tabla de productos procesados -->
+        <div id="productosTableContainer" class="hidden bg-white shadow-md rounded-lg overflow-hidden mb-6">
+            <h3 class="text-xl font-bold p-4 text-jk-blue border-b">Productos Procesados</h3>
+            <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Fila</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Código de Producto</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Descripción</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Precio</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Stock</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Estado</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fila</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Colegio</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                     </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Uniforme escolar completo</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">50.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">100</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-002</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Camisa de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">25.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">200</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-003</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Pantalón de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">30.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">150</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-004</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Falda de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">28.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">120</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-005</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Chaqueta de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">40.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">80</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
+                    <tbody id="productosBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Se llena dinámicamente -->
                     </tbody>
                 </table>
             </div>
-            
-            <div class="flex justify-end mt-8">
-                <button id="importBtn" class="bg-jk-red hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i class="fas fa-upload mr-2"></i>
-                    Importar Datos
-                </button>
-            </div>
-        </main>
-    </div>
 
-    <!-- WhatsApp Support -->
-    <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
+            <!-- Paginación -->
+            <div id="paginacionContainer" class="flex justify-center gap-2 p-4 border-t">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+        
+    <!-- Botón importar -->
+    <div id="importarContainer" class="hidden flex justify-end mt-6">
+        <button id="importBtn" onclick="importarProductos()" class="bg-jk-green hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-check mr-2"></i>
+            Importar Productos Válidos
+        </button>
+    </div>
 </div>
 
-<!-- JavaScript para funcionalidad de arrastrar y soltar -->
-<script>
+<!-- Fragmento de CSS adicional (vacío, pero necesario para el layout) -->
+<th:block th:fragment="extraCss">
+</th:block>
+
+<!-- Fragmento de JavaScript -->
+<th:block th:fragment="extraJs">
+    <!-- JavaScript para funcionalidad de carga masiva -->
+    <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const selectFileBtn = document.getElementById('selectFileBtn');
     const fileList = document.getElementById('fileList');
     const fileItems = document.getElementById('fileItems');
-    const importBtn = document.getElementById('importBtn');
 
-    let selectedFiles = [];
+    let productosData = [];
+    let paginaActual = 1;
+    const productosPorPagina = 10;
 
     // Eventos del botón seleccionar archivo
     selectFileBtn.addEventListener('click', () => {
@@ -165,7 +123,9 @@
 
     // Evento de cambio en el input de archivo
     fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
+        if (e.target.files.length > 0) {
+            procesarArchivo(e.target.files[0]);
+        }
     });
 
     // Eventos de arrastrar y soltar
@@ -182,101 +142,224 @@
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('border-jk-blue', 'bg-blue-50');
-
+        
         const files = e.dataTransfer.files;
-        handleFiles(files);
+        if (files.length > 0) {
+            procesarArchivo(files[0]);
+        }
     });
 
-    // Función para manejar archivos
-    function handleFiles(files) {
-        const allowedTypes = ['.csv', '.xlsx', '.xls'];
-        const validFiles = [];
+    function procesarArchivo(file) {
+        // Validar tamaño del archivo (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('El archivo es demasiado grande. Tamaño máximo: 10MB');
+            return;
+        }
 
-        for (let file of files) {
-            const fileName = file.name.toLowerCase();
-            const isValid = allowedTypes.some(type => fileName.endsWith(type));
+        // Validar extensión
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!['csv', 'xlsx', 'xls'].includes(extension)) {
+            alert('Formato de archivo no soportado. Use CSV o Excel (.xlsx, .xls)');
+            return;
+        }
 
-            if (isValid) {
-                validFiles.push(file);
-            } else {
-                alert(`El archivo "${file.name}" no es un formato válido. Solo se permiten archivos CSV y Excel.`);
+        // Mostrar spinner y ocultar otras secciones
+        document.getElementById('loadingSpinner').classList.remove('hidden');
+        document.getElementById('resumenContainer').classList.add('hidden');
+        document.getElementById('productosTableContainer').classList.add('hidden');
+        document.getElementById('importarContainer').classList.add('hidden');
+
+        // Enviar archivo al servidor
+        const formData = new FormData();
+        formData.append('archivo', file);
+
+        fetch('/admin/cargaMasivaDatos/procesar', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            
+            if (data.erroresGenerales && data.erroresGenerales.length > 0) {
+                alert('Errores al procesar archivo:\\n' + data.erroresGenerales.join('\\n'));
+                return;
             }
-        }
 
-        if (validFiles.length > 0) {
-            selectedFiles = [...selectedFiles, ...validFiles];
-            displayFiles();
-        }
+            productosData = data.productos || [];
+            mostrarResumen(data);
+            mostrarProductos();
+            
+            if (data.productosValidos > 0) {
+                document.getElementById('importarContainer').classList.remove('hidden');
+            }
+        })
+        .catch(error => {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            console.error('Error:', error);
+            alert('Error al procesar el archivo. Por favor, inténtelo nuevamente.');
+        });
     }
 
-    // Función para mostrar archivos seleccionados
-    function displayFiles() {
-        if (selectedFiles.length > 0) {
-            fileList.classList.remove('hidden');
-            fileItems.innerHTML = '';
+    function mostrarResumen(data) {
+        document.getElementById('totalProductos').textContent = data.totalProductos || 0;
+        document.getElementById('productosValidos').textContent = data.productosValidos || 0;
+        document.getElementById('productosInvalidos').textContent = data.productosInvalidos || 0;
+        document.getElementById('resumenContainer').classList.remove('hidden');
+    }
 
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg';
+    function mostrarProductos() {
+        if (productosData.length === 0) return;
 
-                fileItem.innerHTML = `
-                    <div class="flex items-center">
-                        <i class="fas fa-file-alt text-jk-green mr-2"></i>
-                        <span class="text-sm font-medium text-gray-700">${file.name}</span>
-                        <span class="text-xs text-gray-500 ml-2">(${formatFileSize(file.size)})</span>
-                    </div>
-                    <button onclick="removeFile(${index})" class="text-jk-red hover:text-red-800 transition-colors duration-200">
-                        <i class="fas fa-times text-sm"></i>
-                    </button>
-                `;
+        const tbody = document.getElementById('productosBody');
+        tbody.innerHTML = '';
 
-                fileItems.appendChild(fileItem);
-            });
+        // Calcular índices de paginación
+        const inicio = (paginaActual - 1) * productosPorPagina;
+        const fin = Math.min(inicio + productosPorPagina, productosData.length);
+        const productosPagina = productosData.slice(inicio, fin);
 
-            importBtn.disabled = false;
-        } else {
-            fileList.classList.add('hidden');
-            importBtn.disabled = true;
+        // Renderizar productos
+        productosPagina.forEach(producto => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-gray-50 transition-colors duration-200';
+            
+            const stockTotal = producto.tallas 
+                ? producto.tallas.reduce((sum, t) => sum + (t.stock || 0), 0) 
+                : 0;
+
+            const estadoClass = producto.estado === 'VALIDO' 
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800';
+            
+            const estadoTexto = producto.estado === 'VALIDO' ? 'Válido' : 'Formato Inválido';
+
+            const erroresHtml = producto.errores && producto.errores.length > 0
+                ? '<ul class="mt-1 text-xs text-red-600 list-disc list-inside">' + 
+                  producto.errores.map(e => '<li>' + e + '</li>').join('') + '</ul>'
+                : '';
+
+            tr.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${producto.fila}</td>
+                <td class="px-6 py-4 text-sm">
+                    <div class="font-medium text-gray-900">${producto.nombre || 'Sin nombre'}</div>
+                    <div class="text-xs text-gray-500">${producto.categoria || '-'}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    S/ ${producto.precio ? producto.precio.toFixed(2) : '0.00'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${stockTotal}</td>
+                <td class="px-6 py-4 text-sm text-gray-900">${producto.colegioAsociado || '-'}</td>
+                <td class="px-6 py-4">
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${estadoClass}">
+                        ${estadoTexto}
+                    </span>
+                    ${erroresHtml}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('productosTableContainer').classList.remove('hidden');
+        renderizarPaginacion();
+    }
+
+    function renderizarPaginacion() {
+        const totalPaginas = Math.ceil(productosData.length / productosPorPagina);
+        const paginacionDiv = document.getElementById('paginacionContainer');
+        paginacionDiv.innerHTML = '';
+
+        if (totalPaginas <= 1) return;
+
+        // Botón anterior
+        const btnAnterior = document.createElement('button');
+        btnAnterior.textContent = 'Anterior';
+        btnAnterior.className = 'px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        btnAnterior.disabled = paginaActual === 1;
+        btnAnterior.onclick = () => cambiarPagina(paginaActual - 1);
+        paginacionDiv.appendChild(btnAnterior);
+
+        // Botones de páginas (mostrar máximo 5)
+        const maxBotones = 5;
+        let inicio = Math.max(1, paginaActual - Math.floor(maxBotones / 2));
+        let fin = Math.min(totalPaginas, inicio + maxBotones - 1);
+        
+        if (fin - inicio < maxBotones - 1) {
+            inicio = Math.max(1, fin - maxBotones + 1);
         }
-    }
 
-    // Función para remover archivo
-    function removeFile(index) {
-        selectedFiles.splice(index, 1);
-        displayFiles();
-    }
-
-    // Función para formatear tamaño de archivo
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-
-    // Evento del botón importar
-    importBtn.addEventListener('click', () => {
-        if (selectedFiles.length > 0) {
-            // Aquí iría la lógica para procesar los archivos
-            alert(`Importando ${selectedFiles.length} archivo(s)...`);
-
-            // Simular proceso de importación
-            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Importando...';
-            importBtn.disabled = true;
-
-            setTimeout(() => {
-                importBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Importado Exitosamente';
-                setTimeout(() => {
-                    importBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Importar Datos';
-                    importBtn.disabled = false;
-                    selectedFiles = [];
-                    displayFiles();
-                }, 2000);
-            }, 3000);
+        for (let i = inicio; i <= fin; i++) {
+            const btn = document.createElement('button');
+            btn.textContent = i;
+            btn.className = i === paginaActual 
+                ? 'px-4 py-2 border border-jk-blue bg-jk-blue text-white rounded-lg'
+                : 'px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50';
+            btn.onclick = () => cambiarPagina(i);
+            paginacionDiv.appendChild(btn);
         }
-    });
 
-    // Inicializar estado del botón
-    importBtn.disabled = true;
-</script>
+        // Botón siguiente
+        const btnSiguiente = document.createElement('button');
+        btnSiguiente.textContent = 'Siguiente';
+        btnSiguiente.className = 'px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        btnSiguiente.disabled = paginaActual === totalPaginas;
+        btnSiguiente.onclick = () => cambiarPagina(paginaActual + 1);
+        paginacionDiv.appendChild(btnSiguiente);
+    }
+
+    function cambiarPagina(nuevaPagina) {
+        paginaActual = nuevaPagina;
+        mostrarProductos();
+        document.getElementById('productosTableContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function importarProductos() {
+        const productosValidos = productosData.filter(p => p.estado === 'VALIDO');
+        
+        if (productosValidos.length === 0) {
+            alert('No hay productos válidos para importar');
+            return;
+        }
+
+        if (!confirm(`¿Está seguro de importar ${productosValidos.length} productos?`)) {
+            return;
+        }
+
+        const btnImportar = document.getElementById('importBtn');
+        btnImportar.disabled = true;
+        btnImportar.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Importando...';
+
+        fetch('/admin/cargaMasivaDatos/importar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(productosValidos)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                // Limpiar y resetear
+                productosData = [];
+                paginaActual = 1;
+                document.getElementById('productosTableContainer').classList.add('hidden');
+                document.getElementById('resumenContainer').classList.add('hidden');
+                document.getElementById('importarContainer').classList.add('hidden');
+                fileInput.value = '';
+            } else {
+                alert('Error al importar: ' + data.message);
+            }
+            
+            btnImportar.disabled = false;
+            btnImportar.innerHTML = '<i class="fas fa-check mr-2"></i> Importar Productos Válidos';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al importar productos. Por favor, inténtelo nuevamente.');
+            btnImportar.disabled = false;
+            btnImportar.innerHTML = '<i class="fas fa-check mr-2"></i> Importar Productos Válidos';
+        });
+    }
+    </script>
+</th:block>
