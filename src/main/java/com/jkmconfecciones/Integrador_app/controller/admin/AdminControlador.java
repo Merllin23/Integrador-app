@@ -2,6 +2,8 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
+import com.jkmconfecciones.Integrador_app.DTO.ProductoCargaMasivaDTO;
+import com.jkmconfecciones.Integrador_app.DTO.ResultadoCargaMasivaDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService;
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
@@ -9,6 +11,7 @@ import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
 import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
+import com.jkmconfecciones.Integrador_app.service.CargaMasiva.CargaMasivaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +49,7 @@ public class AdminControlador {
     private final NotificacionService notificacionService;
     private final AuditoriaService auditoriaService;
     private final UsuarioService usuarioService;
+    private final CargaMasivaService cargaMasivaService;
 
 
     @GetMapping("/panel")
@@ -80,6 +85,8 @@ public class AdminControlador {
         model.addAttribute("rol", "Administrador");
 
         model.addAttribute("mainContent", "admin/cargaMasivaDatos :: mainContent");
+        model.addAttribute("extraCss", "admin/cargaMasivaDatos :: extraCss");
+        model.addAttribute("extraJs", "admin/cargaMasivaDatos :: extraJs");
         return "fragments/admin-layout";
     }
 
@@ -852,6 +859,78 @@ public class AdminControlador {
             error.put("success", false);
             error.put("message", "Error al cargar registros");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    // ==================== CARGA MASIVA DE DATOS ====================
+
+    /**
+     * Procesa el archivo CSV/Excel subido y retorna los productos validados
+     */
+    @PostMapping("/cargaMasivaDatos/procesar")
+    @ResponseBody
+    public ResponseEntity<ResultadoCargaMasivaDTO> procesarArchivoCargaMasiva(
+            @RequestParam("archivo") MultipartFile archivo) {
+        try {
+            if (archivo.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            ResultadoCargaMasivaDTO resultado = cargaMasivaService.procesarArchivo(archivo);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            log.error("Error al procesar archivo de carga masiva", e);
+            ResultadoCargaMasivaDTO error = ResultadoCargaMasivaDTO.builder()
+                    .erroresGenerales(Arrays.asList("Error al procesar archivo: " + e.getMessage()))
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Importa los productos válidos a la base de datos
+     */
+    @PostMapping("/cargaMasivaDatos/importar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> importarProductosCargaMasiva(
+            @RequestBody List<ProductoCargaMasivaDTO> productos) {
+        try {
+            int importados = cargaMasivaService.importarProductos(productos);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("productosImportados", importados);
+            response.put("message", importados + " productos importados exitosamente");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al importar productos", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al importar productos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    //Descarga la plantilla CSV con formato y datos de ejemplo
+
+    @GetMapping("/cargaMasivaDatos/descargarPlantilla")
+    public ResponseEntity<byte[]> descargarPlantillaCSV() {
+        try {
+            byte[] plantilla = cargaMasivaService.generarPlantillaCSV();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+            headers.setContentDisposition(
+                    ContentDisposition.builder("attachment")
+                            .filename("plantilla_productos.csv", StandardCharsets.UTF_8)
+                            .build()
+            );
+            
+            return new ResponseEntity<>(plantilla, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error al generar plantilla CSV", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

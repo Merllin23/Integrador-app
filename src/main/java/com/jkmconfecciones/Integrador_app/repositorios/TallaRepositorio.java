@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface TallaRepositorio extends JpaRepository<Talla, Integer> {
 
     Optional<Talla> findByNombreTalla(String nombreTalla);
+    boolean existsByNombreTalla(String nombreTalla);
 }
