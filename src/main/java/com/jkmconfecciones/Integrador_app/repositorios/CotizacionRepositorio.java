@@ -3,8 +3,11 @@ package com.jkmconfecciones.Integrador_app.repositorios;
 import com.jkmconfecciones.Integrador_app.entidades.Cotizacion;
 import com.jkmconfecciones.Integrador_app.entidades.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +27,12 @@ public interface CotizacionRepositorio extends JpaRepository<Cotizacion, Integer
 
     @Query("SELECT c FROM Cotizacion c WHERE c.usuario.id = :usuarioId ORDER BY c.fecha DESC")
     List<Cotizacion> findByUsuarioId(@Param("usuarioId") Long usuarioId);
+
+    List<Cotizacion> findByEstadoInOrderByFechaDesc(List<String> estados);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE Cotizacion c SET c.estado = :nuevoEstado WHERE c.estado = :estadoActual")
+    void actualizarEstadoPorEstado(@Param("estadoActual") String estadoActual, @Param("nuevoEstado") String nuevoEstado);
+
 }

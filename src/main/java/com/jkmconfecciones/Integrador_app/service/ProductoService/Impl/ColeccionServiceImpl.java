@@ -17,4 +17,24 @@ public class ColeccionServiceImpl implements ColeccionService {
     public List<Coleccion> listarColecciones() {
         return coleccionRepository.findAll();
     }
+
+    @Override
+    public Coleccion guardarColeccion(Coleccion coleccion) {
+        return coleccionRepository.save(coleccion);
+    }
+
+    @Override
+    public void editarColeccion(Long id, String nombre) {
+        Coleccion c = coleccionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Colección no encontrada"));
+
+        c.setNombre(nombre);
+        coleccionRepository.save(c);
+    }
+
+    @Override
+    public void eliminarColeccion(Long id) {
+        coleccionRepository.deleteById(id);
+    }
+
 }

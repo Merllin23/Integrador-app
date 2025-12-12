@@ -17,4 +17,23 @@ public class CategoriaServiceImpl implements CategoriaService {
     public List<Categoria> listarCategorias() {
         return categoriaRepository.findAll();
     }
+
+    @Override
+    public Categoria guardarCategoria(Categoria categoria) {
+        return categoriaRepository.save(categoria);
+    }
+
+    @Override
+    public void editarCategoria(Long id, String nombre) {
+        Categoria c = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        c.setNombre(nombre);
+        categoriaRepository.save(c);
+    }
+
+    @Override
+    public void eliminarCategoria(Long id) {
+        categoriaRepository.deleteById(id);
+    }
 }

@@ -112,15 +112,14 @@ public class UsuarioControlador {
             return "redirect:/usuario/catalogo";
         }
 
-        // Cargar tallas
-        var tallas = usuarioCatalogoService.listarTallasPorProducto(id);
+        // Traer solo tallas activas
+        var tallasActivas = usuarioCatalogoService.listarTallasPorProductoActivas(id);
 
-        // Calcular el stock total sumando las cantidades de cada talla
-        int stockTotal = producto.getTallas().stream()
+        // Calcular stock total sumando cantidades de tallas activas
+        int stockTotal = tallasActivas.stream()
                 .mapToInt(t -> t.getCantidadStock() != null ? t.getCantidadStock() : 0)
                 .sum();
 
-        // Obtener usuario autenticado (igual que en el catálogo)
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             String correo = auth.getName();
@@ -132,11 +131,12 @@ public class UsuarioControlador {
         }
 
         model.addAttribute("producto", producto);
-        model.addAttribute("tallas", tallas);
+        model.addAttribute("tallas", tallasActivas); // <- usar tallas filtradas
         model.addAttribute("stockTotal", stockTotal);
 
         return "usuario/detalle";
     }
+
 
 
     @PostMapping("/cotizar")

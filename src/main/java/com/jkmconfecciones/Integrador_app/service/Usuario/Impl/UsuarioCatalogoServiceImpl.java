@@ -3,6 +3,7 @@ package com.jkmconfecciones.Integrador_app.service.Usuario.Impl;
 import com.jkmconfecciones.Integrador_app.entidades.Producto;
 import com.jkmconfecciones.Integrador_app.entidades.Categoria;
 import com.jkmconfecciones.Integrador_app.entidades.Colegio;
+import com.jkmconfecciones.Integrador_app.entidades.ProductoTalla;
 import com.jkmconfecciones.Integrador_app.repositorios.ProductoRepositorio;
 import com.jkmconfecciones.Integrador_app.repositorios.CategoriaRepositorio;
 import com.jkmconfecciones.Integrador_app.repositorios.ColegioRepositorio;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,4 +76,17 @@ public class UsuarioCatalogoServiceImpl implements UsuarioCatalogoService {
         return productoRepositorio.findById(id).orElse(null);
     }
 
+
+    @Override
+    public List<ProductoTalla> listarTallasPorProductoActivas(Long productoId) {
+        var tallas = listarTallasPorProductoTalla(productoId); // devuelve ProductoTalla
+        return tallas.stream()
+                .filter(ProductoTalla::getActivo)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProductoTalla> listarTallasPorProductoTalla(Long productoId) {
+        return productoTallaRepositorio.findByProductoId(productoId);
+    }
 }

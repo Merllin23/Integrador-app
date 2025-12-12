@@ -321,7 +321,7 @@
                     <option value="TODOS" th:selected="${estadoSeleccionado == null || estadoSeleccionado == 'TODOS'}">Todos los Estados</option>
                     <option value="PENDIENTE" th:selected="${estadoSeleccionado == 'PENDIENTE'}">Pendiente</option>
                     <option value="EN PROCESO" th:selected="${estadoSeleccionado == 'EN PROCESO'}">En Proceso</option>
-                    <option value="COMPLETADO" th:selected="${estadoSeleccionado == 'COMPLETADO'}">Completado</option>
+                    <option value="PEDIDO" th:selected="${estadoSeleccionado == 'PEDIDO'}">Pedido</option>
                     <option value="CANCELADO" th:selected="${estadoSeleccionado == 'CANCELADO'}">Cancelado</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500">
@@ -382,7 +382,7 @@
                     <td>
                         <span th:class="${cot.estado == 'PENDIENTE'} ? 'estado-badge estado-pendiente' :
                                         (${cot.estado == 'EN PROCESO'} ? 'estado-badge estado-en-proceso' :
-                                        (${cot.estado == 'COMPLETADO'} ? 'estado-badge estado-completado' : 'estado-badge estado-cancelado'))"
+                                        (${cot.estado == 'PEDIDO'} ? 'estado-badge estado-completado' : 'estado-badge estado-cancelado'))"
                               th:text="${cot.estado}"></span>
                     </td>
                     <td class="text-center">
@@ -455,7 +455,7 @@
                 <select id="selectEstado" class="form-select">
                     <option value="PENDIENTE">Pendiente</option>
                     <option value="EN PROCESO">En Proceso</option>
-                    <option value="COMPLETADO">Completado</option>
+                    <option value="PEDIDO">PEDIDO</option>
                     <option value="CANCELADO">Cancelado</option>
                 </select>
             </div>
