@@ -354,6 +354,8 @@ public class AdminControlador {
         model.addAttribute("rol", "Administrador");
 
         model.addAttribute("mainContent", "admin/registroAuditoriaSeguridad :: mainContent");
+        model.addAttribute("extraCss", "admin/registroAuditoriaSeguridad :: extraCss");
+        model.addAttribute("extraJs", "admin/registroAuditoriaSeguridad :: extraJs");
         return "fragments/admin-layout";
     }
 
