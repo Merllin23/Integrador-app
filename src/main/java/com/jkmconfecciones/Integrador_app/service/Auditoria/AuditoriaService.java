@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Slf4j
@@ -35,7 +37,7 @@ public class AuditoriaService {
                 .recurso(recurso)
                 .recursoId(recursoId)
                 .ipAddress(ipAddress)
-                .fechaHora(LocalDateTime.now())
+                .fechaHora(obtenerFechaHoraPeru())
                 .estado(estado)
                 .detalles(detalles)
                 .userAgent(userAgent)
@@ -52,7 +54,7 @@ public class AuditoriaService {
                 .usuario(usuario)
                 .accion(accion)
                 .recurso(recurso)
-                .fechaHora(LocalDateTime.now())
+                .fechaHora(obtenerFechaHoraPeru())
                 .estado(estado)
                 .detalles(detalles)
                 .build();
@@ -78,7 +80,7 @@ public class AuditoriaService {
                 .accion("LOGIN")
                 .recurso("Sistema")
                 .ipAddress(ipAddress)
-                .fechaHora(LocalDateTime.now())
+                .fechaHora(obtenerFechaHoraPeru())
                 .estado("FALLIDO")
                 .detalles("Intento de inicio de sesión fallido para: " + correo)
                 .userAgent(userAgent)
@@ -153,6 +155,16 @@ public class AuditoriaService {
         }
 
         return request.getRemoteAddr();
+    }
+
+    /**
+     * Obtiene la fecha y hora actual en la zona horaria de Perú (America/Lima, GMT-5).
+     * Esto asegura que las auditorías se registren con la hora local correcta.
+     * 
+     * @return LocalDateTime en zona horaria de Perú
+     */
+    private LocalDateTime obtenerFechaHoraPeru() {
+        return ZonedDateTime.now(ZoneId.of("America/Lima")).toLocalDateTime();
     }
 
 }
