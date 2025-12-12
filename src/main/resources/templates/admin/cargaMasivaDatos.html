@@ -1,252 +1,235 @@
-
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carga Masiva de Datos - JKM Confecciones</title>
 
-    <!-- Tailwind & FontAwesome -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                'jk-blue': '#1e3a5f',
-                'jk-red': '#dc3545',
-                'jk-green': '#22c55e',
-                'jk-sidebar': '#1e3a5f',
-                'jk-sidebar-hover': '#2a4d6b'
-              }
+    <!-- Fragmento CSS adicional -->
+    <th:block th:fragment="extraCss">
+        <style>
+            .dropzone-hover {
+                border-color: #1e3a5f !important;
+                background-color: #eff6ff !important;
             }
-          }
-        }
-    </script>
+            #mensajeNotificacion {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                color: white;
+                font-weight: 600;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
+            .mensaje-success { background-color: #16a34a; }
+            .mensaje-error { background-color: #dc2626; }
+            .mensaje-warning { background-color: #f59e0b; }
+        </style>
+    </th:block>
 </head>
 
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<body>
 
-    <!-- Contenido principal -->
-    <div class="ml-64 flex-1 p-6">
+<!-- MAIN CONTENT -->
+<th:block th:fragment="mainContent">
+    <div class="max-w-7xl mx-auto">
+
+        <!-- ENCABEZADO -->
         <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
             <h1 class="text-3xl font-semibold text-jk-blue">Carga Masiva de Datos</h1>
-            <p class="text-gray-600 mt-2">Arrastra y suelta tus archivos CSV o Excel aquí para cargar datos en lote. Asegúrate de que los archivos sigan el formato estándar para evitar errores.</p>
+            <p class="text-gray-600 mt-2">Carga múltiples productos desde archivos CSV o Excel. Descarga la plantilla para asegurar el formato correcto.</p>
         </div>
 
-            <!-- Zona de carga de archivos mejorada -->
+        <!-- Notificación -->
+        <div id="mensajeNotificacion" class="hidden"></div>
+
+        <!-- Zona de carga de archivos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-jk-blue hover:bg-blue-50">
+                <div class="flex flex-col items-center">
+                    <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-jk-blue mb-2">Arrastra y suelta archivos aquí</h3>
+                    <p class="text-gray-500 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
+                    <p class="text-sm text-gray-400 mb-6">o</p>
+                    <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls">
+                    <button id="selectFileBtn" class="bg-jk-blue hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
+                        <i class="fas fa-folder-open mr-2"></i>
+                        Seleccionar archivo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Archivo seleccionado -->
+            <div id="selectedFileInfo" class="mt-4 hidden">
+                <h4 class="text-lg font-semibold text-jk-blue mb-2">Archivo seleccionado:</h4>
+                <div id="fileInfo" class="bg-gray-50 p-3 rounded-lg flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-file-excel text-jk-green text-2xl mr-3"></i>
+                        <div>
+                            <p id="fileName" class="text-sm font-medium text-gray-700"></p>
+                            <p id="fileSize" class="text-xs text-gray-500"></p>
+                        </div>
+                    </div>
+                    <button id="removeFileBtn" class="text-jk-red hover:text-red-800 transition-colors duration-200">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón para descargar plantilla -->
+        <div class="flex justify-between items-center mb-8">
+            <a th:href="@{/admin/cargaMasivaDatos/descargarPlantilla}" 
+               class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200">
+                <i class="fas fa-download mr-2"></i>
+                Descargar Plantilla CSV
+            </a>
+            <div class="text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-1"></i>
+                La plantilla incluye todos los colegios, categorías, colecciones y tallas del sistema
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-4 mb-8">
+            <button id="validarBtn" class="bg-jk-blue hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <i class="fas fa-check-circle mr-2"></i>
+                Validar Archivo
+            </button>
+            <button id="importarBtn" class="bg-jk-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed hidden" disabled>
+                <i class="fas fa-upload mr-2"></i>
+                Importar Productos
+            </button>
+        </div>
+
+        <!-- Resultado de validación -->
+        <div id="resultadoValidacion" class="hidden">
+            <!-- Resumen -->
             <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
-                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center transition-all duration-300 hover:border-jk-blue hover:bg-blue-50">
-                    <div class="flex flex-col items-center">
-                        <i class="fas fa-cloud-upload-alt text-6xl text-gray-400 mb-4"></i>
-                        <h3 class="text-xl font-semibold text-jk-blue mb-2">Arrastra y suelta archivos aquí</h3>
-                        <p class="text-gray-500 mb-4">Formatos soportados: CSV, Excel (.xlsx, .xls)</p>
-                        <p class="text-sm text-gray-400 mb-6">o</p>
-                        <input type="file" id="fileInput" class="hidden" accept=".csv,.xlsx,.xls" multiple>
-                        <button id="selectFileBtn" class="bg-jk-blue hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200">
-                            <i class="fas fa-folder-open mr-2"></i>
-                            Seleccionar archivo
-                        </button>
+                <h3 class="text-2xl font-bold text-jk-blue mb-4">Resultado de Validación</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Productos Válidos</p>
+                        <p id="productosValidos" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Productos con Errores</p>
+                        <p id="productosInvalidos" class="text-3xl font-bold text-red-600">0</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600">Total Procesados</p>
+                        <p id="totalProductos" class="text-3xl font-bold text-blue-600">0</p>
                     </div>
                 </div>
-
-                <!-- Lista de archivos seleccionados -->
-                <div id="fileList" class="mt-4 hidden">
-                    <h4 class="text-lg font-semibold text-jk-blue mb-2">Archivos seleccionados:</h4>
-                    <div id="fileItems" class="space-y-2"></div>
-                </div>
             </div>
 
-            <!-- Botón para descargar plantilla -->
-            <div class="flex justify-between items-center mb-8">
-                <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg border border-gray-300 transition-colors duration-200">
-                    <i class="fas fa-download mr-2"></i>
-                    Descargar Plantilla de Formato Estándar
-                </button>
-                <div class="text-sm text-gray-500">
-                    <i class="fas fa-info-circle mr-1"></i>
-                    Asegúrate de que los archivos sigan el formato estándar para evitar errores
-                </div>
+            <!-- Errores generales -->
+            <div id="erroresGenerales" class="hidden bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+                <h4 class="text-lg font-semibold text-red-800 mb-2">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Errores Generales
+                </h4>
+                <ul id="listaErroresGenerales" class="list-disc list-inside text-red-700"></ul>
             </div>
 
-            <!-- Vista Previa de Datos -->
-            <h3 class="text-2xl font-bold mb-4 text-jk-blue">Vista Previa de Datos</h3>
-            <div class="bg-white shadow-md rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Fila</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Código de Producto</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Descripción</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Precio</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Stock</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" scope="col">Estado</th>
-                    </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-001</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Uniforme escolar completo</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">50.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">100</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">2</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-002</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Camisa de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">25.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">200</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">3</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-003</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Pantalón de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">30.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">150</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-004</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Falda de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">28.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">120</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    <tr class="hover:bg-gray-50 transition-colors duration-200">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">5</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-jk-red">UNF-005</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-jk-red">Chaqueta de uniforme</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">40.00</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">80</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Válido</span></td>
-                    </tr>
-                    </tbody>
-                </table>
+            <!-- Productos válidos -->
+            <div id="productosValidosContainer" class="hidden bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h4 class="text-lg font-semibold text-green-600 mb-4">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Productos Válidos (listos para importar)
+                </h4>
+                <div id="tablaProductosValidos" class="overflow-x-auto"></div>
             </div>
-            
-            <div class="flex justify-end mt-8">
-                <button id="importBtn" class="bg-jk-red hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-                    <i class="fas fa-upload mr-2"></i>
-                    Importar Datos
-                </button>
+
+            <!-- Productos inválidos -->
+            <div id="productosInvalidosContainer" class="hidden bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h4 class="text-lg font-semibold text-red-600 mb-4">
+                    <i class="fas fa-times-circle mr-2"></i>
+                    Productos con Errores
+                </h4>
+                <div id="tablaProductosInvalidos" class="overflow-x-auto"></div>
             </div>
-        </main>
+        </div>
+
     </div>
+</th:block>
 
-    <!-- WhatsApp Support -->
-    <div th:replace="~{fragments/sidebar :: whatsapp-button}"></div>
-</div>
-
-<!-- JavaScript para funcionalidad de arrastrar y soltar -->
+<!-- JAVASCRIPT -->
+<th:block th:fragment="extraJs">
 <script>
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const selectFileBtn = document.getElementById('selectFileBtn');
-    const fileList = document.getElementById('fileList');
-    const fileItems = document.getElementById('fileItems');
-    const importBtn = document.getElementById('importBtn');
+    const selectedFileInfo = document.getElementById('selectedFileInfo');
+    const fileInfo = document.getElementById('fileInfo');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const validarBtn = document.getElementById('validarBtn');
+    const importarBtn = document.getElementById('importarBtn');
+    const resultadoValidacion = document.getElementById('resultadoValidacion');
+    const mensajeNotificacion = document.getElementById('mensajeNotificacion');
 
-    let selectedFiles = [];
+    let archivoSeleccionado = null;
+    let productosValidados = [];
 
-    // Eventos del botón seleccionar archivo
-    selectFileBtn.addEventListener('click', () => {
-        fileInput.click();
-    });
+    // Botón seleccionar archivo
+    selectFileBtn.addEventListener('click', () => fileInput.click());
 
-    // Evento de cambio en el input de archivo
+    // Input file change
     fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
+        if (e.target.files.length > 0) {
+            manejarArchivo(e.target.files[0]);
+        }
     });
 
-    // Eventos de arrastrar y soltar
+    // Drag & Drop
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
-        dropZone.classList.add('border-jk-blue', 'bg-blue-50');
+        dropZone.classList.add('dropzone-hover');
     });
 
-    dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('border-jk-blue', 'bg-blue-50');
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dropzone-hover');
     });
 
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
-        dropZone.classList.remove('border-jk-blue', 'bg-blue-50');
-
-        const files = e.dataTransfer.files;
-        handleFiles(files);
+        dropZone.classList.remove('dropzone-hover');
+        if (e.dataTransfer.files.length > 0) {
+            manejarArchivo(e.dataTransfer.files[0]);
+        }
     });
 
-    // Función para manejar archivos
-    function handleFiles(files) {
-        const allowedTypes = ['.csv', '.xlsx', '.xls'];
-        const validFiles = [];
+    // Remover archivo
+    removeFileBtn.addEventListener('click', () => {
+        archivoSeleccionado = null;
+        fileInput.value = '';
+        selectedFileInfo.classList.add('hidden');
+        validarBtn.disabled = true;
+        importarBtn.classList.add('hidden');
+        resultadoValidacion.classList.add('hidden');
+    });
 
-        for (let file of files) {
-            const fileName = file.name.toLowerCase();
-            const isValid = allowedTypes.some(type => fileName.endsWith(type));
-
-            if (isValid) {
-                validFiles.push(file);
-            } else {
-                alert(`El archivo "${file.name}" no es un formato válido. Solo se permiten archivos CSV y Excel.`);
-            }
+    function manejarArchivo(file) {
+        const allowedTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx|xls)$/i)) {
+            mostrarMensaje('Solo se permiten archivos CSV y Excel', 'error');
+            return;
         }
 
-        if (validFiles.length > 0) {
-            selectedFiles = [...selectedFiles, ...validFiles];
-            displayFiles();
-        }
+        archivoSeleccionado = file;
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        selectedFileInfo.classList.remove('hidden');
+        validarBtn.disabled = false;
+        resultadoValidacion.classList.add('hidden');
+        importarBtn.classList.add('hidden');
     }
 
-    // Función para mostrar archivos seleccionados
-    function displayFiles() {
-        if (selectedFiles.length > 0) {
-            fileList.classList.remove('hidden');
-            fileItems.innerHTML = '';
-
-            selectedFiles.forEach((file, index) => {
-                const fileItem = document.createElement('div');
-                fileItem.className = 'flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-3 rounded-lg';
-
-                fileItem.innerHTML = `
-                    <div class="flex items-center">
-                        <i class="fas fa-file-alt text-jk-green mr-2"></i>
-                        <span class="text-sm font-medium text-gray-700">${file.name}</span>
-                        <span class="text-xs text-gray-500 ml-2">(${formatFileSize(file.size)})</span>
-                    </div>
-                    <button onclick="removeFile(${index})" class="text-jk-red hover:text-red-800 transition-colors duration-200">
-                        <i class="fas fa-times text-sm"></i>
-                    </button>
-                `;
-
-                fileItems.appendChild(fileItem);
-            });
-
-            importBtn.disabled = false;
-        } else {
-            fileList.classList.add('hidden');
-            importBtn.disabled = true;
-        }
-    }
-
-    // Función para remover archivo
-    function removeFile(index) {
-        selectedFiles.splice(index, 1);
-        displayFiles();
-    }
-
-    // Función para formatear tamaño de archivo
     function formatFileSize(bytes) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -255,28 +238,174 @@
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
-    // Evento del botón importar
-    importBtn.addEventListener('click', () => {
-        if (selectedFiles.length > 0) {
-            // Aquí iría la lógica para procesar los archivos
-            alert(`Importando ${selectedFiles.length} archivo(s)...`);
+    // Validar archivo
+    validarBtn.addEventListener('click', async () => {
+        if (!archivoSeleccionado) return;
 
-            // Simular proceso de importación
-            importBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Importando...';
-            importBtn.disabled = true;
+        validarBtn.disabled = true;
+        validarBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Validando...';
 
-            setTimeout(() => {
-                importBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Importado Exitosamente';
-                setTimeout(() => {
-                    importBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Importar Datos';
-                    importBtn.disabled = false;
-                    selectedFiles = [];
-                    displayFiles();
-                }, 2000);
-            }, 3000);
+        const formData = new FormData();
+        formData.append('archivo', archivoSeleccionado);
+
+        try {
+            const response = await fetch('/admin/cargaMasivaDatos/procesar', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Error al procesar archivo');
+
+            const resultado = await response.json();
+            mostrarResultadoValidacion(resultado);
+            
+            validarBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Validar Archivo';
+            validarBtn.disabled = false;
+
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarMensaje('Error al validar archivo: ' + error.message, 'error');
+            validarBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Validar Archivo';
+            validarBtn.disabled = false;
         }
     });
 
-    // Inicializar estado del botón
-    importBtn.disabled = true;
+    function mostrarResultadoValidacion(resultado) {
+        resultadoValidacion.classList.remove('hidden');
+
+        // Actualizar contadores
+        const validos = resultado.productosValidos?.length || 0;
+        const invalidos = resultado.productosInvalidos?.length || 0;
+        document.getElementById('productosValidos').textContent = validos;
+        document.getElementById('productosInvalidos').textContent = invalidos;
+        document.getElementById('totalProductos').textContent = validos + invalidos;
+
+        // Errores generales
+        if (resultado.erroresGenerales && resultado.erroresGenerales.length > 0) {
+            const erroresGeneralesDiv = document.getElementById('erroresGenerales');
+            const listaErrores = document.getElementById('listaErroresGenerales');
+            listaErrores.innerHTML = resultado.erroresGenerales.map(e => `<li>${e}</li>`).join('');
+            erroresGeneralesDiv.classList.remove('hidden');
+        }
+
+        // Productos válidos
+        if (validos > 0) {
+            productosValidados = resultado.productosValidos;
+            document.getElementById('productosValidosContainer').classList.remove('hidden');
+            const tabla = crearTablaProductos(resultado.productosValidos, true);
+            document.getElementById('tablaProductosValidos').innerHTML = tabla;
+            importarBtn.classList.remove('hidden');
+            importarBtn.disabled = false;
+        }
+
+        // Productos inválidos
+        if (invalidos > 0) {
+            document.getElementById('productosInvalidosContainer').classList.remove('hidden');
+            const tabla = crearTablaProductos(resultado.productosInvalidos, false);
+            document.getElementById('tablaProductosInvalidos').innerHTML = tabla;
+        }
+
+        if (validos > 0) {
+            mostrarMensaje(`Validación completada: ${validos} productos listos para importar`, 'success');
+        } else {
+            mostrarMensaje('No hay productos válidos para importar', 'warning');
+        }
+    }
+
+    function crearTablaProductos(productos, esValido) {
+        if (!productos || productos.length === 0) return '';
+
+        let html = `
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Colección</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Colegio</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+                        ${!esValido ? '<th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Errores</th>' : ''}
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+        `;
+
+        productos.forEach(p => {
+            const errores = p.errores ? p.errores.join(', ') : '';
+            html += `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-2 text-sm">${p.nombre || '-'}</td>
+                    <td class="px-4 py-2 text-sm">${p.categoriaNombre || '-'}</td>
+                    <td class="px-4 py-2 text-sm">${p.coleccionNombre || '-'}</td>
+                    <td class="px-4 py-2 text-sm">${p.colegioNombre || '-'}</td>
+                    <td class="px-4 py-2 text-sm">S/ ${p.precio ? p.precio.toFixed(2) : '0.00'}</td>
+                    ${!esValido ? `<td class="px-4 py-2 text-sm text-red-600">${errores}</td>` : ''}
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        return html;
+    }
+
+    // Importar productos
+    importarBtn.addEventListener('click', async () => {
+        if (productosValidados.length === 0) return;
+
+        if (!confirm(`¿Estás seguro de importar ${productosValidados.length} productos?`)) return;
+
+        importarBtn.disabled = true;
+        importarBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Importando...';
+
+        try {
+            const response = await fetch('/admin/cargaMasivaDatos/importar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productosValidados)
+            });
+
+            if (!response.ok) throw new Error('Error al importar productos');
+
+            const resultado = await response.json();
+            
+            if (resultado.success) {
+                mostrarMensaje(`¡Éxito! ${resultado.productosImportados} productos importados correctamente`, 'success');
+                
+                // Resetear
+                setTimeout(() => {
+                    archivoSeleccionado = null;
+                    fileInput.value = '';
+                    selectedFileInfo.classList.add('hidden');
+                    resultadoValidacion.classList.add('hidden');
+                    importarBtn.classList.add('hidden');
+                    validarBtn.disabled = true;
+                }, 3000);
+            } else {
+                mostrarMensaje('Error: ' + resultado.message, 'error');
+            }
+
+            importarBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Importar Productos';
+            importarBtn.disabled = false;
+
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarMensaje('Error al importar productos: ' + error.message, 'error');
+            importarBtn.innerHTML = '<i class="fas fa-upload mr-2"></i>Importar Productos';
+            importarBtn.disabled = false;
+        }
+    });
+
+    function mostrarMensaje(texto, tipo) {
+        mensajeNotificacion.textContent = texto;
+        mensajeNotificacion.className = `mensaje-${tipo}`;
+        mensajeNotificacion.classList.remove('hidden');
+        
+        setTimeout(() => {
+            mensajeNotificacion.classList.add('hidden');
+        }, 5000);
+    }
 </script>
+</th:block>
+
+</body>
+</html>
