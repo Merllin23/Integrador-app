@@ -5,4 +5,10 @@ import java.util.List;
 
 public interface CategoriaService {
     List<Categoria> listarCategorias();
+
+    Categoria guardarCategoria(Categoria categoria);
+
+    void editarCategoria(Long id, String nombre);
+    
+    void eliminarCategoria(Long id);
 }

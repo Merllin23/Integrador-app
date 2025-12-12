@@ -3,14 +3,17 @@ package com.jkmconfecciones.Integrador_app.controller.admin;
 import com.jkmconfecciones.Integrador_app.DTO.AuditoriaDTO;
 import com.jkmconfecciones.Integrador_app.DTO.CotizacionDetalleDTO;
 import com.jkmconfecciones.Integrador_app.DTO.ProductoDetalleDTO;
+import com.jkmconfecciones.Integrador_app.DTO.ProductoCargaMasivaDTO;
+import com.jkmconfecciones.Integrador_app.DTO.ResultadoCargaMasivaDTO;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.service.ControlClientes.ClienteService;
 import com.jkmconfecciones.Integrador_app.service.CotizacionAdmin.AdminCotizacionService;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.*;
+import com.jkmconfecciones.Integrador_app.service.Tallas.ProductoTallaService;
 import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
 import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jkmconfecciones.Integrador_app.service.CargaMasiva.CargaMasivaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +25,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +51,8 @@ public class AdminControlador {
     private final NotificacionService notificacionService;
     private final UsuarioService usuarioService;
     private final AuditoriaService auditoriaService;
+    private final CargaMasivaService cargaMasivaService;
+    private final ProductoTallaService productoTallaService;
 
 
     @GetMapping("/panel")
@@ -64,15 +69,152 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
-    @GetMapping("/pedidos")
-    public String paginaPedidosAdmin(Model model) {
-        model.addAttribute("currentPage", "pedidos");
-        model.addAttribute("pageTitle", "Gestión de Pedidos - JKM Confecciones");
+    @GetMapping("/cat-col")
+    public String paginaCatCol(@RequestParam(defaultValue = "categorias") String tipo, Model model) {
+
+        model.addAttribute("currentPage", "cat-col");
+        model.addAttribute("pageTitle", "Categorías y Colecciones - JKM Confecciones");
         model.addAttribute("nombre", "Administrador");
         model.addAttribute("rol", "Administrador");
 
-        model.addAttribute("mainContent", "admin/pedidos :: mainContent");
+        // Enviar lo que el HTML espera: "items"
+        if (tipo.equals("colecciones")) {
+            model.addAttribute("items", coleccionService.listarColecciones());
+        } else {
+            model.addAttribute("items", categoriaService.listarCategorias());
+        }
+
+        model.addAttribute("tipo", tipo);
+
+        // Fragmentos
+        model.addAttribute("mainContent", "admin/cat-col :: mainContent");
+        model.addAttribute("extraCss", "admin/cat-col :: extraCss");
+        model.addAttribute("extraJs", "admin/cat-col :: extraJs");
+
         return "fragments/admin-layout";
+    }
+
+    @PostMapping("/categorias/crear")
+    @ResponseBody
+    public Map<String, Object> crearCategoria(@RequestBody Map<String, String> body) {
+        try {
+            Categoria categoria = new Categoria();
+            categoria.setNombre(body.get("nombre"));
+            categoriaService.guardarCategoria(categoria);
+
+            return Map.of("success", true, "message", "Categoría creada correctamente");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al crear categoría");
+        }
+    }
+
+    @PutMapping("/categorias/editar/{id}")
+    @ResponseBody
+    public Map<String, Object> editarCategoria(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            categoriaService.editarCategoria(id, body.get("nombre"));
+            return Map.of("success", true, "message", "Categoría actualizada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al actualizar categoría");
+        }
+    }
+
+    @DeleteMapping("/categorias/eliminar/{id}")
+    @ResponseBody
+    public Map<String, Object> eliminarCategoria(@PathVariable Long id) {
+        try {
+            categoriaService.eliminarCategoria(id);
+            return Map.of("success", true, "message", "Categoría eliminada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al eliminar categoría");
+        }
+    }
+
+    @PostMapping("/colecciones/crear")
+    @ResponseBody
+    public Map<String, Object> crearColeccion(@RequestBody Map<String, String> body) {
+        try {
+            Coleccion coleccion = new Coleccion();
+            coleccion.setNombre(body.get("nombre"));
+            coleccionService.guardarColeccion(coleccion);
+
+            return Map.of("success", true, "message", "Colección creada correctamente");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al crear colección");
+        }
+    }
+
+    @PutMapping("/colecciones/editar/{id}")
+    @ResponseBody
+    public Map<String, Object> editarColeccion(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            coleccionService.editarColeccion(id, body.get("nombre"));
+            return Map.of("success", true, "message", "Colección actualizada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al actualizar colección");
+        }
+    }
+
+    @DeleteMapping("/colecciones/eliminar/{id}")
+    @ResponseBody
+    public Map<String, Object> eliminarColeccion(@PathVariable Long id) {
+        try {
+            coleccionService.eliminarColeccion(id);
+            return Map.of("success", true, "message", "Colección eliminada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al eliminar colección");
+        }
+    }
+
+    @GetMapping("/pedidos")
+    public String paginaPedidosAdmin(@RequestParam(value = "estado", required = false) String estado,
+                                     Model model) {
+        model.addAttribute("currentPage", "pedidos");
+        model.addAttribute("pageTitle", "Gestión de Pedidos - JKM Confecciones");
+
+        List<Cotizacion> cotizaciones;
+        if (estado == null || estado.isEmpty()) {
+            cotizaciones = adminCotizacionService.listarPedidos(); // Todas las cotizaciones
+        } else {
+            cotizaciones = adminCotizacionService.listarCotizacionesPorEstado(estado); // Filtrado por estado
+        }
+
+        model.addAttribute("pedidos", cotizaciones); // Renombramos para mantener consistencia con el HTML
+        model.addAttribute("estadoSeleccionado", estado);
+        model.addAttribute("mainContent", "admin/pedidos :: mainContent");
+        model.addAttribute("extraCss", "admin/pedidos :: extraCss");
+        model.addAttribute("extraJs", "admin/pedidos :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    @PostMapping("/pedidos/{id}/avanzar")
+    @ResponseBody
+    public Map<String, Object> avanzarPedido(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            adminCotizacionService.avanzarEstado(id);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    @GetMapping("/pedidos/{id}/detalle")
+    @ResponseBody
+    public Map<String, Object> detallePedido(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            CotizacionDetalleDTO detalleDTO = adminCotizacionService.obtenerDetalle(id);
+            response.put("success", true);
+            response.put("cotizacion", detalleDTO);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Pedido no encontrado");
+        }
+        return response;
     }
 
     @GetMapping("/cargaMasivaDatos")
@@ -83,7 +225,71 @@ public class AdminControlador {
         model.addAttribute("rol", "Administrador");
 
         model.addAttribute("mainContent", "admin/cargaMasivaDatos :: mainContent");
+        model.addAttribute("extraCss", "admin/cargaMasivaDatos :: extraCss");
+        model.addAttribute("extraJs", "admin/cargaMasivaDatos :: extraJs");
         return "fragments/admin-layout";
+    }
+
+    @PostMapping("/cargaMasivaDatos/procesar")
+    @ResponseBody
+    public ResponseEntity<ResultadoCargaMasivaDTO> procesarArchivoCargaMasiva(
+            @RequestParam("archivo") MultipartFile archivo) {
+        try {
+            if (archivo.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            ResultadoCargaMasivaDTO resultado = cargaMasivaService.procesarArchivo(archivo);
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            log.error("Error al procesar archivo de carga masiva", e);
+            ResultadoCargaMasivaDTO error = ResultadoCargaMasivaDTO.builder()
+                    .erroresGenerales(Arrays.asList("Error al procesar archivo: " + e.getMessage()))
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @PostMapping("/cargaMasivaDatos/importar")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> importarProductosCargaMasiva(
+            @RequestBody List<ProductoCargaMasivaDTO> productos) {
+        try {
+            int importados = cargaMasivaService.importarProductos(productos);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("productosImportados", importados);
+            response.put("message", importados + " productos importados exitosamente");
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al importar productos", e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al importar productos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    @GetMapping("/cargaMasivaDatos/descargarPlantilla")
+    public ResponseEntity<byte[]> descargarPlantillaCSV() {
+        try {
+            byte[] plantilla = cargaMasivaService.generarPlantillaCSV();
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("text/csv"));
+            headers.setContentDisposition(
+                    ContentDisposition.builder("attachment")
+                            .filename("plantilla_productos.csv", StandardCharsets.UTF_8)
+                            .build()
+            );
+            
+            return new ResponseEntity<>(plantilla, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error al generar plantilla CSV", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/edicionProducto")
@@ -875,6 +1081,77 @@ public class AdminControlador {
             error.put("message", "Error al cargar registros");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
+    }
+
+    @GetMapping("/tallas")
+    public String mostrarTallas(Model model) {
+        List<ProductoTalla> productosTallas = productoTallaService.listarTodos();
+        model.addAttribute("productosTallas", productosTallas);
+        model.addAttribute("currentPage", "tallas");
+        model.addAttribute("pageTitle", "Gestión de Tallas - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/tallas :: mainContent");
+        model.addAttribute("extraCss", "admin/tallas :: extraCss");
+        model.addAttribute("extraJs", "admin/tallas :: extraJs");
+        return "fragments/admin-layout";
+    }
+
+    @GetMapping("/tallas/api/list")
+    @ResponseBody
+    public List<Map<String, Object>> listarTallas() {
+        return productoTallaService.listarTallasComoMap();
+    }
+
+    @PutMapping("/tallas/api/{id}/toggle-estado")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> toggleEstado(@PathVariable Long id,
+                                                            @RequestBody Map<String, Boolean> request) {
+        Boolean nuevoEstado = request.get("activo");
+        return ResponseEntity.ok(productoTallaService.toggleEstado(id, nuevoEstado));
+    }
+
+    @GetMapping("/tallas/api/{id}")
+    @ResponseBody
+    public Map<String, Object> obtenerDetalle(@PathVariable Long id) {
+        return productoTallaService.obtenerDetalle(id);
+    }
+
+    @GetMapping("/cambiarrol")
+    public String mostrarCambiarRol(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+
+        Page<Usuario> usuariosPage = usuarioService.listarTodos(PageRequest.of(page, size));
+        List<Rol> roles = usuarioService.listarRoles();
+
+        model.addAttribute("usuariosPage", usuariosPage);
+        model.addAttribute("usuarios", usuariosPage.getContent());
+        model.addAttribute("roles", roles);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", usuariosPage.getTotalPages());
+
+        // Datos para el layout
+        model.addAttribute("pageTitle", "Cambiar Rol de Usuario - JKM Confecciones");
+        model.addAttribute("mainContent", "admin/cambiarRol :: mainContent");
+        model.addAttribute("extraCss", "admin/cambiarRol :: extraCss");
+        model.addAttribute("extraJs", "admin/cambiarRol :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+    @PostMapping("/{id}/rol")
+    public String actualizarRol(
+            @PathVariable Long id,
+            @RequestParam Long rolId,
+            Model model
+    ) {
+        try {
+            usuarioService.cambiarRol(id, rolId);
+            model.addAttribute("success", "Rol actualizado correctamente");
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/cambiarrol";
     }
 
 
