@@ -32,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1033,6 +1034,8 @@ public class AdminControlador {
                 auditoriaPage = auditoriaService.obtenerTodos(pageable);
             }
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            
             List<AuditoriaDTO> registrosDTO = auditoriaPage.getContent()
                     .stream()
                     .map(a -> new AuditoriaDTO(
@@ -1041,7 +1044,7 @@ public class AdminControlador {
                             a.getRecurso(),
                             a.getRecursoId(),
                             a.getIpAddress(),
-                            a.getFechaHora() != null ? a.getFechaHora().toString() : null,
+                            a.getFechaHora() != null ? a.getFechaHora().format(formatter) : null,
                             a.getEstado(),
                             a.getDetalles(),
                             a.getUserAgent()
