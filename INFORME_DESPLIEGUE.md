@@ -718,7 +718,213 @@ Guía paso a paso para futuros despliegues, incluyendo:
 
 ---
 
-## 15. Conclusiones
+## 15. Correcciones Post-Despliegue (12 de diciembre de 2025)
+
+### 15.1 Problema Crítico: Navbar del Panel Admin con Rutas Incorrectas
+
+**Contexto:**
+Después de integrar funcionalidades del folder "Panel admin completado", varios enlaces del navbar empezaron a retornar error 404.
+
+**Síntoma:**
+- `/admin/precios` → 404 Not Found
+- `/admin/roles` → 404 Not Found
+- `/admin/categorias` → 404 Not Found
+- Problema persistía después de limpiar caché y probar en múltiples navegadores
+
+**Diagnóstico:**
+Usando `grep_search` con `includeIgnoredFiles=true`, se descubrió que `admin-layout.html` tenía **116 líneas de sidebar hardcodeado** con rutas incorrectas que sobreescribían el `sidebar.html` correcto.
+
+**Archivos afectados:**
+```
+src/main/resources/templates/fragments/admin-layout.html (líneas 38-158)
+src/main/resources/templates/fragments/sidebar.html
+```
+
+**Problema detectado:**
+```html
+<!-- admin-layout.html tenía esto hardcodeado -->
+<aside class="...">
+  <a href="/admin/categorias">Categorías/Colecciones</a>  <!-- ❌ Ruta incorrecta -->
+  <a href="/admin/precios">Precios y Promociones</a>       <!-- ❌ Ruta incorrecta -->
+  <a href="/admin/roles">Roles y Permisos</a>              <!-- ❌ Ruta incorrecta -->
+  <!-- ... 116 líneas más -->
+</aside>
+```
+
+**Rutas correctas en backend:**
+- ✅ `/admin/cat-col` (no `/admin/categorias`)
+- ✅ `/admin/cambiarrol` (no `/admin/roles`)
+- ✅ Precios y Promociones: deshabilitado con `href="#"` y badge "Próximamente"
+
+**Solución aplicada:**
+```html
+<!-- admin-layout.html - Reemplazado con include -->
+<div th:replace="~{fragments/sidebar}"></div>
+```
+
+**Commits:**
+1. `57e415a` - Eliminar sidebar hardcodeado (116 líneas → 1 línea)
+2. `f513958` - Agregar `th:fragment="sidebar"` a sidebar.html
+3. `6bef794` - Convertir sidebar.html en fragmento puro sin HTML wrapper
+
+### 15.2 Error 500: Fragmento de Sidebar No Encontrado
+
+**Síntoma:**
+Error 500 al acceder a `/admin/panel` después del primer fix.
+
+**Causa raíz:**
+`sidebar.html` era un documento HTML completo (`<html>`, `<head>`, `<body>`) y no tenía definido `th:fragment="sidebar"`. Cuando Thymeleaf intentaba incluirlo, generaba HTML inválido (un HTML dentro de otro).
+
+**Solución:**
+1. **Línea 36:** Agregar atributo `th:fragment="sidebar"` al `<div>` del sidebar
+2. **Limpieza:** Eliminar wrapper HTML completo:
+   - ❌ Eliminado: `<!DOCTYPE html>`, `<html>`, `<head>` con scripts/estilos
+   - ❌ Eliminado: `<body>`, contenedor flex, área de contenido principal, botón WhatsApp
+   - ✅ Dejado: Solo el `<div th:fragment="sidebar">` con navegación (98 líneas)
+
+**Antes:** 154 líneas (documento completo)  
+**Después:** 98 líneas (fragmento puro)
+
+### 15.3 Conversión al Sistema de Fragmentos Thymeleaf
+
+**Archivos convertidos:**
+1. `admin/pedidos.html` - Ahora usa `th:fragment="mainContent"`, `extraCss`, `extraJs`
+2. `admin/cargaMasivaDatos.html` - Convertido a sistema de fragmentos
+3. `admin/registroAuditoriaSeguridad.html` - Ya tenía extraCss/extraJs, agregado al controlador
+
+**Patrón implementado:**
+```html
+<!-- Archivo HTML individual -->
+<div th:fragment="mainContent">
+  <!-- Contenido específico de la página -->
+</div>
+
+<th:block th:fragment="extraCss">
+  <style>/* CSS específico */</style>
+</th:block>
+
+<th:block th:fragment="extraJs">
+  <script>/* JavaScript específico */</script>
+</th:block>
+```
+
+**Controlador:**
+```java
+@GetMapping("/pedidos")
+public String paginaPedidos(Model model) {
+    model.addAttribute("mainContent", "admin/pedidos :: mainContent");
+    model.addAttribute("extraCss", "admin/pedidos :: extraCss");
+    model.addAttribute("extraJs", "admin/pedidos :: extraJs");
+    return "fragments/admin-layout";
+}
+```
+
+### 15.4 Correcciones Menores pero Críticas
+
+#### 15.4.1 Logo del Sidebar - Ruta Incorrecta
+**Problema:** `<img src="/JKM_Confecciones.png">` → 404 Not Found  
+**Solución:** Cambiar a `/images/JKM_Confecciones.png`  
+**Ubicación real:** `src/main/resources/static/images/JKM_Confecciones.png`
+
+#### 15.4.2 Formulario de Cambio de Rol - Error 400 Bad Request
+**Problema:** Select con sintaxis Thymeleaf incorrecta
+```html
+<!-- ❌ Incorrecto -->
+<select form="formRol_${usuario.id}" name="rolId">
+```
+
+**Solución:** Usar `th:attr` para variables dinámicas
+```html
+<!-- ✅ Correcto -->
+<select th:attr="form='formRol_' + ${usuario.id}" name="rolId">
+```
+
+**Commit:** `e9296e9`
+
+#### 15.4.3 Zona Horaria en Auditoría de Seguridad
+**Problema inicial:** Fechas mostraban hora GMT (5 horas adelantadas para Perú)
+
+**Solución 1 (fallida):** Formatear en backend con `DateTimeFormatter`
+- ❌ Resultado: "Invalid Date" en frontend porque JavaScript no parseaba formato personalizado
+
+**Solución 2 (exitosa):** Configuración dual
+- **Backend:** Enviar formato ISO (`2025-12-12T16:03:45`)
+- **Frontend:** Formatear con opciones de zona horaria
+```javascript
+new Date(r.fecha).toLocaleString("es-PE", { 
+    timeZone: "America/Lima",
+    year: "numeric", 
+    month: "2-digit", 
+    day: "2-digit",
+    hour: "2-digit", 
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false
+})
+```
+
+**Configuración en application.properties:**
+```properties
+# Zona horaria (Perú GMT-5)
+spring.jackson.time-zone=America/Lima
+spring.jpa.properties.hibernate.jdbc.time_zone=America/Lima
+```
+
+**Commits:**
+- `85dea84` - Cambiar a zona horaria Perú + formato backend (fallido)
+- `0950261` - Revertir a ISO + formatear en frontend (exitoso)
+
+### 15.5 Herramientas de Debugging Utilizadas
+
+**grep_search con includeIgnoredFiles:**
+Clave para encontrar sidebar hardcodeado en `target/` y `src/`
+```bash
+grep_search --pattern="/admin/(precios|roles|categorias)" --includeIgnoredFiles=true
+```
+
+**read_file con rangos específicos:**
+Inspeccionar bloques grandes de código problemático
+```bash
+read_file admin-layout.html lines 38-158
+```
+
+**git log --stat:**
+Verificar cambios exactos en commits
+```bash
+git log -1 --stat  # "1 file changed, 2 insertions(+), 116 deletions(-)"
+```
+
+### 15.6 Commits de Correcciones Post-Despliegue
+
+```bash
+# Problema del navbar
+git commit -m "fix: CRITICO - Reemplazar sidebar hardcodeado en admin-layout con include de sidebar.html"
+
+# Error 500 fragmento
+git commit -m "fix: Agregar th:fragment='sidebar' a sidebar.html para permitir inclusión correcta"
+git commit -m "fix: Convertir sidebar.html en fragmento puro sin HTML wrapper"
+
+# Correcciones menores
+git commit -m "fix: Corregir logo sidebar, form rolId en cambiarRol y zona horaria Colombia"
+
+# Zona horaria Perú
+git commit -m "fix: Cambiar zona horaria a Peru y formatear correctamente fechas en auditoria"
+git commit -m "fix: Corregir formato de fecha en auditoria - enviar ISO y formatear en frontend con zona horaria Peru"
+```
+
+### 15.7 Lecciones Aprendidas (Post-Despliegue)
+
+1. **Código duplicado es peligroso:** Sidebars hardcodeados en múltiples archivos causan inconsistencias
+2. **grep con includeIgnoredFiles:** Esencial para encontrar código duplicado en `target/` compilado
+3. **Thymeleaf fragments deben ser puros:** No mezclar documentos HTML completos con fragmentos
+4. **Variables dinámicas en atributos HTML:** Usar `th:attr` en lugar de interpolación directa
+5. **Zona horaria en aplicaciones web:** Mejor formatear en frontend con opciones de locale que en backend
+6. **ISO 8601 es el estándar:** JavaScript parsea nativamente fechas ISO, no formatos personalizados
+7. **Cache no siempre es el culprit:** Problemas persistentes después de hard refresh indican errores del servidor
+
+---
+
+## 16. Conclusiones
 
 ### 15.1 Logros
 ✅ **Despliegue exitoso** de aplicación Spring Boot en Railway  
@@ -731,7 +937,9 @@ Guía paso a paso para futuros despliegues, incluyendo:
 ✅ **Costos $0** con servicios free-tier  
 ✅ **Aplicación funcional** en URL pública  
 
-### 15.2 Lecciones Aprendidas
+### 16.2 Lecciones Aprendidas
+
+**Del despliegue inicial:**
 1. **Variables de Railway:** No usar referencias `${MYSQL_URL}` directamente, configurar URLs manualmente
 2. **Healthchecks:** Spring Boot tarda en iniciar, desactivar o configurar delays largos
 3. **JDBC URLs:** Siempre usar prefijo `jdbc:mysql://` (no `mysql://`)
@@ -739,18 +947,31 @@ Guía paso a paso para futuros despliegues, incluyendo:
 5. **Lombok:** Asegurar que Maven procesa correctamente las anotaciones con `clean install`
 6. **Métodos duplicados:** Verificar con grep antes de commit para evitar errores de compilación
 
-### 15.3 Estado Final
+**De las correcciones post-despliegue:**
+7. **Código duplicado es crítico:** Sidebars hardcodeados en múltiples lugares causan bugs difíciles de rastrear
+8. **grep con includeIgnoredFiles:** Esencial para encontrar código en `target/` compilado
+9. **Thymeleaf fragments puros:** No mezclar documentos HTML completos con fragmentos
+10. **Variables dinámicas en HTML:** Usar `th:attr` para interpolación en atributos no estándar
+11. **Zona horaria en web apps:** Formatear fechas en frontend con locale del usuario, no en backend
+12. **ISO 8601 es el estándar:** JavaScript parsea nativamente ISO, evitar formatos personalizados
+13. **Debugging persistente:** Si problema persiste después de cache clear, es error del servidor no del browser
+
+### 16.3 Estado Final
 🟢 **Aplicación en producción y operativa**  
 🟢 **Base de datos MySQL funcional** con tablas de notificación y auditoría  
 🟢 **Almacenamiento de imágenes en Cloudinary**  
 🟢 **reCAPTCHA configurado** para dominio Railway  
 🟢 **Email SMTP configurado y listo**  
 🟢 **Sistema de Notificaciones** activo con verificación horaria  
-🟢 **Sistema de Auditoría** registrando eventos de seguridad  
+🟢 **Sistema de Auditoría** registrando eventos de seguridad con zona horaria Perú  
+🟢 **Panel Admin** completamente funcional con navegación corregida  
+🟢 **Sistema de fragmentos Thymeleaf** implementado correctamente  
+🟢 **Formularios admin** (cambio de rol) operativos  
+🟢 **Assets estáticos** (logos, imágenes) con rutas correctas  
 
 ---
 
-## 16. Contacto y Soporte
+## 17. Contacto y Soporte
 
 **Desarrollador:** Merllin23  
 **Repositorio:** https://github.com/Merllin23/Integrador-app  
@@ -759,6 +980,7 @@ Guía paso a paso para futuros despliegues, incluyendo:
 
 ---
 
-**Fecha del informe:** 3 de diciembre de 2025  
-**Versión del informe:** 1.0  
-**Duración del proyecto:** ~3 horas de trabajo intensivo
+**Fecha inicial del informe:** 3 de diciembre de 2025  
+**Última actualización:** 12 de diciembre de 2025  
+**Versión del informe:** 2.0  
+**Duración del proyecto:** ~3 horas (despliegue inicial) + ~2 horas (correcciones post-despliegue)
