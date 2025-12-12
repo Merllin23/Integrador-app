@@ -15,6 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.ByteArrayOutputStream;
 import java.util.*;
@@ -227,30 +231,103 @@ public class ProductoServiceImpl implements ProductoService {
 
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Inventario");
+            
+            // Estilos profesionales
+            CellStyle headerStyle = workbook.createCellStyle();
+            headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            Font headerFont = workbook.createFont();
+            headerFont.setColor(IndexedColors.WHITE.getIndex());
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+            headerStyle.setAlignment(HorizontalAlignment.CENTER);
+            headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            headerStyle.setBorderBottom(BorderStyle.THIN);
+            headerStyle.setBorderTop(BorderStyle.THIN);
+            headerStyle.setBorderLeft(BorderStyle.THIN);
+            headerStyle.setBorderRight(BorderStyle.THIN);
+
+            // Estilo para filas alternas
+            CellStyle evenRowStyle = workbook.createCellStyle();
+            evenRowStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            evenRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+            evenRowStyle.setBorderBottom(BorderStyle.THIN);
+            evenRowStyle.setBorderLeft(BorderStyle.THIN);
+            evenRowStyle.setBorderRight(BorderStyle.THIN);
+
+            CellStyle oddRowStyle = workbook.createCellStyle();
+            oddRowStyle.setBorderBottom(BorderStyle.THIN);
+            oddRowStyle.setBorderLeft(BorderStyle.THIN);
+            oddRowStyle.setBorderRight(BorderStyle.THIN);
+
+            // Estilo para precios (formato moneda)
+            CellStyle priceStyle = workbook.createCellStyle();
+            priceStyle.setDataFormat(workbook.createDataFormat().getFormat("S/ #,##0.00"));
+            priceStyle.setBorderBottom(BorderStyle.THIN);
+            priceStyle.setBorderLeft(BorderStyle.THIN);
+            priceStyle.setBorderRight(BorderStyle.THIN);
+
+            CellStyle pricestyleEven = workbook.createCellStyle();
+            pricestyleEven.cloneStyleFrom(priceStyle);
+            pricestyleEven.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            pricestyleEven.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // Estilo para números centrados
+            CellStyle numberStyle = workbook.createCellStyle();
+            numberStyle.setAlignment(HorizontalAlignment.CENTER);
+            numberStyle.setBorderBottom(BorderStyle.THIN);
+            numberStyle.setBorderLeft(BorderStyle.THIN);
+            numberStyle.setBorderRight(BorderStyle.THIN);
+
+            CellStyle numberStyleEven = workbook.createCellStyle();
+            numberStyleEven.cloneStyleFrom(numberStyle);
+            numberStyleEven.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            numberStyleEven.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            // Crear encabezado
             Row header = sheet.createRow(0);
-            String[] columnas = {"Producto", "Talla", "Stock", "Precio"};
+            header.setHeightInPoints(25);
+            String[] columnas = {"Producto", "Talla", "Stock", "Precio Unitario"};
             for (int i = 0; i < columnas.length; i++) {
                 Cell cell = header.createCell(i);
                 cell.setCellValue(columnas[i]);
-                CellStyle style = workbook.createCellStyle();
-                Font font = workbook.createFont();
-                font.setBold(true);
-                style.setFont(font);
-                cell.setCellStyle(style);
+                cell.setCellStyle(headerStyle);
             }
 
+            // Llenar datos con estilos alternados
             int rowNum = 1;
             for (ProductoTalla pt : inventario) {
-                Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(pt.getProducto().getNombre());
-                row.createCell(1).setCellValue(pt.getTalla().getNombreTalla());
-                row.createCell(2).setCellValue(pt.getCantidadStock());
-                row.createCell(3).setCellValue(pt.getPrecioUnitarioFinal().doubleValue());
+                Row row = sheet.createRow(rowNum);
+                boolean isEven = (rowNum % 2 == 0);
+                
+                Cell cell0 = row.createCell(0);
+                cell0.setCellValue(pt.getProducto().getNombre());
+                cell0.setCellStyle(isEven ? evenRowStyle : oddRowStyle);
+                
+                Cell cell1 = row.createCell(1);
+                cell1.setCellValue(pt.getTalla().getNombreTalla());
+                cell1.setCellStyle(isEven ? numberStyleEven : numberStyle);
+                
+                Cell cell2 = row.createCell(2);
+                cell2.setCellValue(pt.getCantidadStock());
+                cell2.setCellStyle(isEven ? numberStyleEven : numberStyle);
+                
+                Cell cell3 = row.createCell(3);
+                cell3.setCellValue(pt.getPrecioUnitarioFinal().doubleValue());
+                cell3.setCellStyle(isEven ? pricestyleEven : priceStyle);
+                
+                rowNum++;
             }
 
-            for (int i = 0; i < columnas.length; i++) {
-                sheet.autoSizeColumn(i);
-            }
+            // Ajustar ancho de columnas
+            sheet.setColumnWidth(0, 8000); // Producto
+            sheet.setColumnWidth(1, 2500); // Talla
+            sheet.setColumnWidth(2, 2500); // Stock
+            sheet.setColumnWidth(3, 4000); // Precio
+
+            // Congelar primera fila
+            sheet.createFreezePane(0, 1);
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             workbook.write(out);

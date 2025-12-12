@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class CotizacionServiceImpl implements CotizacionService {
         // 2. Crear cotización base
         Cotizacion cotizacion = new Cotizacion();
         cotizacion.setUsuario(usuario);
-        cotizacion.setFecha(LocalDateTime.now());
+        cotizacion.setFecha(LocalDateTime.now(ZoneId.of("America/Lima")));
         cotizacion.setEstado("PENDIENTE");
 
         List<DetalleCotizacion> detalles = new ArrayList<>();
