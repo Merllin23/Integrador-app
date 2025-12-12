@@ -17,6 +17,10 @@ public interface AdminCotizacionService {
     CotizacionDetalleDTO obtenerDetalle(Integer id);
 
     List<Cotizacion> listarPorCliente(Long clienteId);
+    List<Cotizacion> listarPedidos();
+    void avanzarEstado(Integer id);
+
+    List<Cotizacion> listarCotizacionesPorEstado(String estado);
 
 
 }

@@ -133,7 +133,7 @@
 
                 <div id="tallasContainer" class="flex flex-wrap gap-2 mb-4">
                     <button type="button"
-                            th:each="pt : ${producto.tallas}"
+                            th:each="pt : ${tallas}"
                             th:text="${pt.talla.nombreTalla}"
                             th:attr="data-id=${pt.id}"
                             class="talla-btn px-5 py-2 border border-gray-300 rounded-full bg-gray-100 text-gray-700 text-sm font-medium hover:bg-[#002C77] hover:text-white transition-all shadow-sm">
