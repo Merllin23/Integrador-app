@@ -79,6 +79,7 @@
     <script>
         let notificacionesActuales = [];
         let tabActual = 'todos';
+        let cargandoNotificaciones = false;
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!window.notificacionesInicializadas) {
@@ -103,6 +104,13 @@
         }
 
         async function cargarNotificaciones(tab) {
+            // Evitar llamadas simultáneas
+            if (cargandoNotificaciones) {
+                console.log('Ya hay una carga en proceso, ignorando...');
+                return;
+            }
+            
+            cargandoNotificaciones = true;
             let url = '/admin/api/notificaciones';
             if (tab === 'no-leidas') url = '/admin/api/notificaciones/no-leidas';
             if (tab === 'archivadas') url = '/admin/api/notificaciones/archivadas';
@@ -134,12 +142,39 @@
                 const data = await res.json();
                 const notas = data.notificaciones ?? [];
 
-                /** ============================================
-                    FIX PRINCIPAL → Ya no dependemos de notas.length > 0
-                ============================================== */
+                console.log('Tab:', tab, 'Notificaciones recibidas:', notas.length);
+                
+                // Verificar si hay duplicados en los datos
+                const ids = notas.map(n => n.id);
+                const idsUnicos = new Set(ids);
+                if (ids.length !== idsUnicos.size) {
+                    console.warn('Se encontraron datos duplicados', 
+                                 'Total:', ids.length, 'Únicos:', idsUnicos.size);
+                }
+
+                // Actualización de contadores
+                if (tab === 'todos') {
+                    countTodos.textContent = data.total ?? notas.length;
+                    countNoLeidas.textContent = data.noLeidas ?? 0;
+                    countArchivadas.textContent = data.archivadas ?? 0;
+                } else if (tab === 'no-leidas') {
+                    countTodos.textContent = data.todos ?? 0;
+                    countNoLeidas.textContent = data.noLeidas ?? notas.length;
+                    countArchivadas.textContent = data.archivadas ?? 0;
+                } else if (tab === 'archivadas') {
+                    countTodos.textContent = data.todos ?? 0;
+                    countNoLeidas.textContent = data.noLeidas ?? 0;
+                    countArchivadas.textContent = data.archivadas ?? notas.length;
+                }
+
                 if (data.success) {
                     notificacionesActuales = notas;
+                    
+                    // Limpiar el contenedor
+                    console.log('Elementos en contenedor ANTES de limpiar:', contenedor.children.length);
                     contenedor.innerHTML = '';
+                    console.log('Elementos en contenedor DESPUÉS de limpiar:', contenedor.children.length);
+                    
                     noNotif.classList.add('hidden');
 
                     if (notas.length === 0) {
@@ -147,20 +182,24 @@
                         return;
                     }
 
+                    console.log('Iniciando renderizado de', notas.length, 'notificaciones...');
+                    let contador = 0;
+                    
                     notas.forEach(n => {
+                        contador++;
                         const id = n.id;
                         const titulo = n.titulo ?? 'Sin título';
                         const mensaje = n.mensaje ?? '';
-                        const leida =!!n.leida;
+                        const leida = !!n.leida;
+                        const archivada = !!n.archivada;
                         const fecha = n.fechaCreacion ?? null;
                         const fechaTexto = fecha ? new Date(fecha).toLocaleString('es-PE') : '';
 
                         const div = document.createElement('div');
-                        div.classList.add(
-                            'p-4','border','rounded','shadow-sm',
-                            leida ? '' : 'bg-blue-50',
-                            'flex','justify-between','items-center'
-                        );
+                        div.classList.add('p-4','border','rounded','shadow-sm','flex','justify-between','items-center');
+                        if (!leida) {
+                            div.classList.add('bg-blue-50');
+                        }
 
                         div.innerHTML = `
                             <div>
@@ -171,35 +210,39 @@
 
                             <div class="ml-4 flex flex-col gap-1 text-right">
 
-                                ${!leida
+                                ${!leida && tab !== 'archivadas'
                                     ? `<button onclick="marcarComoLeida(${id})"
                                               class="text-sm text-jk-blue hover:underline">
                                              Marcar leída
                                        </button>`
-                                    : `<span class="text-sm text-gray-500">Leída</span>`}
+                                    : leida && tab !== 'archivadas'
+                                        ? `<span class="text-sm text-gray-500">Leída</span>`
+                                        : ''}
 
-                                <button onclick="archivar(${id})"
-                                        class="text-sm text-jk-red hover:underline">
-                                    Archivar
-                                </button>
+                                ${tab !== 'archivadas'
+                                    ? `<button onclick="archivar(${id})"
+                                              class="text-sm text-jk-red hover:underline">
+                                         Archivar
+                                       </button>`
+                                    : `<span class="text-sm text-gray-500 italic">Archivada</span>`}
                             </div>
                         `;
                         contenedor.appendChild(div);
                     });
+                    
+                    console.log('✓ Renderizadas:', contador, 'notificaciones');
+                    console.log('Elementos en contenedor FINAL:', contenedor.children.length);
                 } else {
                     contenedor.innerHTML = '';
                     noNotif.classList.remove('hidden');
                 }
 
-                // Actualización de contadores
-                countTodos.textContent = data.total ?? notas.length;
-                countNoLeidas.textContent = data.noLeidas ?? notas.filter(n => !n.leida).length;
-                countArchivadas.textContent = data.archivadas ?? countArchivadas.textContent;
-
             } catch (e) {
                 console.error("Error:", e);
                 contenedor.innerHTML = '';
                 noNotif.classList.remove('hidden');
+            } finally {
+                cargandoNotificaciones = false;
             }
         }
 
