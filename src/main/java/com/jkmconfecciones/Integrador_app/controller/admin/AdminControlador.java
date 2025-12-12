@@ -14,6 +14,7 @@ import com.jkmconfecciones.Integrador_app.service.UsuarioService;
 import com.jkmconfecciones.Integrador_app.service.Notificacion.NotificacionService;
 import com.jkmconfecciones.Integrador_app.service.Auditoria.AuditoriaService;
 import com.jkmconfecciones.Integrador_app.service.CargaMasiva.CargaMasivaService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -569,10 +570,10 @@ public class AdminControlador {
 
 
     @GetMapping("/productos/{id}/eliminar")
-      public String eliminarProducto(@PathVariable Integer id) {
-          productoService.eliminarProducto(id);
-          return "redirect:/admin/productos";
-      }
+    public String eliminarProducto(@PathVariable Integer id, HttpServletRequest request) {
+        productoService.eliminarProducto(id, request);
+        return "redirect:/admin/productos";
+    }
 
     @GetMapping("/productos/{id}/json")
     @ResponseBody
@@ -596,16 +597,18 @@ public class AdminControlador {
     @PostMapping("/productos/actualizar-stock")
     public String actualizarStock(@RequestParam Integer productoId,
                                   @RequestParam Integer cantidadStock,
-                                  RedirectAttributes redirectAttributes) {
+                                  RedirectAttributes redirectAttributes,
+                                  HttpServletRequest request) {
 
         try {
-            productoService.actualizarStock(productoId, cantidadStock);
+            productoService.actualizarStock(productoId, cantidadStock, request);
             redirectAttributes.addFlashAttribute("mensajeExito", "Stock actualizado correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("mensajeError", "Error al actualizar stock");
         }
         return "redirect:/admin/inventario"; // Regresa a inventario
     }
+
 
     @GetMapping("/inventario/exportar")
     public ResponseEntity<byte[]> exportarInventario(@RequestParam(value = "colegioId", required = false) Integer colegioId) {
