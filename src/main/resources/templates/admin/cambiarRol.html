@@ -54,7 +54,7 @@
 
                     <!-- Columna de Asignar Nuevo Rol -->
                     <td class="px-6 py-4">
-                        <select form="formRol_${usuario.id}" name="rolId" class="px-2 py-1 border border-gray-300 rounded-lg w-full">
+                        <select th:attr="form='formRol_' + ${usuario.id}" name="rolId" class="px-2 py-1 border border-gray-300 rounded-lg w-full">
                             <option th:each="rol : ${roles}" th:value="${rol.id}" th:text="${rol.nombreRol}"
                                     th:selected="${rol.id} == ${usuario.rol.id}"></option>
                         </select>
