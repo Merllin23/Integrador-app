@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.jkmconfecciones.Integrador_app.entidades.*;
 import com.jkmconfecciones.Integrador_app.repositorios.*;
 import com.jkmconfecciones.Integrador_app.service.ProductoService.ProductoService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -98,7 +99,7 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public void eliminarProducto(Integer id) {
+    public void eliminarProducto(Integer id, HttpServletRequest request) {
         String username = obtenerUsuarioLogueado();
         logger.info("Usuario '{}' intenta eliminar producto con ID {}", username, id);
 
@@ -123,6 +124,23 @@ public class ProductoServiceImpl implements ProductoService {
 
         productoRepositorio.deleteById(id.longValue());
         logger.info("Usuario '{}' eliminó el producto '{}' con ID {}", username, producto.getNombre(), id);
+
+        try {
+            Usuario usuario = usuarioRepositorio.findByCorreo(username).orElse(null);
+            if (usuario != null) {
+                auditoriaService.registrarAccion(
+                        usuario,
+                        "ELIMINAR_PRODUCTO",
+                        "PRODUCTO",
+                        producto.getId().longValue(),
+                        "EXITOSO",
+                        "Producto eliminado: " + producto.getNombre(),
+                        request
+                );
+            }
+        } catch (Exception e) {
+            logger.error("Error al registrar auditoría de eliminación de producto", e);
+        }
     }
 
     @Override
@@ -230,7 +248,7 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Transactional
-    public void actualizarStock(Integer productoId, Integer cantidad) {
+    public void actualizarStock(Integer productoId, Integer cantidad, HttpServletRequest request) {
         ProductoTalla detalle = productoTallaRepositorio.findById(productoId.longValue())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
         
@@ -245,16 +263,18 @@ public class ProductoServiceImpl implements ProductoService {
         try {
             Usuario usuario = usuarioRepositorio.findByCorreo(username).orElse(null);
             if (usuario != null) {
-                auditoriaService.registrarAccionSimple(
-                    usuario,
-                    "ACTUALIZAR_STOCK",
-                    "PRODUCTO_TALLA",
-                    "EXITOSO",
-                    String.format("Stock actualizado: %s - %s (De %d a %d unidades)",
-                        detalle.getProducto().getNombre(),
-                        detalle.getTalla().getNombreTalla(),
-                        stockAnterior,
-                        cantidad)
+                auditoriaService.registrarAccion(
+                        usuario,
+                        "ACTUALIZAR_STOCK",
+                        "PRODUCTO_TALLA",
+                        detalle.getId().longValue(),
+                        "EXITOSO",
+                        String.format("Stock actualizado: %s - %s (De %d a %d unidades)",
+                                detalle.getProducto().getNombre(),
+                                detalle.getTalla().getNombreTalla(),
+                                stockAnterior,
+                                cantidad),
+                        request
                 );
             }
         } catch (Exception e) {
