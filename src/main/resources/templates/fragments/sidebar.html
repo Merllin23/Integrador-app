@@ -1,40 +1,6 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle} ?: 'JKM Confecciones'">JKM Confecciones</title>
-    <!-- VERSION 2024-12-13 - Sidebar corregido con todas las rutas actualizadas -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Configuración de Tailwind -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'jk-blue': '#1e3a5f',
-                        'jk-red': '#dc3545',
-                        'jk-green': '#22c55e',
-                        'jk-sidebar': '#1e3a5f',
-                        'jk-sidebar-hover': '#2a4d6b'
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- CSS adicional personalizado -->
-    <th:block th:replace="${extraCss}">
-        <!-- Placeholder para CSS adicional que las páginas puedan agregar -->
-    </th:block>
-</head>
-<body class="bg-gray-100 font-sans">
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <div th:fragment="sidebar" class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto z-50">
+<!-- Fragmento del Sidebar para admin-layout -->
+<div th:fragment="sidebar" class="w-64 bg-jk-sidebar text-white fixed h-full overflow-y-auto z-50"
+     xmlns:th="http://www.thymeleaf.org">
         <!-- Logo -->
         <div class="flex items-center p-4 border-b border-jk-sidebar-hover">
             <img src="/JKM_Confecciones.png" alt="Logo JKM" class="w-8 h-8" />
@@ -129,26 +95,4 @@
                 <span>Cerrar Sesión</span>
             </a>
         </div>
-    </div>
-
-    <!-- Main Content Area -->
-    <div class="ml-64 flex-1 p-6">
-        <!-- Contenido dinámico que será reemplazado por cada página -->
-        <th:block th:replace="${mainContent}">
-            <!-- Este contenido será reemplazado por cada página individual -->
-        </th:block>
-    </div>
-
-    <!-- WhatsApp Support Button -->
-    <a href="#" class="fixed bottom-6 left-72 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-full shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 flex items-center space-x-2 z-40">
-        <i class="fab fa-whatsapp text-lg"></i>
-        <span class="font-medium">Soporte WhatsApp</span>
-    </a>
 </div>
-
-<!-- JavaScript adicional personalizado -->
-<th:block th:replace="${extraJs}">
-    <!-- Placeholder para JavaScript adicional que las páginas puedan agregar -->
-</th:block>
-</body>
-</html>
