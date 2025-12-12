@@ -64,16 +64,155 @@ public class AdminControlador {
         return "fragments/admin-layout";
     }
 
-    @GetMapping("/pedidos")
-    public String paginaPedidosAdmin(Model model) {
-        model.addAttribute("currentPage", "pedidos");
-        model.addAttribute("pageTitle", "Gestión de Pedidos - JKM Confecciones");
+    @GetMapping("/cat-col")
+    public String paginaCatCol(@RequestParam(defaultValue = "categorias") String tipo, Model model) {
+
+        model.addAttribute("currentPage", "cat-col");
+        model.addAttribute("pageTitle", "Categorías y Colecciones - JKM Confecciones");
         model.addAttribute("nombre", "Administrador");
         model.addAttribute("rol", "Administrador");
 
-        model.addAttribute("mainContent", "admin/pedidos :: mainContent");
+        // Enviar lo que el HTML espera: "items"
+        if (tipo.equals("colecciones")) {
+            model.addAttribute("items", coleccionService.listarColecciones());
+        } else {
+            model.addAttribute("items", categoriaService.listarCategorias());
+        }
+
+        model.addAttribute("tipo", tipo);
+
+        // Fragmentos
+        model.addAttribute("mainContent", "admin/cat-col :: mainContent");
+        model.addAttribute("extraCss", "admin/cat-col :: extraCss");
+        model.addAttribute("extraJs", "admin/cat-col :: extraJs");
+
         return "fragments/admin-layout";
     }
+
+    @PostMapping("/categorias/crear")
+    @ResponseBody
+    public Map<String, Object> crearCategoria(@RequestBody Map<String, String> body) {
+        try {
+            Categoria categoria = new Categoria();
+            categoria.setNombre(body.get("nombre"));
+            categoriaService.guardarCategoria(categoria);
+
+            return Map.of("success", true, "message", "Categoría creada correctamente");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al crear categoría");
+        }
+    }
+
+    @PutMapping("/categorias/editar/{id}")
+    @ResponseBody
+    public Map<String, Object> editarCategoria(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            categoriaService.editarCategoria(id, body.get("nombre"));
+            return Map.of("success", true, "message", "Categoría actualizada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al actualizar categoría");
+        }
+    }
+
+    @DeleteMapping("/categorias/eliminar/{id}")
+    @ResponseBody
+    public Map<String, Object> eliminarCategoria(@PathVariable Long id) {
+        try {
+            categoriaService.eliminarCategoria(id);
+            return Map.of("success", true, "message", "Categoría eliminada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al eliminar categoría");
+        }
+    }
+
+    @PostMapping("/colecciones/crear")
+    @ResponseBody
+    public Map<String, Object> crearColeccion(@RequestBody Map<String, String> body) {
+        try {
+            Coleccion coleccion = new Coleccion();
+            coleccion.setNombre(body.get("nombre"));
+            coleccionService.guardarColeccion(coleccion);
+
+            return Map.of("success", true, "message", "Colección creada correctamente");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al crear colección");
+        }
+    }
+
+    @PutMapping("/colecciones/editar/{id}")
+    @ResponseBody
+    public Map<String, Object> editarColeccion(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        try {
+            coleccionService.editarColeccion(id, body.get("nombre"));
+            return Map.of("success", true, "message", "Colección actualizada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al actualizar colección");
+        }
+    }
+
+    @DeleteMapping("/colecciones/eliminar/{id}")
+    @ResponseBody
+    public Map<String, Object> eliminarColeccion(@PathVariable Long id) {
+        try {
+            coleccionService.eliminarColeccion(id);
+            return Map.of("success", true, "message", "Colección eliminada");
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Error al eliminar colección");
+        }
+    }
+
+    @GetMapping("/pedidos")
+    public String paginaPedidosAdmin(@RequestParam(value = "estado", required = false) String estado,
+                                     Model model) {
+        model.addAttribute("currentPage", "pedidos");
+        model.addAttribute("pageTitle", "Gestión de Pedidos - JKM Confecciones");
+
+        List<Cotizacion> cotizaciones;
+        if (estado == null || estado.isEmpty()) {
+            cotizaciones = adminCotizacionService.listarPedidos(); // Todas las cotizaciones
+        } else {
+            cotizaciones = adminCotizacionService.listarCotizacionesPorEstado(estado); // Filtrado por estado
+        }
+
+        model.addAttribute("pedidos", cotizaciones); // Renombramos para mantener consistencia con el HTML
+        model.addAttribute("estadoSeleccionado", estado);
+        model.addAttribute("mainContent", "admin/pedidos :: mainContent");
+        model.addAttribute("extraCss", "admin/pedidos :: extraCss");
+        model.addAttribute("extraJs", "admin/pedidos :: extraJs");
+
+        return "fragments/admin-layout";
+    }
+
+
+    @PostMapping("/pedidos/{id}/avanzar")
+    @ResponseBody
+    public Map<String, Object> avanzarPedido(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            adminCotizacionService.avanzarEstado(id);
+            response.put("success", true);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return response;
+    }
+
+    @GetMapping("/pedidos/{id}/detalle")
+    @ResponseBody
+    public Map<String, Object> detallePedido(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            CotizacionDetalleDTO detalleDTO = adminCotizacionService.obtenerDetalle(id);
+            response.put("success", true);
+            response.put("cotizacion", detalleDTO);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Pedido no encontrado");
+        }
+        return response;
+    }
+
 
 
     @GetMapping("/cargaMasivaDatos")

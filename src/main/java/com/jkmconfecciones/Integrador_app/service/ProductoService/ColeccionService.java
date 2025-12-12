@@ -5,4 +5,9 @@ import java.util.List;
 
 public interface ColeccionService {
     List<Coleccion> listarColecciones();
+
+    Coleccion guardarColeccion(Coleccion coleccion);
+
+    void editarColeccion(Long id, String nombre);
+    void eliminarColeccion(Long id);
 }

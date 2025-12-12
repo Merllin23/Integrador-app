@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías y Colecciones</title>
+
+    <!-- Fragmento CSS adicional -->
+    <th:block th:fragment="extraCss">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+        <style>
+            body { font-family: 'Poppins', ui-sans-serif, system-ui; }
+
+            .btn-primary {
+                background-color: #3b82f6;
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 0.5rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                transition: 0.2s;
+            }
+            .btn-primary:hover { background-color: #2563eb; }
+
+            .btn-delete { background-color: #ef4444; color: white; }
+            .btn-delete:hover { background-color: #dc2626; }
+
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                justify-content: center;
+                align-items: center;
+                z-index: 50;
+                padding: 1rem;
+            }
+            .modal.active { display: flex; }
+
+            .modal-content {
+                background: white;
+                padding: 2rem;
+                width: 100%;
+                max-width: 500px;
+                border-radius: 1rem;
+            }
+
+            #mensajeNotificacion { transition: all 0.3s; }
+            .mensaje-success { background: #16a34a; }
+            .mensaje-error { background: #dc2626; }
+        </style>
+    </th:block>
+</head>
+
+<body>
+
+<!-- MAIN CONTENT -->
+<th:block th:fragment="mainContent">
+    <div class="max-w-6xl mx-auto">
+
+        <!-- ENCABEZADO -->
+        <div class="mb-6">
+            <h1 class="text-2xl md:text-3xl font-semibold text-gray-900">Gestión de Categorías y Colecciones</h1>
+            <p class="text-sm text-gray-500 mt-1">Administra todos los elementos base de los productos</p>
+        </div>
+
+        <!-- CONTROLES SUPERIORES -->
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 gap-4">
+
+            <!-- SELECT TIPO -->
+            <select id="filtroTipo"
+                    class="border border-gray-300 px-4 py-2 rounded-lg focus:ring-blue-500">
+                <option value="categorias" th:selected="${tipo == 'categorias'}">Categorías</option>
+                <option value="colecciones" th:selected="${tipo == 'colecciones'}">Colecciones</option>
+            </select>
+
+            <!-- BOTÓN CREAR -->
+            <button onclick="abrirModalCrear()" class="btn-primary">+ Crear Nuevo</button>
+        </div>
+
+        <!-- NOTIFICACIÓN -->
+        <div id="mensajeNotificacion"
+             class="hidden w-full mx-auto mb-4 p-4 rounded-lg text-white font-medium shadow-lg opacity-0 -translate-y-3 flex items-center gap-3">
+            <span id="toastIcon"></span>
+            <span id="toastText"></span>
+        </div>
+
+        <!-- TABLA -->
+        <div class="table-wrapper">
+            <table class="min-w-full bg-white border rounded-lg overflow-hidden">
+                <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-700">ID</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-700">Nombre</th>
+                    <th class="px-4 py-3 text-center font-semibold text-gray-700">Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="item : ${items}" class="border-b hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium" th:text="${item.id}"></td>
+                    <td class="px-4 py-3" th:text="${item.nombre}"></td>
+
+                    <td class="px-4 py-3 text-center">
+                        <button class="btn-primary"
+                                th:attr="data-id=${item.id}, data-nom=${item.nombre}"
+                                onclick="abrirModalEditar(this.dataset.id, this.dataset.nom)">
+                            Editar
+                        </button>
+
+                        <button class="btn-primary btn-delete ml-2"
+                                th:attr="data-id=${item.id}"
+                                onclick="abrirModalEliminar(this.dataset.id)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(items)}">
+                    <td colspan="3" class="py-6 text-center text-gray-500">No hay datos disponibles.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- MODAL CREAR -->
+    <div id="modalCrear" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold mb-4">Crear Nuevo</h2>
+
+            <label class="block text-sm mb-1 font-medium">Nombre:</label>
+            <input id="nuevoNombre" class="w-full border px-3 py-2 rounded-lg mb-4">
+
+            <div class="flex justify-end gap-2">
+                <button class="px-4 py-2 bg-gray-200 rounded-lg"
+                        onclick="cerrarModal('modalCrear')">Cancelar</button>
+
+                <button class="btn-primary"
+                        onclick="crearItem()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR -->
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold mb-4">Editar</h2>
+
+            <input type="hidden" id="editarId">
+
+            <label class="block text-sm mb-1 font-medium">Nombre:</label>
+            <input id="editarNombre" class="w-full border px-3 py-2 rounded-lg mb-4">
+
+            <div class="flex justify-end gap-2">
+                <button class="px-4 py-2 bg-gray-200 rounded-lg"
+                        onclick="cerrarModal('modalEditar')">Cancelar</button>
+
+                <button class="btn-primary"
+                        onclick="guardarEdicion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ELIMINAR -->
+    <div id="modalEliminar" class="modal">
+        <div class="modal-content">
+            <h2 class="text-xl font-semibold mb-3 text-red-600">¿Eliminar?</h2>
+            <p class="text-gray-600 mb-6">Esta acción no se puede deshacer.</p>
+
+            <input type="hidden" id="eliminarId">
+
+            <div class="flex justify-end gap-2">
+                <button class="px-4 py-2 bg-gray-200 rounded-lg"
+                        onclick="cerrarModal('modalEliminar')">Cancelar</button>
+
+                <button class="btn-primary btn-delete"
+                        onclick="confirmarEliminar()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<!-- JS -->
+<th:block th:fragment="extraJs">
+    <script>
+
+        document.getElementById("filtroTipo").addEventListener("change", function () {
+            window.location.href = `/admin/cat-col?tipo=${this.value}`;
+        });
+
+        function abrirModalCrear() {
+            document.getElementById("modalCrear").classList.add("active");
+        }
+
+        function abrirModalEditar(id, nombre) {
+            document.getElementById("editarId").value = id;
+            document.getElementById("editarNombre").value = nombre;
+            document.getElementById("modalEditar").classList.add("active");
+        }
+
+        function abrirModalEliminar(id) {
+            document.getElementById("eliminarId").value = id;
+            document.getElementById("modalEliminar").classList.add("active");
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).classList.remove("active");
+        }
+
+        // Toast
+        function toast(msg, tipo = "success") {
+            const box = document.getElementById("mensajeNotificacion");
+            const icon = document.getElementById("toastIcon");
+            const text = document.getElementById("toastText");
+
+            // Quitar clases que ocultan
+            box.classList.remove("hidden", "opacity-0", "-translate-y-3", "mensaje-success", "mensaje-error");
+
+            text.textContent = msg;
+
+            if (tipo === "success") {
+                box.classList.add("mensaje-success");
+            } else {
+                box.classList.add("mensaje-error");
+            }
+
+            // Después de 2.5 segundos ocultarlo con animación
+            setTimeout(() => {
+                box.classList.add("opacity-0", "-translate-y-3");
+                setTimeout(() => box.classList.add("hidden"), 300);
+            }, 2500);
+        }
+
+
+        // Crear
+        async function crearItem() {
+            const nombre = document.getElementById("nuevoNombre").value;
+            const tipo = document.getElementById("filtroTipo").value;
+
+            const res = await fetch(`/admin/${tipo}/crear`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({nombre})
+            });
+
+            const json = await res.json();
+
+            cerrarModal("modalCrear");
+            toast(json.message, json.success ? "success" : "error");
+
+            if (json.success) setTimeout(() => location.reload(), 1000);
+        }
+
+        // Editar
+        async function guardarEdicion() {
+            const id = document.getElementById("editarId").value;
+            const nombre = document.getElementById("editarNombre").value;
+            const tipo = document.getElementById("filtroTipo").value;
+
+            const res = await fetch(`/admin/${tipo}/editar/${id}`, {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({nombre})
+            });
+
+            const json = await res.json();
+
+            cerrarModal("modalEditar");
+            toast(json.message, json.success ? "success" : "error");
+
+            if (json.success) setTimeout(() => location.reload(), 1000);
+        }
+
+        // Eliminar
+        async function confirmarEliminar() {
+            const id = document.getElementById("eliminarId").value;
+            const tipo = document.getElementById("filtroTipo").value;
+
+            const res = await fetch(`/admin/${tipo}/eliminar/${id}`, {method: "DELETE"});
+            const json = await res.json();
+
+            cerrarModal("modalEliminar");
+            toast(json.message, json.success ? "success" : "error");
+
+            if (json.success) setTimeout(() => location.reload(), 1000);
+        }
+
+    </script>
+</th:block>
+
+</body>
+</html>
