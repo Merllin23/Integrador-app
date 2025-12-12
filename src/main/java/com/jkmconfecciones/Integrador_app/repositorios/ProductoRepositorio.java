@@ -20,4 +20,9 @@ public interface ProductoRepositorio extends JpaRepository<Producto, Long> {
 
     List<Producto> filtrarProductos(@Param("colegioId") Integer colegioId,
                                     @Param("categoriaId") Integer categoriaId);
+
+    boolean existsByImagenUrl(String imagenUrl);
+
+    @Query("SELECT p FROM Producto p WHERE p.categoria.id = :categoriaId")
+    List<Producto> findByCategoriaId(@Param("categoriaId") Integer categoriaId);
 }

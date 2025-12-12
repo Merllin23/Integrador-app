@@ -54,6 +54,7 @@ public class SeguridadConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/usuario/**").authenticated()
+                        .requestMatchers("/actuator/**").hasRole("ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
