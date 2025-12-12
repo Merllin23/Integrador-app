@@ -48,6 +48,9 @@ public class AuditoriaSeguridad {
 
     @PrePersist
     protected void onCreate() {
-        this.fechaHora = LocalDateTime.now();
+        // Solo establecer fechaHora si no fue asignada previamente
+        if (this.fechaHora == null) {
+            this.fechaHora = java.time.ZonedDateTime.now(java.time.ZoneId.of("America/Lima")).toLocalDateTime();
+        }
     }
 }
