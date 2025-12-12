@@ -46,6 +46,7 @@ public class SeguridadConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMINISTRADOR")
                         .requestMatchers("/usuario/**").authenticated()
+                        .requestMatchers("/actuator/**").hasRole("ADMINISTRADOR")  // Solo admins pueden ver métricas
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
