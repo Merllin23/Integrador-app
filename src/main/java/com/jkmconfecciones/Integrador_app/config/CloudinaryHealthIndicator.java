@@ -1,32 +1,30 @@
 package com.jkmconfecciones.Integrador_app.config;
 
-import com.cloudinary.Cloudinary;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 /**
- * Health Check personalizado para verificar la conexión con Cloudinary.
- * Valida que las credenciales estén configuradas y la API sea accesible.
+ * Health Check personalizado para verificar la configuración de Cloudinary.
+ * Valida que las credenciales estén configuradas correctamente.
  * Se expone en /actuator/health (solo para ADMINISTRADOR).
  */
 @Component
 public class CloudinaryHealthIndicator implements HealthIndicator {
 
-    @Autowired
-    private Cloudinary cloudinary;
+    @Value("${cloudinary.cloud-name}")
+    private String cloudName;
+    
+    @Value("${cloudinary.api-key}")
+    private String apiKey;
+    
+    @Value("${cloudinary.api-secret}")
+    private String apiSecret;
 
     @Override
     public Health health() {
         try {
-            // Obtener configuración de Cloudinary
-            Map<String, Object> config = cloudinary.config.asMap();
-            String cloudName = (String) config.get("cloud_name");
-            String apiKey = (String) config.get("api_key");
-            
             // Validar que las credenciales estén configuradas
             if (cloudName == null || cloudName.equals("default") || cloudName.isEmpty()) {
                 return Health.down()
@@ -38,6 +36,13 @@ public class CloudinaryHealthIndicator implements HealthIndicator {
             if (apiKey == null || apiKey.equals("default") || apiKey.isEmpty()) {
                 return Health.down()
                         .withDetail("error", "API Key no configurada")
+                        .withDetail("cloud_name", cloudName)
+                        .build();
+            }
+
+            if (apiSecret == null || apiSecret.equals("default") || apiSecret.isEmpty()) {
+                return Health.down()
+                        .withDetail("error", "API Secret no configurado")
                         .withDetail("cloud_name", cloudName)
                         .build();
             }
