@@ -67,7 +67,7 @@ public class NotificacionService {
     //Obtener notificaciones no leídas
     
     public List<Notificacion> obtenerNotificacionesNoLeidas(Usuario usuario) {
-        return notificacionRepositorio.findByUsuarioAndLeidaFalseOrderByFechaCreacionDesc(usuario);
+        return notificacionRepositorio.findByUsuarioAndLeidaFalseAndArchivadaFalseOrderByFechaCreacionDesc(usuario);
     }
 
     //Obtener notificaciones archivadas
@@ -108,10 +108,22 @@ public class NotificacionService {
         }
     }
 
-    //Contar notificaciones no leídas
+    //Contar notificaciones no leídas 
     
     public long contarNotificacionesNoLeidas(Usuario usuario) {
-        return notificacionRepositorio.countByUsuarioAndLeidaFalse(usuario);
+        return notificacionRepositorio.countByUsuarioAndLeidaFalseAndArchivadaFalse(usuario);
+    }
+
+    //Contar notificaciones archivadas
+    
+    public long contarNotificacionesArchivadas(Usuario usuario) {
+        return notificacionRepositorio.findByUsuarioAndArchivadaTrueOrderByFechaCreacionDesc(usuario).size();
+    }
+
+    //Contar todas las notificaciones no archivadas
+    
+    public long contarNotificacionesNoArchivadas(Usuario usuario) {
+        return notificacionRepositorio.findByUsuarioAndArchivadaFalseOrderByFechaCreacionDesc(usuario).size();
     }
 
     //Obtener notificaciones con paginación

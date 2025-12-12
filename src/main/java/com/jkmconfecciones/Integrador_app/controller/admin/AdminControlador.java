@@ -814,13 +814,15 @@ public class AdminControlador {
         try {
             Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesUsuario(usuario);
+            // Obtener notificaciones
+            List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesNoArchivadas(usuario);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("notificaciones", notificaciones);
             response.put("total", notificaciones.size());
             response.put("noLeidas", notificacionService.contarNotificacionesNoLeidas(usuario));
+            response.put("archivadas", notificacionService.contarNotificacionesArchivadas(usuario));
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -839,12 +841,16 @@ public class AdminControlador {
         try {
             Usuario usuario = usuarioService.buscarPorCorreo(userDetails.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            // Obtener notificaciones no leídas Y no archivadas
             List<Notificacion> notificaciones = notificacionService.obtenerNotificacionesNoLeidas(usuario);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("notificaciones", notificaciones);
             response.put("total", notificaciones.size());
+            response.put("noLeidas", notificaciones.size());
+            response.put("todos", notificacionService.contarNotificacionesNoArchivadas(usuario));
+            response.put("archivadas", notificacionService.contarNotificacionesArchivadas(usuario));
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -869,6 +875,9 @@ public class AdminControlador {
             response.put("success", true);
             response.put("notificaciones", notificaciones);
             response.put("total", notificaciones.size());
+            response.put("archivadas", notificaciones.size());
+            response.put("todos", notificacionService.contarNotificacionesNoArchivadas(usuario));
+            response.put("noLeidas", notificacionService.contarNotificacionesNoLeidas(usuario));
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {

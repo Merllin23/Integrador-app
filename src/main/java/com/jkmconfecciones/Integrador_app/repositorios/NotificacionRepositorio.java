@@ -19,6 +19,9 @@ public interface NotificacionRepositorio extends JpaRepository<Notificacion, Lon
     // Buscar notificaciones no leídas
     List<Notificacion> findByUsuarioAndLeidaFalseOrderByFechaCreacionDesc(Usuario usuario);
 
+    // Buscar notificaciones no leídas Y no archivadas 
+    List<Notificacion> findByUsuarioAndLeidaFalseAndArchivadaFalseOrderByFechaCreacionDesc(Usuario usuario);
+
     // Buscar notificaciones archivadas
     List<Notificacion> findByUsuarioAndArchivadaTrueOrderByFechaCreacionDesc(Usuario usuario);
 
@@ -27,6 +30,9 @@ public interface NotificacionRepositorio extends JpaRepository<Notificacion, Lon
 
     // Contar notificaciones no leídas 
     long countByUsuarioAndLeidaFalse(Usuario usuario);
+
+    // Contar notificaciones no leídas Y no archivadas
+    long countByUsuarioAndLeidaFalseAndArchivadaFalse(Usuario usuario);
 
     // Paginación de notificaciones
     Page<Notificacion> findByUsuarioOrderByFechaCreacionDesc(Usuario usuario, Pageable pageable);
